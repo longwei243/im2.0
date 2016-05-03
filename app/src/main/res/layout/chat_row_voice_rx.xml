@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    >
+
+    <TextView
+        android:id="@+id/chatting_time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:background="@color/lightgrey"
+        android:textSize="10sp"
+        android:layout_margin="2dp"
+        />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/chatting_time_tv" >
+
+        <RelativeLayout
+            android:id="@+id/chart_from_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="48dp"
+            android:layout_alignParentLeft="true" >
+
+            <ImageView
+                android:id="@+id/chatting_avatar_iv"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/head_default_local"
+                android:scaleType="fitXY" />
+
+            <FrameLayout
+                android:id="@+id/chatfrom_content_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/chatting_avatar_iv"
+                >
+
+                <TextView
+                    android:id="@+id/chatting_voice_play_anim_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chatfrom_bg_normal"
+                    android:drawableLeft="@drawable/chatfrom_voice_playing"
+                    android:layout_centerVertical="true"
+                    android:minHeight="48dp" />
+
+                <com.moor.im.options.chat.view.VoiceAnimImageView
+                    android:id="@+id/chatting_voice_anim"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:visibility="gone" />
+            </FrameLayout>
+            <TextView
+                android:id="@+id/chatting_content_itv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="xxx"
+                android:layout_toRightOf="@id/chatfrom_content_layout" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item  
+        android:id="@+id/action_change_discussion_name"
+        app:showAsAction="never"
+        android:title="修改组名称"/>
+   <item  
+        android:id="@+id/action_add_discussion_member"
+        app:showAsAction="never"
+        android:title="添加成员"/>
+    <item  
+        android:id="@+id/action_delete_discussion"
+        app:showAsAction="never"
+        android:title="删除该讨论组"/>
+</menu>

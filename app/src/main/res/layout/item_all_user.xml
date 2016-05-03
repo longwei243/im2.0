@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_image_section_item">
+
+        <ImageView
+            android:id="@+id/section_iv"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_margin="12dp"
+            android:src="@drawable/img_default_head"/>
+
+        <TextView
+            android:id="@+id/section_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="2dp"
+            android:layout_toEndOf="@id/section_iv"
+            android:layout_toRightOf="@id/section_iv"
+            android:textColor="@color/image_section_name_tv"
+            android:textSize="16sp"/>
+
+        <CheckBox
+            android:id="@+id/section_cb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:layout_centerVertical="true"
+            />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@id/section_iv"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
+            android:background="#ffE5E5E5"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

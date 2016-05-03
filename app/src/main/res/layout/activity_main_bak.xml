@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/maincolor"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:id="@+id/title_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/all_white"
+                android:text="@string/app_name"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/title_btn_contact_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search_white_36dp"
+                android:layout_marginRight="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                />
+
+        </RelativeLayout>
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/id_main_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </android.support.v4.view.ViewPager>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/lightgrey" />
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="52dp" >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="52dp"
+            android:background="#ffffff"
+            android:orientation="horizontal" >
+
+            <com.moor.im.common.views.changecolortab.ChangeColorTabItem
+                android:id="@+id/id_indicator_one"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:padding="5dp"
+                app:tab_icon="@drawable/ic_message_grey600_36dp"
+                app:tab_text="@string/tab_message"
+                app:tab_text_size="12sp" />
+
+            <com.moor.im.common.views.changecolortab.ChangeColorTabItem
+                android:id="@+id/id_indicator_two"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:padding="5dp"
+                app:tab_icon="@drawable/ic_perm_identity_grey600_36dp"
+                app:tab_text="@string/tab_contact"
+                app:tab_text_size="12sp" />
+
+            <com.moor.im.common.views.changecolortab.ChangeColorTabItem
+                android:id="@+id/id_indicator_three"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:padding="5dp"
+                app:tab_icon="@drawable/phone_popup_keyboard_normal"
+                app:tab_text="@string/tab_dial"
+                app:tab_text_size="12sp" />
+
+            <com.moor.im.common.views.changecolortab.ChangeColorTabItem
+                android:id="@+id/id_indicator_four"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:padding="5dp"
+                app:tab_icon="@drawable/ic_settings_grey600_36dp"
+                app:tab_text="@string/tab_setup"
+                app:tab_text_size="12sp" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

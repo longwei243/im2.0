@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/maincolor">
+
+    <TextView
+        android:id="@+id/welcome_label"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/all_white"
+        android:layout_centerInParent="true"
+        android:textSize="26sp"
+        android:text="容联七陌"
+        />
+
+    <ImageView
+        android:id="@+id/welcome_icon"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:src="@drawable/start_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/welcome_label"
+        android:layout_marginBottom="16dp"
+        />
+
+
+    <TextView
+        android:layout_below="@id/welcome_label"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/all_white"
+        android:layout_marginTop="8dp"
+        android:textSize="20sp"
+        android:text="创企业新通讯"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="6dp"
+        android:layout_marginBottom="6dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/all_white"
+        android:textSize="16sp"
+        android:text="7moor.com"
+        />
+</RelativeLayout>

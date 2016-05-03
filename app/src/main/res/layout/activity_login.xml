@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/login_tb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/maincolor"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="登录"/>
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/login_til_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_tb"
+        >
+        <EditText
+            android:id="@+id/login_et_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="工号@账号名"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/login_til_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_til_name"
+        >
+        <EditText
+            android:id="@+id/login_et_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+            android:hint="密码"
+            />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:layout_below="@id/login_til_password"
+        android:id="@+id/login_btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="登录"
+        />
+
+    <com.moor.im.common.views.progress.ProgressWheel
+        android:id="@+id/login_pw"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_below="@id/login_til_password"
+        android:layout_centerHorizontal="true"
+        app:matProg_barColor="@color/maincolor"
+        app:matProg_progressIndeterminate="true"
+        android:visibility="gone"
+        />
+
+</RelativeLayout>

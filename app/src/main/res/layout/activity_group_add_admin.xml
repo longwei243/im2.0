@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/all_white">
+
+    <include layout="@layout/layout_titlebar" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffE5E5E5"
+        android:paddingLeft="8dp"
+        android:text="管理员"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="68dp">
+        <TextView
+            android:id="@+id/group_add_admin_tv_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            />
+        <android.support.v7.widget.RecyclerView
+            android:layout_marginLeft="4dp"
+            android:layout_toLeftOf="@id/group_add_admin_tv_count"
+            android:id="@+id/group_add_admin_rv_admin"
+            android:layout_width="match_parent"
+            android:layout_height="68dp">
+
+        </android.support.v7.widget.RecyclerView>
+
+
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffE5E5E5"
+        android:paddingLeft="8dp"
+        android:text="群成员"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/group_add_admin_rv_members"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>

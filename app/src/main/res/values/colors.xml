@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- 应用主题色 -->
+    <color name="maincolor">#21b38a</color>
+    <color name="maincolordark">#129872</color>
+    <color name="sidebar_letter_normal">#202020</color>
+    <color name="sidebar_letter_pressed">#21b38a</color>
+    <!-- 白色 -->
+    <color name="all_white">#ffffff</color>
+    <!-- 黑色 -->
+    <color name="all_black">#000000</color>
+    <!-- 透明 -->
+    <color name="transparent">#00000000</color>
+    <color name="halftrans">#60000000</color>
+    <!-- 浅灰 -->
+    <color name="lightgrey">#D6D6D6</color>
+    <color name="grey">#8B8989</color>
+    <color name="parent_dialog_bg">#EDEDED</color>
+    <color name="startcolor">#21b38a</color>
+
+    <color name="alert">#CC0000</color>
+    <color name="confirm">#FF8800</color>
+    <color name="info">#669900</color>
+    <color name="sticky">#ffffcd5a</color>
+
+    <color name="setting_text_bg">#7e7f81</color>
+    <color name="call_green">#67d234</color>
+    <color name="call_red">#fa5f5f</color>
+    <color name="flow_bg">#898989</color>
+    <color name="step_bg">#F57474</color>
+    <color name="dialog_bg_color">#FFFFFF</color>
+    <color name="float_transparent">#00000000</color>
+
+    <color name="section_header_tv">#ff666666</color>
+    <color name="section_header_tv_bg">#ffE8EDEE</color>
+    <color name="image_section_name_tv">#ff444444</color>
+
+    <color name="card_background">#ffffff</color>
+    <color name="card_shadow">#10000000</color>
+    <color name="lite_blue">#ff359ff2</color>
+    <color name="window_background">#00000000</color>
+    <color name="black_de">#DE000000</color>
+</resources>

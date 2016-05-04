@@ -128,7 +128,12 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(String responseStr) {
                                     LogUtil.d("获取用户信息成功返回数据:"+responseStr);
-                                    processUserInfoData(responseStr);
+                                    if(HttpParser.getSucceed(responseStr)) {
+                                        processUserInfoData(responseStr);
+                                    }else {
+                                        login_btn_submit.setVisibility(View.VISIBLE);
+                                        login_pw.setVisibility(View.GONE);
+                                    }
                                 }
                             });
                         }else if(event instanceof LoginFailed) {

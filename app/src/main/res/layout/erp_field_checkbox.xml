@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+    android:padding="8dp"
+    >
+
+    <TextView
+        android:id="@+id/erp_field_checkbox_tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_centerVertical="true"
+        android:textSize="16sp"
+        android:text="字段名"/>
+
+    <com.moor.im.common.views.GridViewInScrollView
+        android:layout_toRightOf="@id/erp_field_checkbox_tv_name"
+        android:id="@+id/erp_field_checkbox_gv_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#00000000"
+        android:fadingEdge="none"
+        android:fadingEdgeLength="0dp"
+        android:gravity="center_horizontal"
+        android:horizontalSpacing="3dp"
+        android:padding="4dp"
+        android:scrollbars="none"
+        android:verticalSpacing="3dp"
+        android:numColumns="3"
+        >
+
+    </com.moor.im.common.views.GridViewInScrollView>
+</RelativeLayout>

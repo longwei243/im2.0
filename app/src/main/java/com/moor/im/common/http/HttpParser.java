@@ -41,6 +41,24 @@ public class HttpParser {
     }
 
     /**
+     * 手机助手
+     * @param responseString
+     * @return
+     */
+    public static boolean getSuccess(String responseString) {
+        boolean succeed = false;
+        try {
+            JSONObject o = new JSONObject(responseString);
+            succeed = o.getBoolean("success");
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return succeed;
+    }
+
+    /**
      * 获取返回消息
      *
      * @param responseString

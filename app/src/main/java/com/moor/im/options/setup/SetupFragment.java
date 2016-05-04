@@ -1,32 +1,39 @@
 package com.moor.im.options.setup;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.M7Constant;
+import com.moor.im.common.db.dao.ContactsDao;
 import com.moor.im.common.db.dao.InfoDao;
+import com.moor.im.common.db.dao.MessageDao;
+import com.moor.im.common.db.dao.NewMessageDao;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.db.dao.UserRoleDao;
-import com.moor.im.common.event.MsgRead;
-import com.moor.im.common.event.NewMsgReceived;
-import com.moor.im.common.event.SendMsg;
+import com.moor.im.common.dialog.MaterialDialog;
 import com.moor.im.common.event.UserInfoUpdate;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
@@ -36,9 +43,15 @@ import com.moor.im.common.model.UserRole;
 import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.GlideUtils;
 import com.moor.im.common.utils.log.LogUtil;
+import com.moor.im.options.aboutme.AboutMeActivity;
 import com.moor.im.options.base.BaseLazyFragment;
+import com.moor.im.options.login.LoginActivity;
+import com.moor.im.options.mobileassistant.cdr.activity.CdrActivity;
+import com.moor.im.options.mobileassistant.erp.activity.ErpActivity;
 import com.moor.im.options.setup.activity.ClipImageViewActivity;
 import com.moor.im.options.setup.activity.EditActivity;
+import com.moor.im.options.update.UpdateActivity;
+import com.moor.im.tcp.imservice.IMService;
 
 import java.util.List;
 
@@ -58,7 +71,22 @@ public class SetupFragment extends BaseLazyFragment{
 
     ImageView contact_detail_image;
     private User user = UserDao.getInstance().getUser();
+    private SharedPreferences mSp;
+    private SharedPreferences.Editor mEditor;
     private CompositeSubscription _subscriptions;
+    private Messenger messenger;
+    private ServiceConnection conn = new ServiceConnection() {
+
+        @Override
+        public void onServiceDisconnected(ComponentName cn) {
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName cn, IBinder ibiner) {
+            messenger = new Messenger(ibiner);//得到Service中的Messenger
+            LogUtil.d("bind imservice success");
+        }
+    };
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -123,6 +151,9 @@ public class SetupFragment extends BaseLazyFragment{
                         }
                     }
                 }));
+        mSp = getActivity().getSharedPreferences(M7Constant.MAIN_SP, 0);
+        mEditor = mSp.edit();
+        getActivity().bindService(new Intent(getActivity(), IMService.class), conn, Context.BIND_AUTO_CREATE);
         return view;
     }
 
@@ -162,15 +193,15 @@ public class SetupFragment extends BaseLazyFragment{
         public void onClick(View v) {
             switch(v.getId()) {
                 case R.id.setup_ll_loginoff:
-
+                    showLoginoffDialog();
                     break;
                 case R.id.setup_ll_update:
-//                    Intent updateIntent = new Intent(getActivity(), UpdateActivity.class);
-//                    startActivity(updateIntent);
+                    Intent updateIntent = new Intent(getActivity(), UpdateActivity.class);
+                    startActivity(updateIntent);
                     break;
                 case R.id.setup_ll_aboutme:
-//                    Intent aboutIntent = new Intent(getActivity(), AboutMeActivity.class);
-//                    startActivity(aboutIntent);
+                    Intent aboutIntent = new Intent(getActivity(), AboutMeActivity.class);
+                    startActivity(aboutIntent);
                     break;
                 case R.id.setup_ll_icon:
                     Intent intent;
@@ -201,17 +232,88 @@ public class SetupFragment extends BaseLazyFragment{
 
                     break;
                 case R.id.setup_ll_mobile:
-//                    Intent mobileIntent = new Intent(SetupFragment.this.getActivity(), MACdrActivity.class);
-//                    startActivity(mobileIntent);
+                    Intent mobileIntent = new Intent(SetupFragment.this.getActivity(), CdrActivity.class);
+                    startActivity(mobileIntent);
                     break;
                 case R.id.setup_ll_mobile_erp:
-//                    Intent erpIntent = new Intent(SetupFragment.this.getActivity(), MAErpActivity.class);
-//                    startActivity(erpIntent);
+                    Intent erpIntent = new Intent(SetupFragment.this.getActivity(), ErpActivity.class);
+                    startActivity(erpIntent);
                     break;
             }
         }
     };
 
+    /**
+     * 注销对话框
+     */
+    private void showLoginoffDialog() {
+        final MaterialDialog mMaterialDialog = new MaterialDialog(getActivity());
+        mMaterialDialog.setTitle("温馨提示")
+                .setMessage("确认注销吗?")
+                .setPositiveButton("确认", new View.OnClickListener() {
+                    @Override public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                        loginoff();
+                    }
+                })
+                .setNegativeButton("取消",
+                        new View.OnClickListener() {
+                            @Override public void onClick(View v) {
+                                mMaterialDialog.dismiss();
+                            }
+                        })
+                .setCanceledOnTouchOutside(false)
+                .show();
+
+    }
+
+    /**
+     * 注销
+     *
+     */
+    private void loginoff() {
+        HttpManager.getInstance().loginOff(InfoDao.getInstance().getConnectionId(),
+                new loginOffResponseHandler());
+    }
+
+    class loginOffResponseHandler implements ResponseListener {
+        @Override
+        public void onFailed() {
+        }
+
+        @Override
+        public void onSuccess(String responseString) {
+            if (HttpParser.getSucceed(responseString)) {
+                //发送tcp断开
+                Message msg = Message.obtain(null, M7Constant.HANDLER_LOGINOFF);
+                try {
+                    messenger.send(msg);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+                clearData();
+
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+            } else{
+                Toast.makeText(getActivity(), "网络不稳定，请稍后重试", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void clearData() {
+        //注销就清空原来保存的数据
+        mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,false);
+        mEditor.commit();
+//        getActivity().getContentResolver().delete(SipProfile.ACCOUNT_URI, null, null);
+        MessageDao.getInstance().deleteAllMsgs();
+        NewMessageDao.getInstance().deleteAllMsgs();
+        UserDao.getInstance().deleteUser();
+        ContactsDao.getInstance().clear();
+        MobileApplication.cacheUtil.clear();
+    }
 
     class GetUserInfoResponseHandler implements ResponseListener{
         @Override
@@ -245,5 +347,11 @@ public class SetupFragment extends BaseLazyFragment{
                 }
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unbindService(conn);
     }
 }

@@ -61,7 +61,9 @@ public class UserDao {
 	public User getUser() {
 		User user = new User();
 		try {
-			user = userDao.queryForAll().get(0);
+			if(userDao.queryForAll() != null && userDao.queryForAll().size() > 0) {
+				user = userDao.queryForAll().get(0);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

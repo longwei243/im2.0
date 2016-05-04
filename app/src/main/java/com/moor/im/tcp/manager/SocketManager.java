@@ -116,6 +116,11 @@ public class SocketManager {
 
     }
 
+    public void loginOff() {
+        sendData("quit\n");
+        setLoginOff(true);
+    }
+
     /**
      * 断开tcp链接
      */

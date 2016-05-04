@@ -87,4 +87,37 @@ public class TimeUtil {
 		String currentStr = sdf.format(d);
 		return currentStr;
 	}
+
+	/**
+	 * 获取通话记录显示的时长
+	 * @param seconds
+	 * @return
+	 */
+	public static String getContactsLogTime(long seconds) {
+		String time = "";
+		if(seconds < 0) {
+			time = "0";
+		}else if(seconds < 60) {
+			time = seconds + "";
+		}else if(seconds > 60) {
+			int min = (int)(seconds / 60);
+			int sec = (int)(seconds % 60);
+			time = min +"分"+sec;
+		}
+		return time;
+	}
+
+	public static String getShortTime(String time) {
+		String _d= time.substring(0, 10);
+		String _t= time.substring(11,16);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = new Date();
+		String now = sdf.format(date);
+		String d = now.substring(0, 10);
+		if(_d.equals(d)) {
+			return _t;
+		}else {
+			return _d;
+		}
+	}
 }

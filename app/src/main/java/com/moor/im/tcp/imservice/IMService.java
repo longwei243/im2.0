@@ -70,10 +70,14 @@ public class IMService extends Service{
             if(msg.what == M7Constant.HANDLER_LOGIN) {
                 //客户端登录
                 mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到客户端发送的登录请求");
-
                 String name = msg.getData().getString("name");
                 String password = msg.getData().getString("password");
                 login(name, password);
+            }else if(msg.what == M7Constant.HANDLER_LOGINOFF) {
+                //注销
+                mSocketManager.loginOff();
+                mEditor.clear();
+                mEditor.commit();
             }
         }
     };

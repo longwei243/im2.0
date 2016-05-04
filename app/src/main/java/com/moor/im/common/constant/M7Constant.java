@@ -7,6 +7,7 @@ public class M7Constant {
 
     //int
     public static final int HANDLER_LOGIN = 0x11;
+    public static final int HANDLER_LOGINOFF = 0x12;
 
     //string
     public static final String IMSERVICE_SP = "imservice_sp";
@@ -29,6 +30,5 @@ public class M7Constant {
     public static final String ACTION_NEW_MSG = "com.m7.action.newmsg";
     public static final String ACTION_GROUP_UPDATE = "com.m7.action.update.group";
     public static final String ACTION_DISCUSSION_UPDATE = "com.m7.action.update.discussion";
-
 
 }

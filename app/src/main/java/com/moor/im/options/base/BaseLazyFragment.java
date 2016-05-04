@@ -13,8 +13,7 @@ public class BaseLazyFragment extends Fragment {
     /**
      * rxjava 订阅持有者
      */
-    protected CompositeSubscription mCompositeSubscription
-            = new CompositeSubscription();
+    protected CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
     /**
      * 是否准备好
@@ -28,6 +27,12 @@ public class BaseLazyFragment extends Fragment {
 
     private boolean isFirstVisible = true;
     private boolean isFirstInvisible = true;
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        mCompositeSubscription = new CompositeSubscription();
+//    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

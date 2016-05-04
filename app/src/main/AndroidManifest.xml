@@ -58,6 +58,24 @@
         <activity android:name=".options.imageviewlook.ImageViewLookActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.setup.activity.EditActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.setup.activity.ClipImageViewActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".options.update.UpdateActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/parentDialog" >
+        </activity>
+        <activity android:name=".options.aboutme.AboutMeActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".options.mobileassistant.cdr.activity.CdrActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.cdr.activity.MYCallHighQueryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.cdr.activity.AllCallHighQueryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.cdr.activity.MACallDetailActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".options.mobileassistant.erp.activity.ErpActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.erp.activity.ErpHighQueryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.erp.activity.ErpActionBackActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.erp.activity.ErpActionProcessActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.erp.activity.ErpDetailActivity" android:screenOrientation="portrait"/>
+
 
         <receiver android:name=".common.receiver.SocketReceiver">
             <intent-filter>

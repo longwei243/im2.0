@@ -21,6 +21,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,6 +61,90 @@ public class HttpManager {
         return instance;
     }
 
+    private void sendPost(String content, final ResponseListener listener) {
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("data", content)
+                .build();
+        Request request = new Request.Builder()
+                .url(RequestUrl.baseHttp1)
+                .post(formBody)
+                .build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                if(listener != null) {
+                    mDelivery.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onFailed();
+                        }
+                    });
+
+                }
+            }
+            @Override
+            public void onResponse(Response response){
+                if(listener != null) {
+                    final String responseStr;
+                    try {
+                        responseStr = response.body().string();
+                        mDelivery.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onSuccess(responseStr);
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private void sendPostForMobileAssistant(String content, final ResponseListener listener) {
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("data", content)
+                .build();
+        Request request = new Request.Builder()
+                .url(RequestUrl.baseHttpMobile)
+                .post(formBody)
+                .build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                if(listener != null) {
+                    mDelivery.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onFailed();
+                        }
+                    });
+
+                }
+            }
+            @Override
+            public void onResponse(Response response){
+                if(listener != null) {
+                    final String responseStr;
+                    try {
+                        responseStr = response.body().string();
+                        mDelivery.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onSuccess(responseStr);
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * 获取用户信息
      * @param connectionId
@@ -75,50 +160,29 @@ public class HttpManager {
             e.printStackTrace();
         }
         String content = json.toString();
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("data", content)
-                .build();
-        Request request = new Request.Builder()
-                .url(RequestUrl.baseHttp1)
-                .post(formBody)
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                if(listener != null) {
-                    mDelivery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onFailed();
-                        }
-                    });
-
-                }
-            }
-            @Override
-            public void onResponse(Response response){
-                if(listener != null) {
-                    final String responseStr;
-                    try {
-                        responseStr = response.body().string();
-                        mDelivery.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccess(responseStr);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
+        sendPost(content, listener);
     }
 
     /**
-     * 获取联系人版本号
+     * 注销
+     * @param connectionId
+     * @param listener
+     */
+    public void loginOff(String connectionId, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("ConnectionId", Utils.replaceBlank(connectionId));
+            json.put("Action", "logoff");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPost(content, listener);
+    }
+
+    /**
+     * 获取版本号
      * @param connectionId
      * @param listener
      */
@@ -132,50 +196,11 @@ public class HttpManager {
             e.printStackTrace();
         }
         String content = json.toString();
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("data", content)
-                .build();
-        Request request = new Request.Builder()
-                .url(RequestUrl.baseHttp1)
-                .post(formBody)
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                if(listener != null) {
-                    mDelivery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onFailed();
-                        }
-                    });
-
-                }
-            }
-            @Override
-            public void onResponse(Response response){
-                if(listener != null) {
-                    final String responseStr;
-                    try {
-                        responseStr = response.body().string();
-                        mDelivery.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccess(responseStr);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
+        sendPost(content, listener);
     }
 
     /**
-     * 获取联系人版本号
+     * 获取7牛token
      * @param connectionId
      * @param listener
      */
@@ -190,46 +215,7 @@ public class HttpManager {
             e.printStackTrace();
         }
         String content = json.toString();
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("data", content)
-                .build();
-        Request request = new Request.Builder()
-                .url(RequestUrl.baseHttp1)
-                .post(formBody)
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                if(listener != null) {
-                    mDelivery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onFailed();
-                        }
-                    });
-
-                }
-            }
-            @Override
-            public void onResponse(Response response){
-                if(listener != null) {
-                    final String responseStr;
-                    try {
-                        responseStr = response.body().string();
-                        mDelivery.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccess(responseStr);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
+        sendPost(content, listener);
     }
 
 
@@ -255,46 +241,7 @@ public class HttpManager {
             e.printStackTrace();
         }
         String content = json.toString();
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("data", content)
-                .build();
-        Request request = new Request.Builder()
-                .url(RequestUrl.baseHttp1)
-                .post(formBody)
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                if(listener != null) {
-                    mDelivery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onFailed();
-                        }
-                    });
-
-                }
-            }
-            @Override
-            public void onResponse(Response response){
-                if(listener != null) {
-                    final String responseStr;
-                    try {
-                        responseStr = response.body().string();
-                        mDelivery.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccess(responseStr);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
+        sendPost(content, listener);
     }
 
     /**
@@ -310,46 +257,7 @@ public class HttpManager {
         JSONWriter jw = new JSONWriter();
         jw.write(map);
         String content = jw.write(map);
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("data", content)
-                .build();
-        Request request = new Request.Builder()
-                .url(RequestUrl.baseHttp1)
-                .post(formBody)
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                if(listener != null) {
-                    mDelivery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onFailed();
-                        }
-                    });
-
-                }
-            }
-            @Override
-            public void onResponse(Response response){
-                if(listener != null) {
-                    final String responseStr;
-                    try {
-                        responseStr = response.body().string();
-                        mDelivery.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccess(responseStr);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
+        sendPost(content, listener);
     }
 
     /**
@@ -978,45 +886,7 @@ public class HttpManager {
             e.printStackTrace();
         }
         String content = json.toString();
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("data", content)
-                .build();
-        Request request = new Request.Builder()
-                .url(RequestUrl.baseHttp1)
-                .post(formBody)
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                if(listener != null) {
-                    mDelivery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onFailed();
-                        }
-                    });
-
-                }
-            }
-            @Override
-            public void onResponse(Response response){
-                if(listener != null) {
-                    final String responseStr;
-                    try {
-                        responseStr = response.body().string();
-                        mDelivery.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccess(responseStr);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+        sendPost(content, listener);
     }
 
     /**
@@ -1035,45 +905,7 @@ public class HttpManager {
             e.printStackTrace();
         }
         String content = json.toString();
-        RequestBody formBody = new FormEncodingBuilder()
-                .add("data", content)
-                .build();
-        Request request = new Request.Builder()
-                .url(RequestUrl.baseHttp1)
-                .post(formBody)
-                .build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                if(listener != null) {
-                    mDelivery.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onFailed();
-                        }
-                    });
-
-                }
-            }
-            @Override
-            public void onResponse(Response response){
-                if(listener != null) {
-                    final String responseStr;
-                    try {
-                        responseStr = response.body().string();
-                        mDelivery.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onSuccess(responseStr);
-                            }
-                        });
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
+        sendPost(content, listener);
     }
 
 
@@ -1082,7 +914,6 @@ public class HttpManager {
      */
     public void downloadFile(String url, final File file,
                              final FileDownLoadListener listener) {
-        LogUtil.d("下载文件");
         Request request = new Request.Builder()
                 .get()
                 .url(url)
@@ -1122,7 +953,7 @@ public class HttpManager {
                             mDelivery.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    listener.onProgress((int)(finalSum * 1.0f / total));
+                                    listener.onProgress((int)(finalSum * 100.0f / total));
                                 }
                             });
                         }
@@ -1130,7 +961,6 @@ public class HttpManager {
                         mDelivery.post(new Runnable() {
                             @Override
                             public void run() {
-                                LogUtil.d("文件下载成功，路径是:"+file.getAbsolutePath());
                                 listener.onSuccess(file);
                             }
                         });
@@ -1155,4 +985,540 @@ public class HttpManager {
             }
         });
     }
+
+    //=========手机助手相关====================
+
+    /**
+     * 获取坐席缓存
+     * @return
+     */
+    public Observable<String> getAgentCache(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "agents");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取技能组缓存
+     * @return
+     */
+    public Observable<String> getQueueCache(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "queues");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取option缓存
+     * @return
+     */
+    public Observable<String> getOptionCache(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "options");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取通话记录
+     * @param listener
+     */
+    public void queryCdr(String sessionId, HashMap<String, String> datas, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.queryCdr");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 获取工单流程缓存
+     * @return
+     */
+    public Observable<String> getBusinessFlow(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "businessFlow");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * 获取工单步骤缓存
+     * @return
+     */
+    public Observable<String> getBusinessStep(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "businessFlowStep");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取工单字段缓存
+     * @return
+     */
+    public Observable<String> getBusinessField(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "businessFlowField");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * 获取待领取工单
+     * @param listener
+     */
+    public void queryRoleUnDealOrder(String sessionId, HashMap<String, String> datas, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "getRoleUnDealBusiness");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 获取待处理工单
+     * @param listener
+     */
+    public void queryUserUnDealOrder(String sessionId, HashMap<String, String> datas, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "getUnDealBusiness");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 获取参与的工单
+     * @param listener
+     */
+    public void queryFollowedOrder(String sessionId, HashMap<String, String> datas, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "getFollowedBusiness");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 获取创建工单
+     * @param listener
+     */
+    public void queryAssignedOrder(String sessionId, HashMap<String, String> datas, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "getAssignedBusiness");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+
+    /**
+     * 领取工单
+     * @param listener
+     */
+    public void haveThisOrder(String sessionId, HashMap<String, String> datas, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "setTaskToMe");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 获取工单详情
+     * @param listener
+     */
+    public void getBusinessDetailById(String sessionId, String busId, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "getBusinessDetailById");
+            json.put("_id", busId);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 保存备注
+     * @param listener
+     */
+    public void saveBusinessBackInfo(String sessionId, String busId, String backInfo, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "addBusinessBackInfo");
+            json.put("_id", busId);
+            json.put("backInfo", backInfo);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 执行动作操作
+     * @param listener
+     */
+    public void excuteBusinessStepAction(String sessionId, HashMap<String, String> datas, HashMap<String, JSONArray> jadata, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "excuteBusinessStepAction");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+            for (String key : jadata.keySet()) {
+                json.put(key, jadata.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 重新提交工单
+     * @param listener
+     */
+    public void reSaveBusiness(String sessionId, HashMap<String, String> datas, HashMap<String, JSONArray> jadata, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "addBusinessTask");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+            for (String key : jadata.keySet()) {
+                json.put(key, jadata.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     *
+     * @param listener
+     */
+    public void getErpQiNiuToken(ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("Action", "app.weixin.getUptoken");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 重新提交工单
+     * @param listener
+     */
+    public void excuteBusinessBackAction(String sessionId, String busId, String backInfo,ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "excuteBusinessBackAction");
+            json.put("_id", busId);
+            json.put("backInfo", backInfo);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+    <ImageView
+        android:id="@+id/attach"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginLeft="16dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_attach_file_black_18dp"
+        />
+    <TextView
+        android:layout_toRightOf="@id/attach"
+        android:id="@+id/erp_field_file_upload_already_tv_filename"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:maxEms="10"
+        android:ellipsize="end"
+        android:textColor="@color/lite_blue"
+        android:textSize="16sp"
+        android:text="文件名"/>
+    <ImageView
+        android:layout_toRightOf="@+id/erp_field_file_upload_already_tv_filename"
+        android:id="@+id/erp_field_file_upload_already_btn_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:background="@drawable/image_editer_cancel_icon_normal"/>
+</RelativeLayout>

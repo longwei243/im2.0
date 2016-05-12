@@ -61,6 +61,45 @@ public class HttpManager {
         return instance;
     }
 
+    public void get(String url, final ResponseListener listener) {
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                if(listener != null) {
+                    mDelivery.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onFailed();
+                        }
+                    });
+
+                }
+            }
+            @Override
+            public void onResponse(Response response){
+                if(listener != null) {
+                    final String responseStr;
+                    try {
+                        responseStr = response.body().string();
+                        mDelivery.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onSuccess(responseStr);
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
     private void sendPost(String content, final ResponseListener listener) {
         RequestBody formBody = new FormEncodingBuilder()
                 .add("data", content)
@@ -218,6 +257,98 @@ public class HttpManager {
         sendPost(content, listener);
     }
 
+    /**
+     * 获取部门
+     * @param connectionId
+     * @param listener
+     */
+    public void getDepartments(String connectionId, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("ConnectionId", Utils.replaceBlank(connectionId));
+            json.put("Action", "getDepartments");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPost(content, listener);
+    }
+
+    /**
+     * 获取部门
+     * @param connectionId
+     * @param listener
+     */
+    public void deteleDepartment(String connectionId, String id, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("ConnectionId", Utils.replaceBlank(connectionId));
+            json.put("_id", id);
+            json.put("Action", "delDepartment");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPost(content, listener);
+    }
+
+    /**
+     * 添加部门
+     * @param connectionId
+     * @param members
+     * @param subDept
+     * @param name
+     * @param desc
+     * @param root
+     * @param listener
+     */
+    public void addDepartment(String connectionId, ArrayList members,
+                              ArrayList subDept, String name, String desc, boolean root, final ResponseListener listener) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("ConnectionId", Utils.replaceBlank(connectionId));
+        map.put("Members", members);
+        map.put("Subdepartments", subDept);
+        map.put("Name", name);
+        map.put("Description", desc);
+        map.put("Root", root);
+        map.put("Action", "addDepartment");
+        JSONWriter jw = new JSONWriter();
+        String content = jw.write(map);
+        sendPost(content, listener);
+    }
+
+    public void updateDepartment(String connectionId, String _id, ArrayList members,
+                                 ArrayList subDept, String name, String desc, boolean root, final ResponseListener listener) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("ConnectionId", Utils.replaceBlank(connectionId));
+        map.put("_id", _id);
+        map.put("Members", members);
+        map.put("Subdepartments", subDept);
+        map.put("Name", name);
+        map.put("Description", desc);
+        map.put("Root", root);
+        map.put("Action", "updateDepartment");
+        JSONWriter jw = new JSONWriter();
+        String content = jw.write(map);
+        sendPost(content, listener);
+    }
+
+    public void deteleSubDepartment(String connectionId, String id, String parentId, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("ConnectionId", Utils.replaceBlank(connectionId));
+            json.put("_id", id);
+            json.put("ParentId", parentId);
+            json.put("Action", "delDepartment");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPost(content, listener);
+    }
 
     /**
      * 发送消息
@@ -292,7 +423,6 @@ public class HttpManager {
                             String st = response.body().string();
                             if(!subscriber.isUnsubscribed()) {
                                 if(HttpParser.getSucceed(st)) {
-                                    LogUtil.d("从网络加载联系人返回数据:"+st);
                                     List<Contacts> contactsList = HttpParser.getContacts(st);
                                     subscriber.onNext(contactsList);
                                     subscriber.onCompleted();
@@ -1489,7 +1619,7 @@ public class HttpManager {
      *
      * @param listener
      */
-    public void getErpQiNiuToken(ResponseListener listener) {
+    public void getErpQiNiuToken(final ResponseListener listener) {
         JSONObject json = new JSONObject();
         try {
             json.put("Action", "app.weixin.getUptoken");
@@ -1498,7 +1628,45 @@ public class HttpManager {
             e.printStackTrace();
         }
         String content = json.toString();
-        sendPostForMobileAssistant(content, listener);
+        RequestBody formBody = new FormEncodingBuilder()
+                .add("data", content)
+                .build();
+        Request request = new Request.Builder()
+                .url(RequestUrl.baseHttpMobileQiNiu)
+                .post(formBody)
+                .build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                if(listener != null) {
+                    mDelivery.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onFailed();
+                        }
+                    });
+
+                }
+            }
+            @Override
+            public void onResponse(Response response){
+                if(listener != null) {
+                    final String responseStr;
+                    try {
+                        responseStr = response.body().string();
+                        mDelivery.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onSuccess(responseStr);
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     /**

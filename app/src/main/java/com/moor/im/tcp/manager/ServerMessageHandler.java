@@ -10,6 +10,7 @@ import com.moor.im.tcp.event.LoginKickedEvent;
 import com.moor.im.tcp.event.LoginSuccessEvent;
 import com.moor.im.tcp.event.MsgEvent;
 import com.moor.im.tcp.event.NetStatusEvent;
+import com.moor.im.tcp.event.NewOrderEvent;
 import com.moor.im.tcp.eventbus.EventBus;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -60,6 +61,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
   		super.channelDisconnected(ctx, e);
 		SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:tcp连接断开");
 		SocketManager.getInstance(context).setStatus(SocketStatus.BREAK);
+		EventBus.getDefault().post(NetStatusEvent.NET_RECONNECT);
 	}
 
 	@Override
@@ -99,6 +101,9 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 			InfoDao.getInstance().setLoginStateToSuccess();
 			SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:connectionId被保存了" + connectionId);
 			EventBus.getDefault().post(new LoginSuccessEvent(connectionId));
+		}else if("800".equals(result)) {
+			//有新的工单
+			EventBus.getDefault().post(new NewOrderEvent());
 		} else {
 //			MobileApplication.logger.debug(TimeUtil.getCurrentTime() + "ServerMessageHandler，服务器返回的数据是："+ result+" 未知的标示");
 		}

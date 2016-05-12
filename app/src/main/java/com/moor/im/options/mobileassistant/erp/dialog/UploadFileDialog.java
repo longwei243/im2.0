@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.moor.im.R;
 import com.moor.im.common.db.dao.UserDao;
@@ -88,8 +89,8 @@ public class UploadFileDialog  extends DialogFragment {
 
         @Override
         public void onFailed() {
-//			Toast.makeText(ChatActivity.this, "上传7牛失败了", Toast.LENGTH_SHORT).show();;
-
+            listener.onFailed();
+			Toast.makeText(getActivity(), "上传文件失败了", Toast.LENGTH_SHORT).show();;
         }
 
         @Override

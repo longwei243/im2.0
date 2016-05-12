@@ -36,11 +36,13 @@ import com.moor.im.common.utils.Utils;
 import com.moor.im.options.discussion.parser.DiscussionParser;
 import com.moor.im.options.group.parser.GroupParser;
 import com.moor.im.options.main.MainActivity;
+import com.moor.im.options.mobileassistant.erp.activity.ErpActivity;
 import com.moor.im.tcp.event.LoginFailedEvent;
 import com.moor.im.tcp.event.LoginKickedEvent;
 import com.moor.im.tcp.event.LoginSuccessEvent;
 import com.moor.im.tcp.event.MsgEvent;
 import com.moor.im.tcp.event.NetStatusEvent;
+import com.moor.im.tcp.event.NewOrderEvent;
 import com.moor.im.tcp.eventbus.EventBus;
 import com.moor.im.tcp.manager.SocketManager;
 import com.moor.im.tcp.manager.SocketStatus;
@@ -185,6 +187,54 @@ public class IMService extends Service{
                 reLogin();
             }
         }
+    }
+
+    /**
+     * 新工单
+     */
+    public void onEventMainThread(NewOrderEvent orderEvent){
+        if(isErpForground(this)) {
+            //工单页面在最上面
+            mSocketManager.logger.debug("工单页在前台");
+            Intent intent = new Intent(M7Constant.ACTION_NEW_ORDER);
+            sendBroadcast(intent);
+        }else {
+            mSocketManager.logger.debug("工单页在后台， 发送了通知");
+            Intent contentIntent = new Intent(this,
+                    ErpActivity.class);
+            contentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            PendingIntent resultPendingIntent =
+                    PendingIntent.getActivity(
+                            MobileApplication.getInstance(),
+                            0,
+                            contentIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                    );
+
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(MobileApplication.getInstance());
+            Notification notification = builder.setTicker("新工单")
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentIntent(resultPendingIntent)
+                    .setContentTitle("您有新的工单")
+                    .setContentText("")
+                    .setAutoCancel(true)
+                    .build();
+            notificationManager.notify(1, notification);
+        }
+    }
+
+    public boolean isErpForground(Context mContext) {
+        ActivityManager am = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> tasks = am.getRunningTasks(1);
+        if (!tasks.isEmpty()) {
+            ComponentName topActivity = tasks.get(0).topActivity;
+            if (!topActivity.getClassName().equals("com.moor.im.options.mobileassistant.erp.activity.ErpActivity")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     //有新消息了

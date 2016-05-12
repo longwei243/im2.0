@@ -266,10 +266,22 @@ public class MyCdrFragment extends BaseLazyFragment{
         if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) == null) {
             loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
             mCompositeSubscription.add(ObservableUtils.getAgentCacheObservable(user._id)
+                    .doOnError(new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            LogUtil.d("获取坐席缓存数据失败了");
+                        }
+                    })
                     .flatMap(new Func1<String, Observable<String>>() {
                         @Override
                         public Observable<String> call(String s) {
-                            return ObservableUtils.getQueueCacheObservable(user._id);
+                            return ObservableUtils.getQueueCacheObservable(user._id)
+                                    .doOnError(new Action1<Throwable>() {
+                                        @Override
+                                        public void call(Throwable throwable) {
+                                            LogUtil.d("获取技能组缓存数据失败了");
+                                        }
+                                    });
                         }
                     })
                     .flatMap(new Func1<String, Observable<String>>() {

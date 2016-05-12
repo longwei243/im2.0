@@ -169,6 +169,7 @@ public class ErpActionProcessActivity extends BaseActivity{
      * 提交
      */
     private void submitProcess() {
+        showLoadingDialog();
         HashMap<String, String> datas = new HashMap<>();
         HashMap<String, JSONArray> jadatas = new HashMap<>();
         int childSize = erp_action_pro_field.getChildCount();
@@ -335,12 +336,12 @@ public class ErpActionProcessActivity extends BaseActivity{
 
         @Override
         public void onFailed() {
-
+            dismissLoadingDialog();
         }
 
         @Override
         public void onSuccess(String s) {
-            System.out.println("执行动作返回结果:"+s);
+            dismissLoadingDialog();
             if(HttpParser.getSucceed(s)) {
                 //执行成功
                 Toast.makeText(ErpActionProcessActivity.this, "执行成功", Toast.LENGTH_SHORT).show();
@@ -824,9 +825,15 @@ public class ErpActionProcessActivity extends BaseActivity{
 
     public interface OnFileUploadCompletedListener {
         void onCompleted(String fileName, String key);
+        void onFailed();
     }
 
     OnFileUploadCompletedListener  fileUploadCompletedListener = new OnFileUploadCompletedListener() {
+
+        @Override
+        public void onFailed() {
+
+        }
 
         @Override
         public void onCompleted(String fileName, String key) {

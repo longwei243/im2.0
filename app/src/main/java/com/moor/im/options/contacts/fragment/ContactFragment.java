@@ -13,10 +13,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.csipsimple.utils.Log;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.db.dao.ContactsDao;
 import com.moor.im.common.db.dao.InfoDao;
+import com.moor.im.common.dialog.LoadingDialog;
 import com.moor.im.common.event.SendMsg;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
@@ -37,6 +39,7 @@ import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.contacts.activity.ContactsDetailActivity;
 import com.moor.im.options.contacts.adapter.ContactAdatper;
 import com.moor.im.options.contacts.utils.PinyinComparator;
+import com.moor.im.options.department.activity.DepartmentActivity;
 import com.moor.im.options.discussion.activity.DiscussionActivity;
 import com.moor.im.options.group.activity.GroupActivity;
 
@@ -132,6 +135,9 @@ public class ContactFragment extends BaseLazyFragment implements EasyRecyclerVie
                     startActivity(intent);
                 }else if(position == 2){
                     //组织架构
+                    Intent intent = new Intent(getActivity(),
+                            DepartmentActivity.class);
+                    startActivity(intent);
                 }else if(position == 3){
                     //手机联系人
 
@@ -269,7 +275,6 @@ public class ContactFragment extends BaseLazyFragment implements EasyRecyclerVie
                 List<Contacts> contactsList = ContactsDao.getInstance().getContacts();
                 if(!subscriber.isUnsubscribed()) {
                     if(contactsList != null) {
-                        LogUtil.d("从数据库加载联系人");
                         subscriber.onNext(contactsList);
                         subscriber.onCompleted();
                     }else {

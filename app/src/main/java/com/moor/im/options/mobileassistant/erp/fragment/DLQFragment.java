@@ -93,6 +93,8 @@ public class DLQFragment extends BaseLazyFragment{
 
     private TextView mAllUnreadcount;
     private int unReadCount;
+
+    private RelativeLayout newOrderLayout;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -102,13 +104,8 @@ public class DLQFragment extends BaseLazyFragment{
         myCallEditor.clear();
         myCallEditor.commit();
         initViews(view);
-        return view;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
         addRxBusLinester();
+        return view;
     }
 
     private void addRxBusLinester() {
@@ -122,8 +119,16 @@ public class DLQFragment extends BaseLazyFragment{
                             HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
                         }else if (event instanceof NewOrderEvent) {
                             //有新的工单
-                            HashMap<String, String> datas = new HashMap<>();
-                            HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
+                            newOrderLayout.setVisibility(View.VISIBLE);
+                            newOrderLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    newOrderLayout.setVisibility(View.GONE);
+                                    loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+                                    HashMap<String, String> datas = new HashMap<>();
+                                    HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
+                                }
+                            });
                         }else if (event instanceof HaveOrderEvent) {
                             //领取了工单
                             if(unReadCount-1 > 0) {
@@ -191,7 +196,7 @@ public class DLQFragment extends BaseLazyFragment{
         });
         //数量
         mAllUnreadcount = (TextView) getActivity().findViewById(R.id.all_unreadcount);
-
+        newOrderLayout = (RelativeLayout) view.findViewById(R.id.roalundeal_rl_neworder);
         initCache();
     }
 

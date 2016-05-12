@@ -17,6 +17,7 @@ public class MAErpDetail implements Serializable{
     public String lastUpdateTime;
     public String status;
     public String imIcon;
+    public String master;
 
     public List<MAAction> actions;
     public List<FieldData> fieldDatas;

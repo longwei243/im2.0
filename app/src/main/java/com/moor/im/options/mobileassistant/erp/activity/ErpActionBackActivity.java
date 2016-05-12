@@ -45,6 +45,7 @@ public class ErpActionBackActivity extends BaseActivity{
             public void onClick(View v) {
                 String content = erp_action_back_et.getText().toString().trim();
                 if(!"".equals(content)) {
+                    showLoadingDialog();
                     HttpManager.getInstance().excuteBusinessBackAction(user._id, business._id, content, new ExcuteBusBackHandler());
                 }else {
                     Toast.makeText(ErpActionBackActivity.this, "请填写原因", Toast.LENGTH_SHORT).show();
@@ -64,12 +65,13 @@ public class ErpActionBackActivity extends BaseActivity{
 
         @Override
         public void onFailed() {
+            dismissLoadingDialog();
             Toast.makeText(ErpActionBackActivity.this, "退回失败，请稍后重试", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onSuccess(String s) {
-
+            dismissLoadingDialog();
             if (HttpParser.getSucceed(s)) {
                 Toast.makeText(ErpActionBackActivity.this, "退回成功", Toast.LENGTH_SHORT).show();
                 RxBus.getInstance().send(new ErpExcuteSuccess());

@@ -154,7 +154,7 @@ public class ContactAdatper  extends EasyRecyclerViewAdapter
                             this.positionOfSection.put(section, i);
                         }
                     }
-                } else if (section == 0) {
+                }else if (section == 0) {
                     this.easySections.add(new EasySection(letter));
                     this.positionOfSection.put(section, i);
                 }

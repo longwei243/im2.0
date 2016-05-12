@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:background="@color/all_white"
+    >
+
+    <include layout="@layout/layout_titlebar" />
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/group_create_til_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <EditText
+            android:id="@+id/group_create_et_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入名称"
+            />
+    </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/group_create_til_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <EditText
+            android:id="@+id/group_create_et_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入描述"
+            />
+    </android.support.design.widget.TextInputLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="68dp">
+        <TextView
+            android:id="@+id/group_create_tv_usercount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp"
+            />
+        <android.support.v7.widget.RecyclerView
+            android:layout_marginLeft="4dp"
+            android:layout_toLeftOf="@id/group_create_tv_usercount"
+            android:id="@+id/group_create_rv_selected_user"
+            android:layout_width="match_parent"
+            android:layout_height="68dp">
+
+        </android.support.v7.widget.RecyclerView>
+
+
+    </RelativeLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffE5E5E5"
+        android:paddingLeft="8dp"
+        android:text="选择成员"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/group_create_rv_all_user"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>

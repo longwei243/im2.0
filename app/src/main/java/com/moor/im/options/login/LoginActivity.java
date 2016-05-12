@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -21,6 +22,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.csipsimple.SipCallManager;
+import com.csipsimple.api.SipProfile;
+import com.csipsimple.api.SipUri;
 import com.moor.im.R;
 import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.InfoDao;
@@ -103,8 +107,8 @@ public class LoginActivity extends AppCompatActivity {
         login_til_password = (TextInputLayout) findViewById(R.id.login_til_password);
 
         //测试
-        login_til_name.getEditText().setText("8001@phoneTest");
-        login_til_password.getEditText().setText("8001");
+        login_til_name.getEditText().setText("8131@cgNewApp");
+        login_til_password.getEditText().setText("8131");
 
         login_btn_submit = (Button) findViewById(R.id.login_btn_submit);
         login_pw = (ProgressWheel) findViewById(R.id.login_pw);
@@ -205,7 +209,6 @@ public class LoginActivity extends AppCompatActivity {
         boolean succeed = HttpParser.getSucceed(responseStr);
         if(succeed) {
             User user = HttpParser.getUserInfo(responseStr);
-            LogUtil.d("user name is:"+user.displayName);
             // 用户信息存入数据库
             UserDao.getInstance().deleteUser();
             UserRoleDao.getInstance().deleteUserRole();
@@ -220,6 +223,13 @@ public class LoginActivity extends AppCompatActivity {
             //保存登陆成功到sp文件
             mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,true);
             mEditor.commit();
+
+            //创建sip账户
+            String sipExten = user.sipExten;
+            String displayName = user.displayName;
+            String sipExtenSecret = user.sipExtenSecret;
+            String pbxSipAddr = user.pbxSipAddr;
+            createAccount(displayName, sipExten, sipExtenSecret, pbxSipAddr);
 
             Intent main = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(main);
@@ -240,6 +250,33 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    private SipProfile createAccount(String displayName, String name,
+                                     String password, String serverIp) {
+        SipProfile account = new SipProfile();
+
+        account.display_name = displayName;
+
+        String[] serverParts = serverIp.split(":");
+        account.acc_id = "<sip:" + SipUri.encodeUser(name) + "@"
+                + serverParts[0].trim() + ">";
+
+        String regUri = "sip:" + serverIp;
+        account.reg_uri = regUri;
+        account.proxies = new String[] { regUri };
+
+        account.realm = "*";
+        account.username = name;
+        account.data = password;
+        account.scheme = SipProfile.CRED_SCHEME_DIGEST;
+        account.datatype = SipProfile.CRED_DATA_PLAIN_PASSWD;
+        account.transport = SipProfile.TRANSPORT_UDP;
+        getContentResolver().insert(SipProfile.ACCOUNT_URI,
+                account.getDbContentValues());
+		LogUtil.d("创建了sip账户");
+        return account;
+
     }
 
 }

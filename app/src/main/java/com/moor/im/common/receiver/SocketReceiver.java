@@ -13,6 +13,7 @@ import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.model.Discussion;
 import com.moor.im.common.model.Group;
 import com.moor.im.common.rxbus.RxBus;
+import com.moor.im.options.mobileassistant.erp.event.NewOrderEvent;
 
 import java.util.List;
 
@@ -40,6 +41,9 @@ public class SocketReceiver extends BroadcastReceiver{
             }else if(M7Constant.ACTION_NEW_MSG.equals(action)) {
                 //接收了新消息
                 RxBus.getInstance().send(new NewMsgReceived());
+            }else if(M7Constant.ACTION_NEW_ORDER.equals(action)) {
+                //接收了新工单
+                RxBus.getInstance().send(new NewOrderEvent());
             }else if(M7Constant.ACTION_GROUP_UPDATE.equals(action)) {
                 //更新群组
                 HttpManager.getInstance().getGroupByUser(InfoDao.getInstance().getConnectionId())

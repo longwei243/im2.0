@@ -205,6 +205,11 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
     private float mBadgeMargin;
     private float mBadgeTitleSize;
 
+    private OnModelClickListener listener;
+    public void setListener(OnModelClickListener listener) {
+        this.listener = listener;
+    }
+
     // Model title mode: active ar all
     private TitleMode mTitleMode;
     // Model badge position: left, center or right
@@ -365,6 +370,7 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
                     postInvalidate();
                 }
             });
+
         }
 
         mModels.clear();
@@ -673,7 +679,12 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
             case MotionEvent.ACTION_UP:
                 // Press up and set model index relative to current coordinate
                 if (mIsActionDown) {
-                    if (mIsHorizontalOrientation) setModelIndex((int) (event.getX() / mModelSize));
+                    if (mIsHorizontalOrientation){
+                        setModelIndex((int) (event.getX() / mModelSize));
+                        if(listener != null) {
+                            listener.onModelClickListener((int) (event.getX() / mModelSize));
+                        }
+                    }
                     else setModelIndex((int) (event.getY() / mModelSize));
                 }
             case MotionEvent.ACTION_CANCEL:
@@ -1179,6 +1190,7 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
     // Model class
     public static class Model {
 
+        private OnModelClickListener listener;
         private String mTitle = "";
         private int mColor;
 
@@ -1236,6 +1248,14 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
         public Model(final Drawable icon, final int color, final String title, final String badgeTitle) {
             this(icon, color, title);
             mBadgeTitle = badgeTitle;
+        }
+
+        public void setOnClickListener(OnModelClickListener listener) {
+            this.listener = listener;
+        }
+
+        public OnModelClickListener getOnClickListener() {
+            return this.listener;
         }
 
         public String getTitle() {
@@ -1386,5 +1406,9 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
         void onStartTabSelected(final Model model, final int index);
 
         void onEndTabSelected(final Model model, final int index);
+    }
+
+    public interface OnModelClickListener{
+        void onModelClickListener(int index);
     }
 }

@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.csipsimple.api.SipProfile;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.M7Constant;
@@ -307,11 +308,11 @@ public class SetupFragment extends BaseLazyFragment{
         //注销就清空原来保存的数据
         mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,false);
         mEditor.commit();
-//        getActivity().getContentResolver().delete(SipProfile.ACCOUNT_URI, null, null);
+        getActivity().getContentResolver().delete(SipProfile.ACCOUNT_URI, null, null);
         MessageDao.getInstance().deleteAllMsgs();
         NewMessageDao.getInstance().deleteAllMsgs();
         UserDao.getInstance().deleteUser();
-        ContactsDao.getInstance().clear();
+        UserRoleDao.getInstance().deleteUserRole();
         MobileApplication.cacheUtil.clear();
     }
 

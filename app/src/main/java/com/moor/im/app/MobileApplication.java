@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.csipsimple.service.SipService;
 import com.moor.im.BuildConfig;
 import com.moor.im.common.utils.CacheUtils;
 import com.moor.im.common.utils.log.LogUtil;
@@ -36,6 +37,7 @@ public class MobileApplication extends Application{
             //主进程初始化逻辑
             initLogUtil();
             startIMService();
+            startSipService();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -85,6 +87,16 @@ public class MobileApplication extends Application{
         }.start();
     }
 
+    private void startSipService() {
+        Thread t = new Thread("StartSip") {
+            public void run() {
+                Intent serviceIntent = new Intent(instance, SipService.class);
+                startService(serviceIntent);
+            }
+        };
+        t.start();
+        LogUtil.d("MobileApplication", "启动SipService");
+    }
     /**
      * 初始化日志工具,只用来打印主进程的日志
      */

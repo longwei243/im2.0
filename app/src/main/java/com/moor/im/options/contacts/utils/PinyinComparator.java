@@ -14,7 +14,7 @@ public class PinyinComparator implements Comparator<Contacts> {
 		if (o2.header.equals("#")) {
 			return -1;
 		} else if (o1.header.equals("#")) {
-			return -1;
+			return 1;
 		} else {
 			return o1.header.compareTo(o2.header);
 		}

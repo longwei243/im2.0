@@ -9,9 +9,27 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.USE_SIP" />
+    <uses-permission android:name="android.permission.CONFIGURE_SIP" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
 
-
+    <permission
+        android:name="android.permission.USE_SIP"
+        android:permissionGroup="android.permission-group.COST_MONEY"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:name="android.permission.CONFIGURE_SIP"
+        android:permissionGroup="android.permission-group.COST_MONEY"
+        android:protectionLevel="dangerous" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -70,11 +88,20 @@
         <activity android:name=".options.mobileassistant.cdr.activity.AllCallHighQueryActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.cdr.activity.MACallDetailActivity" android:screenOrientation="portrait"/>
 
-        <activity android:name=".options.mobileassistant.erp.activity.ErpActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.erp.activity.ErpActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"/>
         <activity android:name=".options.mobileassistant.erp.activity.ErpHighQueryActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.erp.activity.ErpActionBackActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.erp.activity.ErpActionProcessActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.erp.activity.ErpDetailActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".options.dial.CallingActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".options.department.activity.DepartmentActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.department.activity.DepartmentAddActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.department.activity.SubDepartmentActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.department.activity.DepartmentUpdateActivity" android:screenOrientation="portrait"/>
 
 
         <receiver android:name=".common.receiver.SocketReceiver">
@@ -83,6 +110,7 @@
                 <action android:name="com.m7.action.loginfailed" />
                 <action android:name="com.m7.action.loginkicked" />
                 <action android:name="com.m7.action.newmsg" />
+                <action android:name="com.m7.action.neworder" />
                 <action android:name="com.m7.action.update.group" />
                 <action android:name="com.m7.action.update.discussion" />
             </intent-filter>
@@ -102,6 +130,93 @@
             </intent-filter>
         </receiver>
 
+
+        <!--sip-->
+        <activity
+            android:name="com.csipsimple.ui.incall.InCallActivity"
+            android:allowTaskReparenting="true"
+            android:configChanges="orientation"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:permission="android.permission.CONFIGURE_SIP"
+            android:process=":sipStack"
+            android:taskAffinity=""
+            >
+            <intent-filter android:priority="10" >
+                <action android:name="com.csipsimple.phone.action.INCALL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.csipsimple.ui.incall.InCallMediaControl"
+            android:configChanges="orientation"
+            android:taskAffinity="com.csipsimple.ui.incall.InCallActivity"
+            android:theme="@style/Theme.AppCompat.Dialog"
+            />
+
+        <!-- Main service -->
+        <!-- Require at least the configure permission to use -->
+        <service
+            android:name="com.csipsimple.service.SipService"
+            android:exported="true"
+            android:permission="android.permission.CONFIGURE_SIP"
+            android:process=":sipStack" >
+            <intent-filter>
+                <action android:name="com.csipsimple.service.SipService" />
+                <action android:name="com.csipsimple.service.SipConfiguration" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="com.csipsimple.service.DeviceStateReceiver"
+            android:permission="android.permission.CONFIGURE_SIP"
+            android:process=":sipStack" >
+            <intent-filter>
+                <action android:name="com.csipsimple.accounts.activate" />
+            </intent-filter>
+        </receiver>
+
+
+
+        <!-- Embedded plugins -->
+        <!-- Call handlers android:process=":telCallHandler" -->
+        <receiver
+            android:name="com.csipsimple.plugins.telephony.CallHandler"
+            android:permission="android.permission.PROCESS_OUTGOING_CALLS"
+            android:process=":sipStack" >
+            <intent-filter>
+                <action android:name="com.csipsimple.phone.action.HANDLE_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Databases providers -->
+        <provider
+            android:name="com.csipsimple.service.PreferenceProvider"
+            android:authorities="com.m7sipcall.prefs"
+            android:permission="android.permission.CONFIGURE_SIP" />
+        <provider
+            android:name="com.csipsimple.db.DBProvider"
+            android:authorities="com.m7sipcall.db"
+            android:permission="android.permission.CONFIGURE_SIP"
+            android:process=":sipStack" />
+
+        <!-- Extra codecs -->
+
+        <receiver
+            android:name="com.csipsimple.plugins.codecs.ReceiverSILK"
+            android:exported="false" >
+            <meta-data
+                android:name="lib_name"
+                android:value="libpj_g729_codec.so" />
+            <meta-data
+                android:name="init_factory"
+                android:value="pjmedia_codec_g729_init" />
+
+            <intent-filter>
+                <action android:name="com.csipsimple.codecs.action.REGISTER_CODEC" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

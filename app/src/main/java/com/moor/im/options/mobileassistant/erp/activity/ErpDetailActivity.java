@@ -41,6 +41,7 @@ import com.moor.im.common.model.UserRole;
 import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.NullUtil;
 import com.moor.im.common.utils.WindowUtils;
+import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.GridViewInScrollView;
 import com.moor.im.common.views.roundimage.RoundImageView;
 import com.moor.im.options.base.BaseActivity;
@@ -95,7 +96,6 @@ public class ErpDetailActivity extends BaseActivity{
     private TextView erpdetail_tv_customerName, erpdetail_tv_flow, erpdetail_tv_step,
             erpdetail_tv_lastUpdateUser, erpdetail_tv_lastUpdateTime;
     private LinearLayout erpdetail_ll_fields, erpdetail_ll_history, erp_detail_start_ll;
-    private LoadingDialog loadingFragmentDialog;
     private Spinner erpdetail_sp_action;
     private ScrollView erpdetail_sv;
     private EditText erpdetail_et_backinfo;
@@ -129,9 +129,7 @@ public class ErpDetailActivity extends BaseActivity{
 
         erpdetail_sp_action = (Spinner) findViewById(R.id.erpdetail_sp_action);
 
-        loadingFragmentDialog = new LoadingDialog();
-        loadingFragmentDialog.show(getSupportFragmentManager(), "");
-
+        showLoadingDialog();
         erpdetail_et_backinfo = (EditText) findViewById(R.id.erpdetail_et_backinfo);
         erpdetail_btn_save = (TextView) findViewById(R.id.erpdetail_btn_save);
         erpdetail_btn_save.setOnClickListener(new View.OnClickListener() {
@@ -236,11 +234,12 @@ public class ErpDetailActivity extends BaseActivity{
 
         @Override
         public void onFailed() {
-            loadingFragmentDialog.dismiss();
+            dismissLoadingDialog();
         }
 
         @Override
         public void onSuccess(String s) {
+            LogUtil.d("获取工单详情数据:"+s);
             if (HttpParser.getSucceed(s)) {
                 BackTask backTask = new BackTask();
                 backTask.execute(s);
@@ -504,6 +503,7 @@ public class ErpDetailActivity extends BaseActivity{
             }
         });
         //判断是否需要显示动作操作
+
         if("roalundeal".equals(type)) {
             //隐藏
             erpdetail_sp_action.setVisibility(View.GONE);
@@ -514,8 +514,13 @@ public class ErpDetailActivity extends BaseActivity{
                 erpdetail_sp_action.setVisibility(View.GONE);
             }
         }
+        if(!user._id.equals(detail.master)) {
+            erpdetail_sp_action.setVisibility(View.GONE);
+        }
+        LogUtil.d("uesrid is:"+user._id);
+        LogUtil.d("master is:"+detail.master);
         erpdetail_sv.setVisibility(View.VISIBLE);
-        loadingFragmentDialog.dismiss();
+        dismissLoadingDialog();
     }
 
     LinearLayout erp_detail_start_ll_fields;
@@ -727,6 +732,7 @@ public class ErpDetailActivity extends BaseActivity{
             String lastUpdateUserId = jsonObject.getString("lastUpdateUser");
             String lastUpdateTime = jsonObject.getString("lastUpdateTime");
             String status = jsonObject.getString("status");
+            String master = jsonObject.getString("master");
             MABusinessFlow flow = MobileAssitantCache.getInstance().getBusinessFlow(flowId);
             if(flow != null) {
                 detail.flow = flow.name;
@@ -738,6 +744,7 @@ public class ErpDetailActivity extends BaseActivity{
             detail.flowId = flowId;
             detail.stepId = stepId;
             detail.status = status;
+            detail.master = master;
 
             MAAgent agent = MobileAssitantCache.getInstance().getAgentById(lastUpdateUserId);
             if(agent != null) {
@@ -1545,6 +1552,11 @@ public class ErpDetailActivity extends BaseActivity{
     ErpActionProcessActivity.OnFileUploadCompletedListener fileUploadCompletedListener = new ErpActionProcessActivity.OnFileUploadCompletedListener() {
 
         @Override
+        public void onFailed() {
+
+        }
+
+        @Override
         public void onCompleted(String fileName, String key) {
             final RelativeLayout rl = (RelativeLayout) LayoutInflater.from(ErpDetailActivity.this).inflate(R.layout.erp_field_file_already, null);
             String type = "other";
@@ -1578,6 +1590,7 @@ public class ErpDetailActivity extends BaseActivity{
      * 提交
      */
     private void submitProcess(MAErpDetail business) {
+        showLoadingDialog();
         HashMap<String, String> datas = new HashMap<>();
         HashMap<String, JSONArray> jadatas = new HashMap<>();
         int childSize = erp_detail_start_ll_fields.getChildCount();
@@ -1751,12 +1764,12 @@ public class ErpDetailActivity extends BaseActivity{
 
         @Override
         public void onFailed() {
-
+            dismissLoadingDialog();
         }
 
         @Override
         public void onSuccess(String s) {
-            System.out.println("执行动作返回结果:"+s);
+            dismissLoadingDialog();
             if(HttpParser.getSucceed(s)) {
                 //执行成功
                 RxBus.getInstance().send(new ErpExcuteSuccess());

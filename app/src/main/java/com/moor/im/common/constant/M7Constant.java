@@ -28,6 +28,7 @@ public class M7Constant {
     public static final String ACTION_LOGIN_FAILED = "com.m7.action.loginfailed";
     public static final String ACTION_LOGIN_KICKED = "com.m7.action.loginkicked";
     public static final String ACTION_NEW_MSG = "com.m7.action.newmsg";
+    public static final String ACTION_NEW_ORDER = "com.m7.action.neworder";
     public static final String ACTION_GROUP_UPDATE = "com.m7.action.update.group";
     public static final String ACTION_DISCUSSION_UPDATE = "com.m7.action.update.discussion";
 

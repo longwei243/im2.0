@@ -8,6 +8,7 @@ import com.j256.ormlite.dao.Dao;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.db.DataBaseHelper;
 import com.moor.im.common.model.Contacts;
+import com.moor.im.common.utils.log.LogUtil;
 
 /**
  * 联系人数据库操作

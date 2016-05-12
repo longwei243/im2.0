@@ -84,6 +84,7 @@ public class DBFragment extends BaseLazyFragment{
     private TextView userundeal_tv_queryitem;
     private ImageView userundeal_btn_queryitem;
     private RelativeLayout userundeal_rl_queryitem;
+    private RelativeLayout userundeal_rl_neworder;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -93,15 +94,9 @@ public class DBFragment extends BaseLazyFragment{
         myCallEditor.clear();
         myCallEditor.commit();
         initViews(view);
+        addRxBusLinester();
         return view;
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        addRxBusLinester();
-    }
-
     private void addRxBusLinester() {
         mCompositeSubscription.add(RxBus.getInstance().toObserverable()
                 .subscribe(new Action1<Object>() {
@@ -111,7 +106,15 @@ public class DBFragment extends BaseLazyFragment{
                             refreshData();
                         }else if (event instanceof NewOrderEvent) {
                             //有新的工单
-                            refreshData();
+                            userundeal_rl_neworder.setVisibility(View.VISIBLE);
+                            userundeal_rl_neworder.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    userundeal_rl_neworder.setVisibility(View.GONE);
+                                    loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+                                    refreshData();
+                                }
+                            });
                         }else if (event instanceof HaveOrderEvent) {
                             //领取了工单
                             refreshData();
@@ -141,7 +144,7 @@ public class DBFragment extends BaseLazyFragment{
                 startActivityForResult(intent, 0x666);
             }
         });
-
+        userundeal_rl_neworder = (RelativeLayout) view.findViewById(R.id.userundeal_rl_neworder);
 
         userundeal_et_numquery = (EditText) view.findViewById(R.id.userundeal_et_numquery);
         userundeal_ib_search = (ImageButton) view.findViewById(R.id.userundeal_ib_search);

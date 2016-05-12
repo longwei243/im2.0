@@ -7,6 +7,7 @@ import com.moor.im.common.model.Discussion;
 import com.moor.im.common.model.FromToMessage;
 import com.moor.im.common.model.Group;
 import com.moor.im.common.model.User;
+import com.moor.im.options.department.model.Department;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -289,5 +290,58 @@ public class HttpParser {
         }
 
         return discussions;
+    }
+
+    /**
+     * 获取一个部门
+     *
+     * @param responseString
+     * @return
+     */
+    public static Department getDepartmentInfo(String responseString) {
+        Department department = new Department();
+
+        try {
+
+            JSONObject o = new JSONObject(responseString);
+            JSONObject o1 = o.getJSONObject("Department");
+
+            Gson gson = new Gson();
+            // TypeToken<Json>--他的参数是根节点【】或{}-集合或对象
+            department = gson.fromJson(o1.toString(), new TypeToken<Department>() {
+            }.getType());
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return department;
+    }
+
+    /**
+     * 有网络数据获取组织结构
+     *
+     * @param responseString
+     * @return
+     */
+    public static List<Department> getDepartments(String responseString) {
+        List<Department> departments = new ArrayList<Department>();
+        try {
+            JSONObject o = new JSONObject(responseString);
+            JSONArray o1 = o.getJSONArray("Departments");
+
+            Gson gson = new Gson();
+            // TypeToken<Json>--他的参数是根节点【】或{}-集合或对象
+            departments = gson.fromJson(o1.toString(),
+                    new TypeToken<List<Department>>() {
+                    }.getType());
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return departments;
     }
 }

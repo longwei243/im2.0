@@ -97,6 +97,7 @@ public class VoiceViewHolder extends BaseHolder {
             ViewHolderTag holderTag = ViewHolderTag.createTag(detail, ViewHolderTag.TagType.TAG_VOICE, position, holder.type, receive);
             holder.voicePlayAnim.setTag(holderTag);
             holder.voicePlayAnim.setOnClickListener(activity.getChatAdapter().getOnClickListener());
+            holder.voicePlayAnim.setOnLongClickListener(activity.getChatAdapter().getOnLongClickListener());
 
             ChatAdapter adapterForce = activity.getChatAdapter();
             if(adapterForce.mVoicePosition == position) {

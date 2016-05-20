@@ -24,7 +24,7 @@ import com.moor.im.common.model.UserRole;
 public class DataBaseHelper extends OrmLiteSqliteOpenHelper {
 
 	private static final String DATABASE_NAME = "qmoor.db";
-	private static final int DATABASE_VERSION = 8;
+	private static final int DATABASE_VERSION = 9;
 	private Dao<User, Integer> userDao = null;
 	private Dao<UserRole, Integer> userRoleDao = null;
 	private Dao<Info, Integer> infoDao = null;

@@ -91,6 +91,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 		} else if ("400".equals(result)) {
 			//登录失败，用户名或密码错误
 			//发送登录失败的事件
+			InfoDao.getInstance().saveIsChangePW("true");
 			SocketManager.getInstance(context).setStatus(SocketStatus.LOGINFAILED);
 			EventBus.getDefault().post(new LoginFailedEvent());
 		} else if(result.startsWith("200")) {
@@ -99,6 +100,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 			//保存connectionId到数据库中
 			InfoDao.getInstance().saveConnectionId(connectionId);
 			InfoDao.getInstance().setLoginStateToSuccess();
+			InfoDao.getInstance().saveIsChangePW("false");
 			SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:connectionId被保存了" + connectionId);
 			EventBus.getDefault().post(new LoginSuccessEvent(connectionId));
 		}else if("800".equals(result)) {

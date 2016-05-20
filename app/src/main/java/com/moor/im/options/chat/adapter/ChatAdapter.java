@@ -22,6 +22,7 @@ import com.moor.im.options.chat.chatrow.VoiceRxChatRow;
 import com.moor.im.options.chat.chatrow.VoiceTxChatRow;
 import com.moor.im.options.chat.holder.BaseHolder;
 import com.moor.im.options.chat.listener.ChatListClickListener;
+import com.moor.im.options.chat.listener.ChatListLongClickListener;
 import com.moor.im.options.chat.utils.DateUtil;
 import com.moor.im.options.chat.utils.MediaPlayTools;
 
@@ -42,6 +43,7 @@ public class ChatAdapter extends BaseAdapter{
     public int mVoicePosition = -1;
 
     protected View.OnClickListener mOnClickListener;
+    protected View.OnLongClickListener mOnLongClickListener;
 
     public ChatAdapter(Context context, List<FromToMessage> messageList, String imicon) {
         this.context = context;
@@ -49,6 +51,7 @@ public class ChatAdapter extends BaseAdapter{
         this.imicon = imicon;
         chatRowHashMap = new HashMap<Integer, IChatRow>();
         mOnClickListener = new ChatListClickListener((ChatActivity)context, null);
+        mOnLongClickListener = new ChatListLongClickListener((ChatActivity)context);
         initRowItems();
     }
 
@@ -160,6 +163,9 @@ public class ChatAdapter extends BaseAdapter{
 
     public View.OnClickListener getOnClickListener() {
         return mOnClickListener;
+    }
+    public View.OnLongClickListener getOnLongClickListener() {
+        return mOnLongClickListener;
     }
 
     public void onPause() {

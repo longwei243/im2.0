@@ -157,6 +157,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="24dp"
+        android:background="@drawable/btn_bg"
+        android:minHeight="36dp"
         android:textColor="@color/all_white"
         android:text="发消息" />
 
@@ -166,7 +168,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btn_bg"
+        android:minHeight="36dp"
         android:textColor="@color/all_white"
         android:text="打电话" />
 

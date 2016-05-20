@@ -42,6 +42,8 @@ import com.moor.im.options.contacts.utils.PinyinComparator;
 import com.moor.im.options.department.activity.DepartmentActivity;
 import com.moor.im.options.discussion.activity.DiscussionActivity;
 import com.moor.im.options.group.activity.GroupActivity;
+import com.moor.im.options.systemcontacts.SystemContactsActivity;
+import com.moor.im.options.systemcontacts.adapter.SystemContactAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,6 +88,7 @@ public class ContactFragment extends BaseLazyFragment implements EasyRecyclerVie
         editor = myPreferences.edit();
         pinyinComparator = new PinyinComparator();
         initViews(view);
+        getData();
         return view;
     }
 
@@ -109,7 +112,6 @@ public class ContactFragment extends BaseLazyFragment implements EasyRecyclerVie
     @Override
     public void onFirstUserVisible() {
         //第一次界面显示，加载数据
-        getData();
         getContactsVersion();
     }
     /**
@@ -140,7 +142,9 @@ public class ContactFragment extends BaseLazyFragment implements EasyRecyclerVie
                     startActivity(intent);
                 }else if(position == 3){
                     //手机联系人
-
+                    Intent intent = new Intent(getActivity(),
+                            SystemContactsActivity.class);
+                    startActivity(intent);
                 }else {
                     Contacts contact = contactsList.get(position);
                     Intent intent = new Intent(getActivity(),

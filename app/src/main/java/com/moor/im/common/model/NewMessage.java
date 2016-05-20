@@ -36,5 +36,7 @@ public class NewMessage {
 	public String type;
 	@DatabaseField
 	public int unReadCount;
+	@DatabaseField
+	public int isTop;
 
 }

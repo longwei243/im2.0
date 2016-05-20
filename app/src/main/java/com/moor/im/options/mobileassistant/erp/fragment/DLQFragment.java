@@ -134,6 +134,7 @@ public class DLQFragment extends BaseLazyFragment{
                             if(unReadCount-1 > 0) {
                                 mAllUnreadcount.setVisibility(View.VISIBLE);
                                 mAllUnreadcount.setText(unReadCount-1 + "");
+                                unReadCount--;
                             }else {
                                 mAllUnreadcount.setVisibility(View.GONE);
                             }

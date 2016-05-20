@@ -5,6 +5,7 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/message_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_image_section_item">

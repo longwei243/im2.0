@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <include layout="@layout/layout_titlebar"/>
+
+    <ProgressBar
+        android:id="@+id/pb_load_more"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+    <com.moor.im.options.chat.view.ChatListView
+        android:id="@+id/system_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/pb_load_more"
+        android:cacheColorHint="@null"
+        android:divider="@null"
+        android:dividerHeight="5dp"
+        android:listSelector="@null"
+        android:scrollbarStyle="outsideOverlay"
+        android:transcriptMode="normal" />
+</LinearLayout>

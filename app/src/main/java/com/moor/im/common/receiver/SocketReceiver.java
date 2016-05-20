@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.InfoDao;
 import com.moor.im.common.event.LoginFailed;
+import com.moor.im.common.event.LoginKicked;
 import com.moor.im.common.event.LoginSuccess;
 import com.moor.im.common.event.NewMsgReceived;
 import com.moor.im.common.http.HttpManager;
@@ -38,6 +39,7 @@ public class SocketReceiver extends BroadcastReceiver{
                 RxBus.getInstance().send(new LoginFailed());
             }else if(M7Constant.ACTION_LOGIN_KICKED.equals(action)) {
                 //被踢了
+                RxBus.getInstance().send(new LoginKicked());
             }else if(M7Constant.ACTION_NEW_MSG.equals(action)) {
                 //接收了新消息
                 RxBus.getInstance().send(new NewMsgReceived());

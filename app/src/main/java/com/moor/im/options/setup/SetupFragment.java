@@ -49,6 +49,7 @@ import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.login.LoginActivity;
 import com.moor.im.options.mobileassistant.cdr.activity.CdrActivity;
 import com.moor.im.options.mobileassistant.erp.activity.ErpActivity;
+import com.moor.im.options.setting.SettingActivity;
 import com.moor.im.options.setup.activity.ClipImageViewActivity;
 import com.moor.im.options.setup.activity.EditActivity;
 import com.moor.im.options.update.UpdateActivity;
@@ -64,9 +65,9 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class SetupFragment extends BaseLazyFragment{
     RelativeLayout setup_ll_loginoff, setup_ll_update,
-            setup_ll_aboutme, setup_ll_icon,
+            setup_ll_icon,
             setup_ll_edit_name, setup_ll_edit_email,
-            setup_ll_edit_phone, setup_ll_kefu, setup_ll_mobile, setup_ll_mobile_erp;
+            setup_ll_edit_phone, setup_ll_kefu, setup_ll_setting;
 
     TextView user_detail_tv_name, user_detail_tv_num, user_detail_tv_email, user_detail_tv_phone;
 
@@ -98,9 +99,6 @@ public class SetupFragment extends BaseLazyFragment{
         setup_ll_update = (RelativeLayout) view.findViewById(R.id.setup_ll_update);
         setup_ll_update.setOnClickListener(clickListener);
 
-        setup_ll_aboutme = (RelativeLayout) view.findViewById(R.id.setup_ll_aboutme);
-        setup_ll_aboutme.setOnClickListener(clickListener);
-
         setup_ll_icon = (RelativeLayout) view.findViewById(R.id.setup_ll_icon);
         setup_ll_icon.setOnClickListener(clickListener);
 
@@ -122,7 +120,8 @@ public class SetupFragment extends BaseLazyFragment{
         user_detail_tv_email.setText(user.email);
         user_detail_tv_phone.setText(user.mobile);
 
-
+        setup_ll_setting = (RelativeLayout) view.findViewById(R.id.setup_ll_setting);
+        setup_ll_setting.setOnClickListener(clickListener);
         contact_detail_image = (ImageView) view.findViewById(R.id.user_icon);
 
         if(user.im_icon != null && !"".equals(user.im_icon)) {
@@ -133,13 +132,6 @@ public class SetupFragment extends BaseLazyFragment{
 
         setup_ll_kefu = (RelativeLayout) view.findViewById(R.id.setup_ll_kefu);
         setup_ll_kefu.setOnClickListener(clickListener);
-
-
-        setup_ll_mobile = (RelativeLayout) view.findViewById(R.id.setup_ll_mobile);
-        setup_ll_mobile.setOnClickListener(clickListener);
-
-        setup_ll_mobile_erp = (RelativeLayout) view.findViewById(R.id.setup_ll_mobile_erp);
-        setup_ll_mobile_erp.setOnClickListener(clickListener);
 
         _subscriptions = new CompositeSubscription();
         _subscriptions.add(RxBus.getInstance().toObserverable()
@@ -200,10 +192,6 @@ public class SetupFragment extends BaseLazyFragment{
                     Intent updateIntent = new Intent(getActivity(), UpdateActivity.class);
                     startActivity(updateIntent);
                     break;
-                case R.id.setup_ll_aboutme:
-                    Intent aboutIntent = new Intent(getActivity(), AboutMeActivity.class);
-                    startActivity(aboutIntent);
-                    break;
                 case R.id.setup_ll_icon:
                     Intent intent;
                     if (Build.VERSION.SDK_INT < 19) {
@@ -232,13 +220,9 @@ public class SetupFragment extends BaseLazyFragment{
                 case R.id.setup_ll_kefu:
 
                     break;
-                case R.id.setup_ll_mobile:
-                    Intent mobileIntent = new Intent(SetupFragment.this.getActivity(), CdrActivity.class);
-                    startActivity(mobileIntent);
-                    break;
-                case R.id.setup_ll_mobile_erp:
-                    Intent erpIntent = new Intent(SetupFragment.this.getActivity(), ErpActivity.class);
-                    startActivity(erpIntent);
+                case R.id.setup_ll_setting:
+                    Intent settingIntent = new Intent(getActivity(), SettingActivity.class);
+                    startActivity(settingIntent);
                     break;
             }
         }

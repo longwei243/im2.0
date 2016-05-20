@@ -31,6 +31,7 @@ public class VoiceRxChatRow extends BaseChatRow{
 
     @Override
     public boolean onCreateRowContextMenu(ContextMenu contextMenu, View targetView, FromToMessage detail) {
+
         return false;
     }
 

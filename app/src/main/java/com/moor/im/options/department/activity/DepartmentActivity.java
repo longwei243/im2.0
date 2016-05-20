@@ -413,7 +413,7 @@ public class DepartmentActivity extends BaseActivity {
 				
 				try {
 					JSONObject jsonObject = new JSONObject(responseString);
-					String DepartmentVersion = jsonObject.getLong("DepartmentVersion") + "";
+					String DepartmentVersion = jsonObject.getString("DepartmentVersion");
 					
 					if(!"".equals(myPreferences.getString("DepartmentVersion", ""))) {
 						if(!myPreferences.getString("DepartmentVersion", "").equals(NullUtil.checkNull(DepartmentVersion))) {

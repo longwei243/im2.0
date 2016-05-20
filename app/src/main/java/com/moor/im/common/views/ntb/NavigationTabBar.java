@@ -993,7 +993,7 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
 
             // Set color and alpha for badge bg
             if (model.mBadgeFraction == MIN_FRACTION) mBadgePaint.setColor(Color.TRANSPARENT);
-            else mBadgePaint.setColor(mActiveColor);
+            else mBadgePaint.setColor(Color.RED);
             mBadgePaint.setAlpha((int) (MAX_ALPHA * model.mBadgeFraction));
 
             // Set corners to round rect for badge bg and draw
@@ -1002,7 +1002,7 @@ public class NavigationTabBar extends View implements ViewPager.OnPageChangeList
 
             // Set color and alpha for badge title
             if (model.mBadgeFraction == MIN_FRACTION) mBadgePaint.setColor(Color.TRANSPARENT);
-            else mBadgePaint.setColor(model.getColor());
+            else mBadgePaint.setColor(Color.WHITE);
             mBadgePaint.setAlpha((int) (MAX_ALPHA * model.mBadgeFraction));
 
             // Set badge title center position and draw title

@@ -8,6 +8,7 @@ public class M7Constant {
     //int
     public static final int HANDLER_LOGIN = 0x11;
     public static final int HANDLER_LOGINOFF = 0x12;
+    public static final int HANDLER_LOGIN_FOR_KICKED = 0x13;
 
     //string
     public static final String IMSERVICE_SP = "imservice_sp";

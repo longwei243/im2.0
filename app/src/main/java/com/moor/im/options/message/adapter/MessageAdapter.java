@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -64,6 +65,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         NewMessage message = datas.get(position);
+
         if("User".equals(message.type)) {
             String im_icon = ContactsDao.getInstance().getContactsIcon(message.from);
             if(!"".equals(im_icon) && im_icon != null) {
@@ -76,6 +78,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }else if("Discussion".equals(message.type)) {
             Glide.with(context).load(R.drawable.ic_addfriend_discuss).asBitmap().into(holder.img);
         }else if("System".equals(message.type)) {
+            Glide.with(context).load(R.drawable.ic_launcher).asBitmap().into(holder.img);
+        }else if("MA".equals(message.type)) {
             Glide.with(context).load(R.drawable.ic_launcher).asBitmap().into(holder.img);
         }
 
@@ -162,6 +166,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }else if("System".equals(message.type)) {
             holder.name.setText("系统通知");
             holder.content.setText(content);
+        }else if("MA".equals(message.type)) {
+            holder.name.setText("客服助手");
+            holder.content.setText(content);
         }
 
         holder.time.setText(TimeUtil.convertTimeToFriendly(message.time));
@@ -175,7 +182,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             holder.unreadcount.setVisibility(View.VISIBLE);
             holder.unreadcount.setText(message.unReadCount + "");
         }
-
+        if(message.isTop == 1) {
+            holder.message_ll.setBackgroundResource(R.drawable.bg_top_section_item);
+        }else {
+            holder.message_ll.setBackgroundResource(R.drawable.bg_image_section_item);
+        }
         holder.setOnItemClickListener(this.onItemClickListener, position);
         holder.setOnItemLongClickListener(this.onItemLongClickListener, position);
 
@@ -188,6 +199,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
+        public LinearLayout message_ll;
         public ImageView img;
         public TextView name;
         public TextView time;
@@ -223,7 +235,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             time = (TextView) itemView.findViewById(R.id.message_time);
             content = (TextView) itemView.findViewById(R.id.message_content);
             unreadcount = (TextView) itemView.findViewById(R.id.message_unreadcount);
-
+            message_ll = (LinearLayout) itemView.findViewById(R.id.message_ll);
         }
     }
 

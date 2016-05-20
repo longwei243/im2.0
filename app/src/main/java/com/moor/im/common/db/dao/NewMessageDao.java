@@ -56,6 +56,7 @@ public class NewMessageDao {
 		String s = date + y;
 		NewMessage newMsgs = new NewMessage();
 		newMsgs._id = s + "";
+		newMsgs.isTop = 0;
 		newMsgs.fromName = fromName;
 		newMsgs.message = message;
 		newMsgs.msgType = msgType;
@@ -73,6 +74,15 @@ public class NewMessageDao {
 		}
 	}
 
+	public void insertMAMsg(NewMessage maMsg) {
+		try {
+			newMessageDao.create(maMsg);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * 获取所有最新消息的列表
 	 * 
@@ -81,7 +91,7 @@ public class NewMessageDao {
 	public List<NewMessage> queryMessage() {
 		List<NewMessage> newMessage = new ArrayList<NewMessage>();
 		try {
-			newMessage = newMessageDao.queryBuilder().orderBy("time", false)
+			newMessage = newMessageDao.queryBuilder().orderBy("isTop", false).orderBy("time", false)
 					.query();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

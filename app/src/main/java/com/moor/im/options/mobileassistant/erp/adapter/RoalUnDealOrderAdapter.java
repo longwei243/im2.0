@@ -125,11 +125,12 @@ public class RoalUnDealOrderAdapter extends BaseAdapter{
             if (HttpParser.getSucceed(responseString)) {
                 maBusinesses.remove(position);
                 notifyDataSetChanged();
-                RxBus.getInstance().send(new HaveOrderEvent());
+                RxBus.getInstance().send(new HaveOrderEvent(1));
                 Toast.makeText(context.getActivity(), "领取成功", Toast.LENGTH_SHORT).show();
             }else if("此业务已被其他人领取。".equals(msg)){
                 maBusinesses.remove(position);
                 notifyDataSetChanged();
+                RxBus.getInstance().send(new HaveOrderEvent(0));
                 Toast.makeText(context.getActivity(), "此业务已被其他人领取", Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(context.getActivity(), "领取失败", Toast.LENGTH_SHORT).show();

@@ -28,6 +28,7 @@ import com.csipsimple.api.SipUri;
 import com.moor.im.R;
 import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.InfoDao;
+import com.moor.im.common.db.dao.NewMessageDao;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.db.dao.UserRoleDao;
 import com.moor.im.common.event.LoginFailed;
@@ -35,6 +36,7 @@ import com.moor.im.common.event.LoginSuccess;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
+import com.moor.im.common.model.NewMessage;
 import com.moor.im.common.model.User;
 import com.moor.im.common.model.UserRole;
 import com.moor.im.common.rxbus.RxBus;
@@ -45,6 +47,7 @@ import com.moor.im.options.main.MainActivity;
 import com.moor.im.tcp.imservice.IMService;
 
 import java.util.List;
+import java.util.UUID;
 
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -224,17 +227,44 @@ public class LoginActivity extends AppCompatActivity {
             mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,true);
             mEditor.commit();
 
-            //创建sip账户
-            String sipExten = user.sipExten;
-            String displayName = user.displayName;
-            String sipExtenSecret = user.sipExtenSecret;
-            String pbxSipAddr = user.pbxSipAddr;
-            createAccount(displayName, sipExten, sipExtenSecret, pbxSipAddr);
+            onFirstLoginInit(user);
 
             Intent main = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(main);
             finish();
         }
+    }
+
+    /**
+     * 登录成功的一些初始化工作
+     * @param user
+     */
+    private void onFirstLoginInit(User user) {
+        //创建sip账户
+        String sipExten = user.sipExten;
+        String displayName = user.displayName;
+        String sipExtenSecret = user.sipExtenSecret;
+        String pbxSipAddr = user.pbxSipAddr;
+        createAccount(displayName, sipExten, sipExtenSecret, pbxSipAddr);
+
+        //生成一条手机助手消息
+        buildMAMsg();
+    }
+
+    private void buildMAMsg() {
+        NewMessage maMsg = new NewMessage();
+        maMsg._id = UUID.randomUUID().toString();
+        maMsg.isTop = 0;
+        maMsg.fromName = "客服助手";
+        maMsg.message = "查询通话记录，处理工单";
+        maMsg.msgType = "";
+        maMsg.sessionId = "MA";
+        maMsg.time = System.currentTimeMillis();
+        maMsg.img = "";
+        maMsg.unReadCount = 0;
+        maMsg.type = "MA";
+        maMsg.from = "";
+        NewMessageDao.getInstance().insertMAMsg(maMsg);
     }
 
     @Override

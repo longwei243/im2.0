@@ -80,6 +80,9 @@ public class IMService extends Service{
                 mSocketManager.loginOff();
                 mEditor.clear();
                 mEditor.commit();
+            }else if(msg.what == M7Constant.HANDLER_LOGIN_FOR_KICKED) {
+                //注销
+                reLogin();
             }
         }
     };

@@ -117,7 +117,9 @@ public class DBFragment extends BaseLazyFragment{
                             });
                         }else if (event instanceof HaveOrderEvent) {
                             //领取了工单
-                            refreshData();
+                            if(((HaveOrderEvent) event).type == 1) {
+                                refreshData();
+                            }
                         }
                     }
                 }));

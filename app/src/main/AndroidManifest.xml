@@ -19,6 +19,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.GET_TASKS" />
 
 
@@ -53,6 +54,7 @@
             android:launchMode="singleTask"
             />
         <activity android:name=".options.contacts.activity.ContactsDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.contacts.activity.ContactsSearchActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.chat.activity.ChatActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
@@ -83,6 +85,7 @@
         </activity>
         <activity android:name=".options.aboutme.AboutMeActivity" android:screenOrientation="portrait"/>
 
+        <activity android:name=".options.mobileassistant.MAActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.cdr.activity.CdrActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.cdr.activity.MYCallHighQueryActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.cdr.activity.AllCallHighQueryActivity" android:screenOrientation="portrait"/>
@@ -90,7 +93,8 @@
 
         <activity android:name=".options.mobileassistant.erp.activity.ErpActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"
+            />
         <activity android:name=".options.mobileassistant.erp.activity.ErpHighQueryActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.erp.activity.ErpActionBackActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.erp.activity.ErpActionProcessActivity" android:screenOrientation="portrait"/>
@@ -102,6 +106,13 @@
         <activity android:name=".options.department.activity.DepartmentAddActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.department.activity.SubDepartmentActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.department.activity.DepartmentUpdateActivity" android:screenOrientation="portrait"/>
+
+        <activity android:name=".options.systemcontacts.SystemContactsActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.message.activity.SystemMsgActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.setting.SettingActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.login.KickedActivity"
+            android:screenOrientation="portrait"
+            />
 
 
         <receiver android:name=".common.receiver.SocketReceiver">

@@ -84,7 +84,7 @@
                     android:id="@+id/user_icon"
                     android:layout_width="72dp"
                     android:layout_height="72dp"
-                    android:src="@drawable/ic_person_black_48dp"
+                    android:src="@drawable/img_default_head"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="16dp"
@@ -221,17 +221,18 @@
             android:layout_marginTop="16dp"
             >
             <RelativeLayout
-                android:visibility="gone"
+                android:id="@+id/setup_ll_kefu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/setup_bg_selector"
-                android:padding="8dp"
+                android:padding="12dp"
+                android:clickable="true"
                 >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="开启工单助手"
+                    android:text="联系客服"
                     android:textSize="18sp"
                     android:textColor="@color/all_black"
                     android:layout_alignParentLeft="true"
@@ -239,19 +240,8 @@
                     android:layout_marginLeft="8dp"
                     />
 
-                <CheckBox
-                    android:id="@+id/setup_cb_gongdan"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
-                    android:checked="true"
-                    />
             </RelativeLayout>
-
             <View
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="@color/lightgrey"
@@ -290,7 +280,7 @@
                 />
 
             <RelativeLayout
-                android:id="@+id/setup_ll_aboutme"
+                android:id="@+id/setup_ll_setting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/setup_bg_selector"
@@ -301,7 +291,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="关于我们"
+                    android:text="设置"
                     android:textSize="18sp"
                     android:textColor="@color/all_black"
                     android:layout_alignParentLeft="true"
@@ -310,91 +300,7 @@
                     />
 
             </RelativeLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/lightgrey"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                />
 
-            <RelativeLayout
-                android:id="@+id/setup_ll_kefu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/setup_bg_selector"
-                android:padding="12dp"
-                android:clickable="true"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="联系客服"
-                    android:textSize="18sp"
-                    android:textColor="@color/all_black"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    />
-
-            </RelativeLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/lightgrey"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                />
-
-            <RelativeLayout
-                android:id="@+id/setup_ll_mobile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/setup_bg_selector"
-                android:padding="12dp"
-                android:clickable="true"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="手机助手-通话记录"
-                    android:textSize="18sp"
-                    android:textColor="@color/all_black"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    />
-
-            </RelativeLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/lightgrey"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                />
-            <RelativeLayout
-                android:id="@+id/setup_ll_mobile_erp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/setup_bg_selector"
-                android:padding="12dp"
-                android:clickable="true"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="手机助手-工单"
-                    android:textSize="18sp"
-                    android:textColor="@color/all_black"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    />
-            </RelativeLayout>
         </LinearLayout>
 
         <RelativeLayout

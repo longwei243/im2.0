@@ -118,7 +118,30 @@ public class InfoDao {
         }
         return "";
     }
-
+    public void saveIsChangePW(String isChangePw) {
+        try {
+            Info info = infoDao.queryForAll().get(0);
+            if(info != null) {
+                info.isChangePassWord = isChangePw;
+                infoDao.update(info);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public String getIsChangePW() {
+        String isChangePw = "false";
+        try {
+            Info info = infoDao.queryForAll().get(0);
+            if(info != null) {
+                isChangePw = info.isChangePassWord;
+                return isChangePw;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
     /**
      * 删除所有数据
      */

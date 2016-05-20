@@ -1,21 +1,30 @@
 package com.moor.im.app;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.csipsimple.service.SipService;
 import com.moor.im.BuildConfig;
+import com.moor.im.common.event.LoginKicked;
+import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.CacheUtils;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.utils.log.Settings;
 import com.moor.im.options.chat.utils.FaceConversionUtil;
+import com.moor.im.options.login.KickedActivity;
+import com.tencent.bugly.crashreport.CrashReport;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import rx.functions.Action1;
 
 /**
  * Created by longwei on 2016/3/16.
@@ -25,6 +34,7 @@ public class MobileApplication extends Application{
     private static MobileApplication instance;
 
     public static CacheUtils cacheUtil;
+    private List<Activity> activities = new ArrayList<Activity>();
 
     @Override
     public void onCreate() {
@@ -35,6 +45,12 @@ public class MobileApplication extends Application{
         String processName = getProcessName(this, android.os.Process.myPid());
         if (!TextUtils.isEmpty(processName) && processName.equals(this.getPackageName())) {//判断进程名，保证只有主进程运行
             //主进程初始化逻辑
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()
+                    .penaltyLog()
+                    .build());
             initLogUtil();
             startIMService();
             startSipService();
@@ -44,6 +60,10 @@ public class MobileApplication extends Application{
                     FaceConversionUtil.getInstace().getFileText(instance);
                 }
             }).start();
+
+            addRxBusListener();
+            CrashReport.initCrashReport(getApplicationContext(), "900005144", false);
+
         }
 
     }
@@ -108,5 +128,30 @@ public class MobileApplication extends Application{
                         .setMethodOffset(0)
                         .setLogPriority(BuildConfig.DEBUG ? Log.VERBOSE : Log.ASSERT)
         );
+    }
+
+    private void addRxBusListener() {
+        RxBus.getInstance().toObserverable().subscribe(new Action1<Object>() {
+            @Override
+            public void call(Object o) {
+                if(o instanceof LoginKicked) {
+                    Intent intent = new Intent(instance, KickedActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+
+    public void add(Activity a) {
+        activities.add(a);
+    }
+    public void remove(Activity a) {
+        activities.remove(a);
+    }
+    public void exit() {
+        for (int i = 0; i < activities.size(); i++) {
+            activities.get(i).finish();
+        }
     }
 }

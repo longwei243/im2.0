@@ -1,10 +1,13 @@
 package com.moor.im.options.chat.activity;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,13 +19,17 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +100,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by longwei on 2016/4/19.
  */
 public class ChatActivity extends BaseActivity implements View.OnClickListener,
-        AdapterView.OnItemClickListener, ChatListView.OnRefreshListener, AudioRecorderButton.RecorderFinishListener {
+        AdapterView.OnItemClickListener, ChatListView.OnRefreshListener, AudioRecorderButton.RecorderFinishListener{
 
     private ChatListView mChatList;
     private Button mChatSend, mChatMore, mChatSetModeVoice,
@@ -170,13 +177,39 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
                 // 加载更多的时候
                 JZMoreMessage();
             }
-            if(msg.what == 0x88) {
-                updateMessage();
-            }
             if ("拍照".equals(msg.obj)) {
-                takePicture();
+                if(Build.VERSION.SDK_INT < 23) {
+                    System.out.println("sdk < 23");
+                    takePicture();
+                }else {
+                    //6.0
+                    System.out.println("sdk 6.0");
+                    if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        //该权限已经有了
+                        takePicture();
+                    }else {
+                        //申请该权限
+                        System.out.println("申请该权限");
+                        ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.CAMERA}, 0x3333);
+                    }
+                }
             } else if ("图库".equals(msg.obj)) {
-                openAlbum();
+                if(Build.VERSION.SDK_INT < 23) {
+                    System.out.println("sdk < 23");
+                    openAlbum();
+                }else {
+                    //6.0
+                    System.out.println("sdk 6.0");
+                    if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                        //该权限已经有了
+                        System.out.println("权限已经有了");
+                        openAlbum();
+                    }else {
+                        //申请该权限
+                        System.out.println("申请该权限");
+                        ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0x4444);
+                    }
+                }
             }
 
             if(msg.what == 0x777) {
@@ -264,6 +297,22 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
             });
         }
 
+        if(Build.VERSION.SDK_INT > 22) {
+            //6.0
+            if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                //写存储权限已经有了
+                begin();
+            }else {
+                //申请该权限
+                ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0x6666);
+            }
+        }else {
+            begin();
+        }
+
+    }
+
+    private void begin() {
         init();
         registerListener();
         initEmojiViewPager();
@@ -511,6 +560,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
         mChatEmojiChecked.setOnClickListener(this);
         mChatMore.setOnClickListener(this);
         mChatList.setOnRefreshListener(this);
+//        mChatList.setOnItemLongClickListener(this);
     }
 
     // 获取分页数据
@@ -540,6 +590,86 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
                 manager.hideSoftInputFromWindow(getCurrentFocus()
                         .getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+
+//    @Override
+//    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+//        final int itemPosition = position;
+//        if(chatAdapter != null) {
+//            int headerViewsCount = mChatList.getHeaderViewsCount();
+//            if (itemPosition < headerViewsCount) {
+//                return false;
+//            }
+//            int _position = itemPosition - headerViewsCount;
+//
+//            if (chatAdapter == null || chatAdapter.getItem(_position) == null) {
+//                return false;
+//            }
+//            FromToMessage item = chatAdapter.getItem(_position);
+//            if(FromToMessage.MSG_TYPE_AUDIO.equals(item.msgType)) {
+//                showVoiceDialog();
+//            }
+//        }
+//        return false;
+//    }
+
+    public void itemLongClick(FromToMessage item) {
+        if(item != null) {
+            if(FromToMessage.MSG_TYPE_AUDIO.equals(item.msgType)) {
+                showVoiceDialog();
+            }
+        }
+    }
+
+    /**
+     * 显示切换录音播放方式的对话框
+     */
+    public void showVoiceDialog() {
+        LayoutInflater myInflater = LayoutInflater.from(this);
+        final View myDialogView = myInflater.inflate(R.layout.voice_convert_dialog,
+                null);
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                .setView(myDialogView);
+        final AlertDialog alert = dialog.show();
+        alert.setCanceledOnTouchOutside(true);// 设置点击Dialog外部任意区域关闭Dialog
+        alert.getWindow().setGravity(Gravity.CENTER);
+
+
+        LinearLayout mDirectSeeding = (LinearLayout) myDialogView
+                .findViewById(R.id.voice_convert_layout);
+        final TextView voice_convert_tv = (TextView) myDialogView.findViewById(R.id.voice_convert_tv);
+        if(isSpeaker) {
+            voice_convert_tv.setText("切换为听筒模式");
+        }else {
+            voice_convert_tv.setText("切换为扬声器模式");
+        }
+
+        mDirectSeeding.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                if(isSpeaker) {
+                    //当前是扬声器模式，需切换为听筒模式
+                    alert.dismiss();
+                    audioManager.setMode(AudioManager.MODE_IN_CALL);
+                    isSpeaker = false;
+                    editor.putInt("mode", AudioManager.MODE_IN_CALL);
+                    editor.commit();
+
+                }else {
+                    alert.dismiss();
+                    audioManager.setMode(AudioManager.MODE_NORMAL);
+                    isSpeaker = true;
+                    editor.putInt("mode", AudioManager.MODE_NORMAL);
+                    editor.commit();
+
+                }
+                handler.sendEmptyMessage(0x777);
+            }
+        });
+
+
     }
 
     // 发消息
@@ -672,18 +802,19 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
                 break;
 
             case R.id.chat_set_mode_voice:
-                hideKeyboard();
-                mChatEdittextLayout.setVisibility(View.GONE);
-                mMore.setVisibility(View.GONE);
-                mChatSetModeVoice.setVisibility(View.GONE);
-                mChatSetModeKeyboard.setVisibility(View.VISIBLE);
-                mChatSend.setVisibility(View.GONE);
-                mChatMore.setVisibility(View.VISIBLE);
-                mRecorderButton.setVisibility(View.VISIBLE);
-                mChatEmojiNormal.setVisibility(View.VISIBLE);
-                mChatEmojiChecked.setVisibility(View.GONE);
-                mChatMoreContainer.setVisibility(View.VISIBLE);
-                mChatFaceContainer.setVisibility(View.GONE);
+
+                if(Build.VERSION.SDK_INT < 23) {
+                    showVoice();
+                }else {
+                    //6.0
+                    if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                        //该权限已经有了
+                        showVoice();
+                    }else {
+                        //申请该权限
+                        ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0x5555);
+                    }
+                }
 
                 break;
 
@@ -742,6 +873,21 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
             default:
                 break;
         }
+    }
+
+    private void showVoice() {
+        hideKeyboard();
+        mChatEdittextLayout.setVisibility(View.GONE);
+        mMore.setVisibility(View.GONE);
+        mChatSetModeVoice.setVisibility(View.GONE);
+        mChatSetModeKeyboard.setVisibility(View.VISIBLE);
+        mChatSend.setVisibility(View.GONE);
+        mChatMore.setVisibility(View.VISIBLE);
+        mRecorderButton.setVisibility(View.VISIBLE);
+        mChatEmojiNormal.setVisibility(View.VISIBLE);
+        mChatEmojiChecked.setVisibility(View.GONE);
+        mChatMoreContainer.setVisibility(View.VISIBLE);
+        mChatFaceContainer.setVisibility(View.GONE);
     }
 
     public void setOnCorpusSelectedListener(OnCorpusSelectedListener listener) {
@@ -1422,7 +1568,74 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
     }
 
     public void resendMsg(FromToMessage msg, int position) {
+        if(msg.msgType.equals(FromToMessage.MSG_TYPE_TEXT)) {
+            //文本消息
+            msg.sendState = "sending";
+            MessageDao.getInstance().updateMsgToDao(msg);
+            //发送到网络中
+            HttpManager.getInstance().newMsgToServer(InfoDao.getInstance().getConnectionId(),
+                    msg, new NewMessageResponseHandler(msg));
+        }else if(msg.msgType.equals(FromToMessage.MSG_TYPE_AUDIO)) {
+            //录音
+            msg.sendState = "sending";
+            MessageDao.getInstance().updateMsgToDao(msg);
+            //获取7牛token
+            HttpManager.getInstance().getQiNiuToken(InfoDao.getInstance().getConnectionId(),
+                    msg.filePath, new UploadFileResponseHandler("ly", msg));
+        }else if(msg.msgType.equals(FromToMessage.MSG_TYPE_IMAGE)) {
+            msg.sendState = "sending";
+            MessageDao.getInstance().updateMsgToDao(msg);
 
+            //获取7牛token
+            HttpManager.getInstance().getQiNiuToken(InfoDao.getInstance().getConnectionId(),
+                    msg.filePath, new UploadFileResponseHandler("img", msg));
+        }
+        chatAdapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 0x3333:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    takePicture();
+                } else {
+
+                }
+                break;
+            case 0x4444:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    openAlbum();
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                break;
+            case 0x5555:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    showVoice();
+                } else {
+
+                }
+                break;
+            case 0x6666:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    begin();
+                } else {
+
+                }
+                break;
+        }
     }
 
 }

@@ -1,7 +1,9 @@
 package com.moor.im.options.base;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 
+import com.moor.im.app.MobileApplication;
 import com.moor.im.common.dialog.LoadingDialog;
 import com.moor.im.common.views.swipeback.SwipeBackActivity;
 import com.moor.im.common.views.swipeback.SwipeBackLayout;
@@ -27,12 +29,14 @@ public class BaseActivity extends SwipeBackActivity{
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
         loadingDialog = new LoadingDialog();
+        MobileApplication.getInstance().add(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         mCompositeSubscription.unsubscribe();
+        MobileApplication.getInstance().remove(this);
     }
 
     /**
@@ -46,6 +50,7 @@ public class BaseActivity extends SwipeBackActivity{
      * 隐藏加载框
      */
     protected void dismissLoadingDialog() {
-        loadingDialog.dismiss();
+        loadingDialog.dismissAllowingStateLoss();
+
     }
 }

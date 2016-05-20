@@ -4,6 +4,8 @@ package com.moor.im.common.dialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -23,5 +25,21 @@ public class LoadingDialog extends DialogFragment {
         dialog.setContentView(view);
         dialog.setCanceledOnTouchOutside(false);
         return dialog;
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        try {
+            super.show(manager, tag);
+        }catch (Exception e) {}
+
+    }
+
+    @Override
+    public void dismiss() {
+        try {
+            super.dismiss();
+        }catch (Exception e) {}
+
     }
 }

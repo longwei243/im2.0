@@ -25,5 +25,7 @@ public class Info {
 
     @DatabaseField
     public String isSucceed;
+    @DatabaseField
+    public String isChangePassWord;
 
 }

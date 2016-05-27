@@ -46,7 +46,6 @@ public class CallingActivity extends Activity {
 		setContentView(R.layout.activity_calling);
 		Intent intent = getIntent();
 		userName = intent.getStringExtra("phone_number");
-		System.out.println("回拨的号码是："+userName);
 		init();
 		dialBack(userName);
 
@@ -72,7 +71,6 @@ public class CallingActivity extends Activity {
 		String pbx = user.pbx;
 		
 		String urlStr = "http://"+servierIpStr+"/app?Action=Dialout&ActionID="+actionId+"&Account="+account+"&Exten="+otherNum+"&FromExten="+exten+"&PBX="+pbx+"&ExtenType=Local";
-		System.out.println("回拨请求地址是："+urlStr);
 
 		HttpManager.getInstance().get(urlStr, new ResponseListener(){
 			@Override
@@ -95,6 +93,9 @@ public class CallingActivity extends Activity {
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					Toast.makeText(CallingActivity.this, "呼叫失败",
+							Toast.LENGTH_LONG).show();
+					finish();
 				}
 			}
 		});

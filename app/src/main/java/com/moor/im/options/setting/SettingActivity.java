@@ -11,10 +11,16 @@ import android.widget.TextView;
 
 import com.moor.im.R;
 import com.moor.im.common.constant.M7Constant;
+import com.moor.im.common.db.dao.InfoDao;
 import com.moor.im.common.db.dao.NewMessageDao;
+import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.event.MsgRead;
+import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.NewMessage;
+import com.moor.im.common.model.User;
 import com.moor.im.common.rxbus.RxBus;
+import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.options.aboutme.AboutMeActivity;
 import com.moor.im.options.base.BaseActivity;
 
@@ -27,8 +33,9 @@ public class SettingActivity extends BaseActivity{
 
     private SharedPreferences mSp;
     private SharedPreferences.Editor mEditor;
-    private CheckBox setting_cb_ma;
+    private CheckBox setting_cb_ma, setting_cb_erp_push;
     private LinearLayout setting_ll_aboutme;
+    private User user = UserDao.getInstance().getUser();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +85,29 @@ public class SettingActivity extends BaseActivity{
             }
         });
 
+        setting_cb_erp_push = (CheckBox) findViewById(R.id.setting_cb_erp_push);
+        boolean isErpPush = mSp.getBoolean("iserppush", true);
+        if(isErpPush) {
+            setting_cb_erp_push.setChecked(true);
+        }else {
+            setting_cb_erp_push.setChecked(false);
+        }
+
+        setting_cb_erp_push.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(b) {
+                    mEditor.putBoolean("iserppush", true);
+                    mEditor.commit();
+                    HttpManager.getInstance().setErpPush(user._id, false, new SetPushListener());
+                }else {
+                    mEditor.putBoolean("iserppush", false);
+                    mEditor.commit();
+                    HttpManager.getInstance().setErpPush(user._id, true, new SetPushListener());
+                }
+            }
+        });
+
     }
 
     private void buildMAMsg() {
@@ -95,4 +125,19 @@ public class SettingActivity extends BaseActivity{
         maMsg.from = "";
         NewMessageDao.getInstance().insertMAMsg(maMsg);
     }
+
+
+    class SetPushListener implements ResponseListener{
+
+        @Override
+        public void onFailed() {
+
+        }
+
+        @Override
+        public void onSuccess(String responseStr) {
+            LogUtil.d("set erp push result is:"+responseStr);
+        }
+    }
+
 }

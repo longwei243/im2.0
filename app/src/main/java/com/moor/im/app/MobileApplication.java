@@ -15,11 +15,11 @@ import com.moor.im.BuildConfig;
 import com.moor.im.common.event.LoginKicked;
 import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.CacheUtils;
+import com.moor.im.common.utils.CrashHandler;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.utils.log.Settings;
 import com.moor.im.options.chat.utils.FaceConversionUtil;
 import com.moor.im.options.login.KickedActivity;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +34,7 @@ public class MobileApplication extends Application{
     private static MobileApplication instance;
 
     public static CacheUtils cacheUtil;
+    public static boolean isKFSDK = false;
     private List<Activity> activities = new ArrayList<Activity>();
 
     @Override
@@ -62,7 +63,10 @@ public class MobileApplication extends Application{
             }).start();
 
             addRxBusListener();
-            CrashReport.initCrashReport(getApplicationContext(), "900005144", false);
+
+            //异常处理
+            CrashHandler crashHandler = CrashHandler.getInstance();
+            crashHandler.init(instance);
 
         }
 

@@ -14,6 +14,7 @@ import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.options.base.BaseActivity;
+import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.cdr.adapter.SPAdapter;
 import com.moor.im.options.mobileassistant.model.MABusinessFlow;
 import com.moor.im.options.mobileassistant.model.MABusinessStep;
@@ -64,15 +65,14 @@ public class ErpHighQueryActivity extends BaseActivity{
         qd_qnull.setName("请选择");
         qd_qnull.setValue("");
         flowDatas.add(qd_qnull);
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow) != null) {
-            HashMap<String, MABusinessFlow> flowMap = (HashMap<String, MABusinessFlow>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow);
+            HashMap<String, MABusinessFlow> flowMap = MobileAssitantCache.getInstance().getFlowMap();
             for(String key : flowMap.keySet()) {
                 QueryData qd = new QueryData();
                 qd.setName(flowMap.get(key).name);
                 qd.setValue(flowMap.get(key)._id);
                 flowDatas.add(qd);
             }
-        }
+
         SPAdapter flowAdapter = new SPAdapter(ErpHighQueryActivity.this, flowDatas);
         erp_high_query_sp_flow.setAdapter(flowAdapter);
         erp_high_query_sp_flow.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -94,8 +94,7 @@ public class ErpHighQueryActivity extends BaseActivity{
                     qd_stepnull.setValue("");
                     stepDatas.add(qd_stepnull);
 
-                    if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessStep) != null) {
-                        HashMap<String, MABusinessFlow> flowMap = (HashMap<String, MABusinessFlow>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow);
+                        HashMap<String, MABusinessFlow> flowMap = MobileAssitantCache.getInstance().getFlowMap();
                         List<MABusinessStep> steps = flowMap.get(qd.getValue()).steps;
                         for (int i = 0; i < steps.size(); i++) {
                             QueryData qd_step = new QueryData();
@@ -103,7 +102,7 @@ public class ErpHighQueryActivity extends BaseActivity{
                             qd_step.setValue(steps.get(i)._id);
                             stepDatas.add(qd_step);
                         }
-                    }
+
                     SPAdapter stepAdapter = new SPAdapter(ErpHighQueryActivity.this, stepDatas);
                     erp_high_query_sp_step.setAdapter(stepAdapter);
                 }

@@ -133,7 +133,7 @@ public class DLQFragment extends BaseLazyFragment{
                             //领取了工单
                             if(unReadCount-1 > 0) {
                                 mAllUnreadcount.setVisibility(View.VISIBLE);
-                                mAllUnreadcount.setText(unReadCount-1 + "");
+//                                mAllUnreadcount.setText(unReadCount-1 + "");
                                 unReadCount--;
                             }else {
                                 mAllUnreadcount.setVisibility(View.GONE);
@@ -198,107 +198,89 @@ public class DLQFragment extends BaseLazyFragment{
         //数量
         mAllUnreadcount = (TextView) getActivity().findViewById(R.id.all_unreadcount);
         newOrderLayout = (RelativeLayout) view.findViewById(R.id.roalundeal_rl_neworder);
-        initCache();
+//        initCache();
+        initCache2();
+    }
+
+    private void initCache2() {
+        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+        mCompositeSubscription.add(ObservableUtils.getErpCache(user._id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingFragmentDialog.dismiss();
+                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        HashMap<String, String> datas = new HashMap<>();
+                        HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
+
+                    }
+                }));
+
     }
 
     private void initCache() {
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) == null) {
-            loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-            mCompositeSubscription.add(ObservableUtils.getAgentCacheObservable(user._id)
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getQueueCacheObservable(user._id);
-                        }
-                    })
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getOptionCacheObservable(user._id);
-                        }
-                    })
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getBusinessFlowCacheObservable(user._id);
-                        }
-                    })
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getBusinessStepCacheObservable(user._id);
-                        }
-                    })
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getBusinessFieldCacheObservable(user._id);
-                        }
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<String>() {
-                        @Override
-                        public void onCompleted() {
-                        }
+        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+        mCompositeSubscription.add(ObservableUtils.getAgentCacheObservable(user._id)
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return ObservableUtils.getQueueCacheObservable(user._id);
+                    }
+                })
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return ObservableUtils.getOptionCacheObservable(user._id);
+                    }
+                })
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return ObservableUtils.getBusinessFlowCacheObservable(user._id);
+                    }
+                })
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return ObservableUtils.getBusinessStepCacheObservable(user._id);
+                    }
+                })
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return ObservableUtils.getBusinessFieldCacheObservable(user._id);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                    }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            loadingFragmentDialog.dismiss();
-                            Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
-                        }
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingFragmentDialog.dismiss();
+                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                    }
 
-                        @Override
-                        public void onNext(String s) {
-                            HashMap<String, String> datas = new HashMap<>();
-                            HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
+                    @Override
+                    public void onNext(String s) {
+                        HashMap<String, String> datas = new HashMap<>();
+                        HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
 
-                        }
-                    }));
-
-
-        }else if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessStep) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessField) == null) {
-            loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-            mCompositeSubscription.add(ObservableUtils.getBusinessFlowCacheObservable(user._id)
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getBusinessStepCacheObservable(user._id);
-                        }
-                    })
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getBusinessFieldCacheObservable(user._id);
-                        }
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<String>() {
-                        @Override
-                        public void onCompleted() {
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            loadingFragmentDialog.dismiss();
-                            Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onNext(String s) {
-                            HashMap<String, String> datas = new HashMap<>();
-                            HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
-
-                        }
-                    }));
-
-        }else {
-            HashMap<String, String> datas = new HashMap<>();
-            HttpManager.getInstance().queryRoleUnDealOrder(user._id, datas, new QueryRoleUnDealOrderResponseHandler());
-            loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-        }
-
+                    }
+                }));
 
     }
 
@@ -381,7 +363,7 @@ public class DLQFragment extends BaseLazyFragment{
             if(businessList.size() > 0) {
                 mAllUnreadcount.setVisibility(View.VISIBLE);
                 unReadCount = businessList.size();
-                mAllUnreadcount.setText(unReadCount+"");
+//                mAllUnreadcount.setText(unReadCount+"");
             }else {
                 mAllUnreadcount.setVisibility(View.GONE);
             }
@@ -456,7 +438,7 @@ public class DLQFragment extends BaseLazyFragment{
             if(maBusinesses.size() > 0) {
                 mAllUnreadcount.setVisibility(View.VISIBLE);
                 unReadCount = maBusinesses.size();
-                mAllUnreadcount.setText(unReadCount + "");
+//                mAllUnreadcount.setText(unReadCount + "");
             }else {
                 mAllUnreadcount.setVisibility(View.GONE);
             }

@@ -1,11 +1,13 @@
 package com.moor.im.options.setup;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -16,6 +18,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csipsimple.api.SipProfile;
+import com.m7.imkfsdk.chat.ChatActivity;
+import com.m7.imkfsdk.chat.PeerDialog;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.M7Constant;
@@ -34,6 +41,7 @@ import com.moor.im.common.db.dao.MessageDao;
 import com.moor.im.common.db.dao.NewMessageDao;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.db.dao.UserRoleDao;
+import com.moor.im.common.dialog.LoadingDialog;
 import com.moor.im.common.dialog.MaterialDialog;
 import com.moor.im.common.event.UserInfoUpdate;
 import com.moor.im.common.http.HttpManager;
@@ -54,10 +62,18 @@ import com.moor.im.options.setup.activity.ClipImageViewActivity;
 import com.moor.im.options.setup.activity.EditActivity;
 import com.moor.im.options.update.UpdateActivity;
 import com.moor.im.tcp.imservice.IMService;
+import com.moor.imkf.GetPeersListener;
+import com.moor.imkf.IMChatManager;
+import com.moor.imkf.InitListener;
+import com.moor.imkf.model.entity.Peer;
 
+import java.io.Serializable;
 import java.util.List;
 
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -72,6 +88,7 @@ public class SetupFragment extends BaseLazyFragment{
     TextView user_detail_tv_name, user_detail_tv_num, user_detail_tv_email, user_detail_tv_phone;
 
     ImageView contact_detail_image;
+    private LoadingDialog loadingDialog = new LoadingDialog();
     private User user = UserDao.getInstance().getUser();
     private SharedPreferences mSp;
     private SharedPreferences.Editor mEditor;
@@ -218,7 +235,18 @@ public class SetupFragment extends BaseLazyFragment{
                     startActivity(emailIntent);
                     break;
                 case R.id.setup_ll_kefu:
-
+                    if(Build.VERSION.SDK_INT < 23) {
+                        initKeFu();
+                    }else {
+                        //6.0
+                        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                            //该权限已经有了
+                            initKeFu();
+                        }else {
+                            //申请该权限
+                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_PHONE_STATE}, 0x1111);
+                        }
+                    }
                     break;
                 case R.id.setup_ll_setting:
                     Intent settingIntent = new Intent(getActivity(), SettingActivity.class);
@@ -338,5 +366,99 @@ public class SetupFragment extends BaseLazyFragment{
     public void onDestroy() {
         super.onDestroy();
         getActivity().unbindService(conn);
+    }
+
+
+    private void initKeFu() {
+        loadingDialog.show(getFragmentManager(), "kf");
+        if (MobileApplication.isKFSDK) {
+            getPeers();
+        } else {
+            startKFService();
+        }
+    }
+
+    private void getPeers() {
+        loadingDialog.dismiss();
+        IMChatManager.getInstance().getPeers(new GetPeersListener() {
+            @Override
+            public void onSuccess(List<Peer> peers) {
+                if (peers.size() > 1) {
+                    PeerDialog dialog = new PeerDialog();
+                    Bundle b = new Bundle();
+                    b.putSerializable("Peers", (Serializable) peers);
+                    dialog.setArguments(b);
+                    dialog.show(getFragmentManager(), "");
+
+                } else if (peers.size() == 1) {
+                    startChatActivity(peers.get(0).getId());
+                } else {
+                    startChatActivity("");
+                }
+            }
+
+            @Override
+            public void onFailed() {
+                Toast.makeText(getActivity(), "获取技能组失败", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void startKFService() {
+
+        new Thread() {
+            @Override
+            public void run() {
+                IMChatManager.getInstance().setOnInitListener(new InitListener() {
+                    @Override
+                    public void oninitSuccess() {
+                        MobileApplication.isKFSDK = true;
+                        getPeers();
+                        LogUtil.d("sdk初始化成功");
+                        //初始化表情,界面效果需要
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                com.m7.imkfsdk.utils.FaceConversionUtil.getInstace().getFileText(
+                                        MobileApplication.getInstance());
+                            }
+                        }).start();
+                    }
+
+                    @Override
+                    public void onInitFailed() {
+                        MobileApplication.isKFSDK = false;
+                        Toast.makeText(getActivity(), "客服初始化失败", Toast.LENGTH_SHORT).show();
+                        LogUtil.d("sdk初始化失败");
+                    }
+                });
+
+                //初始化IMSdk,填入相关参数
+                IMChatManager.getInstance().init(MobileApplication.getInstance(), "com.moor.kefu.NEW_MSG", "2ff6ebc0-e40c-11e5-82a5-51d279813f91", user.displayName, user.exten);
+            }
+        }.start();
+
+    }
+
+    /**
+     * 启动客服聊天界面
+     * @param peerId
+     */
+    private void startChatActivity(String peerId) {
+        Intent chatIntent = new Intent(getActivity(), ChatActivity.class);
+        chatIntent.putExtra("PeerId", peerId);
+        startActivity(chatIntent);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 0x1111:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initKeFu();
+                }
+                break;
+        }
     }
 }

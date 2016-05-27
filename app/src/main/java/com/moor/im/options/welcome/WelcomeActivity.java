@@ -3,6 +3,8 @@ package com.moor.im.options.welcome;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.moor.im.R;
@@ -33,7 +35,15 @@ public class WelcomeActivity extends Activity{
 
         mSp = getSharedPreferences(M7Constant.MAIN_SP, 0);
         mEditor = mSp.edit();
-
+        final String appVersion_sp = mSp.getString("appVersion", "");
+        final String version = getVersion();
+        if(version.equals(appVersion_sp)) {
+            mEditor.putBoolean("versionChanged", false);
+        }else {
+            mEditor.putBoolean("versionChanged", true);
+        }
+        mEditor.putString("appVersion", version);
+        mEditor.commit();
         Observable
                 .timer(600, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
@@ -62,9 +72,9 @@ public class WelcomeActivity extends Activity{
                             finish();
 
                         }else {
-                            //判断是否登录成功过
+                            //判断是否登录成功过而且版本号没变
                             boolean isLoginSucceed = mSp.getBoolean(M7Constant.SP_LOGIN_SUCCEED, false);
-                            if(isLoginSucceed) {
+                            if(isLoginSucceed && version.equals(appVersion_sp)) {
                                 //登录成功过，直接进主界面
                                 Intent main = new Intent(WelcomeActivity.this, MainActivity.class);
                                 startActivity(main);
@@ -78,7 +88,18 @@ public class WelcomeActivity extends Activity{
                         }
                     }
                 });
+    }
 
 
+    public String getVersion() {
+        try {
+            PackageManager manager = this.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+            String version = info.versionName;
+            return version;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 }

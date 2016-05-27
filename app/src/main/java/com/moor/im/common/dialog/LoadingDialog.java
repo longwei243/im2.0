@@ -29,10 +29,11 @@ public class LoadingDialog extends DialogFragment {
 
     @Override
     public void show(FragmentManager manager, String tag) {
-        try {
-            super.show(manager, tag);
-        }catch (Exception e) {}
-
+        if(!this.isAdded()) {
+            try {
+                super.show(manager, tag);
+            }catch (Exception e) {}
+        }
     }
 
     @Override

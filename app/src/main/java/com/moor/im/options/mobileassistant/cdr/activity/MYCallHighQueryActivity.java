@@ -21,6 +21,7 @@ import android.widget.TimePicker;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
+import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.cdr.adapter.SPAdapter;
 import com.moor.im.options.mobileassistant.model.MAQueue;
 import com.moor.im.options.mobileassistant.model.QueryData;
@@ -120,15 +121,14 @@ public class MYCallHighQueryActivity extends Activity implements View.OnClickLis
         qd_qnull.setName("请选择");
         qd_qnull.setValue("");
         queueDatas.add(qd_qnull);
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue) != null) {
-            HashMap<String, MAQueue> queueMap = (HashMap<String, MAQueue>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue);
+            HashMap<String, MAQueue> queueMap = MobileAssitantCache.getInstance().getQueueMap();
             for(String key : queueMap.keySet()) {
                 QueryData qd = new QueryData();
                 qd.setName(queueMap.get(key).DisplayName);
                 qd.setValue(queueMap.get(key).Exten);
                 queueDatas.add(qd);
             }
-        }
+
         SPAdapter queueAdapter = new SPAdapter(MYCallHighQueryActivity.this, queueDatas);
         mycall_high_query_sp_ERROR_MEMO.setAdapter(queueAdapter);
 

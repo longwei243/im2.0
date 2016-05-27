@@ -28,10 +28,15 @@ public class MobileAssitantCache {
 
     private static  MobileAssitantCache instance;
 
-    private User user;
+    private HashMap<String, MAAgent> agentMap = new HashMap<>();
+    private HashMap<String, MAQueue> queueMap = new HashMap<>();
+    private HashMap<String, MAOption> optionMap = new HashMap<>();
+    private HashMap<String, MABusinessStep> stepMap = new HashMap<>();
+    private HashMap<String, MABusinessFlow> flowMap = new HashMap<>();
+    private HashMap<String, MABusinessField> fieldMap = new HashMap<>();
+
 
     private MobileAssitantCache() {
-        user = UserDao.getInstance().getUser();
     }
 
     public static MobileAssitantCache getInstance() {
@@ -42,145 +47,102 @@ public class MobileAssitantCache {
     }
 
     public MAAgent getAgentById(String id) {
-        MAAgent agent;
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent) != null) {
-            HashMap<String, MAAgent> agentMap = (HashMap<String, MAAgent>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent);
-            agent = agentMap.get(id);
+        MAAgent agent = agentMap.get(id);
+        if (agent != null) {
             return agent;
-        }else {
-//            MobileHttpManager.getAgentCache(user._id, new GetAgentResponseHandler());
         }
         return null;
     }
 
     public List<MAAgent> getAgents() {
         List<MAAgent> agents = new ArrayList<>();
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent) != null) {
-            HashMap<String, MAAgent> agentMap = (HashMap<String, MAAgent>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent);
-            for (String key : agentMap.keySet()) {
-                MAAgent agent = agentMap.get(key);
-                agents.add(agent);
-            }
-            return agents;
+        for (String key : agentMap.keySet()) {
+            MAAgent agent = agentMap.get(key);
+            agents.add(agent);
         }
         return agents;
+
     }
 
     public MAQueue getQueueByExten(String id) {
-        MAQueue queue;
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue) != null) {
-            HashMap<String, MAQueue> queueMap = (HashMap<String, MAQueue>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue);
-            queue = queueMap.get(id);
+        MAQueue queue = queueMap.get(id);
+        if(queue != null) {
             return queue;
-        }else {
-
         }
         return null;
     }
 
     public MABusinessStep getBusinessStep(String id) {
-        MABusinessStep step;
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessStep) != null) {
-            HashMap<String, MABusinessStep> stepMap = (HashMap<String, MABusinessStep>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessStep);
-            step = stepMap.get(id);
+        MABusinessStep step = stepMap.get(id);
+        if(step != null) {
             return step;
-        }else {
-
         }
         return null;
     }
 
     public MAAction getBusinessStepAction(String stepId, String actionId) {
-        MABusinessStep step;
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessStep) != null) {
-            HashMap<String, MABusinessStep> stepMap = (HashMap<String, MABusinessStep>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessStep);
-            step = stepMap.get(stepId);
-            if(step != null) {
-                List<MAAction> actions = step.actions;
-                if(actions != null) {
-                    for(int i=0; i<actions.size(); i++) {
-                        if(actions.get(i)._id.equals(actionId)) {
-                            return actions.get(i);
-                        }
+        MABusinessStep step = stepMap.get(stepId);
+        if(step != null) {
+            List<MAAction> actions = step.actions;
+            if(actions != null) {
+                for(int i=0; i<actions.size(); i++) {
+                    if(actions.get(i)._id.equals(actionId)) {
+                        return actions.get(i);
                     }
                 }
             }
-        }else {
-
         }
         return null;
     }
 
     public MABusinessFlow getBusinessFlow(String id) {
-        MABusinessFlow flow;
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow) != null) {
-            HashMap<String, MABusinessFlow> flowMap = (HashMap<String, MABusinessFlow>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow);
-            flow = flowMap.get(id);
+        MABusinessFlow flow = flowMap.get(id);
+        if(flow != null) {
             return flow;
-        }else {
-
         }
         return null;
     }
 
     public List<MABusinessFlow> getBusinessFlows() {
         List<MABusinessFlow> flows = new ArrayList<>();
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow) != null) {
-            HashMap<String, MABusinessFlow> flowMap = (HashMap<String, MABusinessFlow>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessFlow);
-            for (String key : flowMap.keySet()) {
-                MABusinessFlow flow = flowMap.get(key);
-                flows.add(flow);
-            }
-            return flows;
-        }else {
-
+        for (String key : flowMap.keySet()) {
+            MABusinessFlow flow = flowMap.get(key);
+            flows.add(flow);
         }
-        return null;
+        return flows;
     }
 
 
     public MABusinessField getBusinessField(String id) {
-        MABusinessField field;
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessField) != null) {
-            HashMap<String, MABusinessField> fieldMap = (HashMap<String, MABusinessField>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MABusinessField);
-            field = fieldMap.get(id);
+        MABusinessField field = fieldMap.get(id);
+        if(field != null) {
             return field;
-        }else {
-
         }
+
         return null;
     }
 
     public MAOption getMAOption(String dicId) {
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
-            HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
-            for(String key : optionMap.keySet()) {
-                if(optionMap.get(key)._id.equals(dicId)) {
-                    return optionMap.get(key);
-                }
+        for(String key : optionMap.keySet()) {
+            if(optionMap.get(key)._id.equals(dicId)) {
+                return optionMap.get(key);
             }
         }
-
         return null;
     }
 
     public String getDicById(String id) {
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
-            HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
-            for(String key : optionMap.keySet()) {
-                if(optionMap.get(key)._id.equals(id)) {
-                    return optionMap.get(key).name;
-                }
-                List<Option> options = optionMap.get(key).options;
-                if(options != null && options.size() > 0) {
-                    String result = getDic(id, options);
-                    if(!"".equals(result)) {
-                        return result;
-                    }
-                }
-
+        for(String key : optionMap.keySet()) {
+            if(optionMap.get(key)._id.equals(id)) {
+                return optionMap.get(key).name;
             }
-        }else {
+            List<Option> options = optionMap.get(key).options;
+            if(options != null && options.size() > 0) {
+                String result = getDic(id, options);
+                if(!"".equals(result)) {
+                    return result;
+                }
+            }
 
         }
         return "";
@@ -203,5 +165,61 @@ public class MobileAssitantCache {
 
         }
         return "";
+    }
+
+    public void setAgentMap(HashMap<String, MAAgent> agentMap) {
+        this.agentMap = agentMap;
+    }
+
+    public void setQueueMap(HashMap<String, MAQueue> queueMap) {
+        this.queueMap = queueMap;
+    }
+
+    public void setOptionMap(HashMap<String, MAOption> optionMap) {
+        this.optionMap = optionMap;
+    }
+
+    public void setStepMap(HashMap<String, MABusinessStep> stepMap) {
+        this.stepMap = stepMap;
+    }
+
+    public void setFlowMap(HashMap<String, MABusinessFlow> flowMap) {
+        this.flowMap = flowMap;
+    }
+
+    public void setFieldMap(HashMap<String, MABusinessField> fieldMap) {
+        this.fieldMap = fieldMap;
+    }
+    public HashMap<String, MAAgent> getAgentMap() {
+        return agentMap;
+    }
+
+    public HashMap<String, MAQueue> getQueueMap() {
+        return queueMap;
+    }
+
+    public HashMap<String, MAOption> getOptionMap() {
+        return optionMap;
+    }
+
+    public HashMap<String, MABusinessStep> getStepMap() {
+        return stepMap;
+    }
+
+    public HashMap<String, MABusinessFlow> getFlowMap() {
+        return flowMap;
+    }
+
+    public HashMap<String, MABusinessField> getFieldMap() {
+        return fieldMap;
+    }
+
+    public void clear() {
+        agentMap.clear();
+        queueMap.clear();
+        optionMap.clear();
+        stepMap.clear();
+        flowMap.clear();
+        fieldMap.clear();
     }
 }

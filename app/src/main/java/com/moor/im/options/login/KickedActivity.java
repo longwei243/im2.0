@@ -14,9 +14,14 @@ import android.os.RemoteException;
 import android.view.View;
 import android.view.Window;
 
+import com.csipsimple.api.SipProfile;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.M7Constant;
+import com.moor.im.common.db.dao.MessageDao;
+import com.moor.im.common.db.dao.NewMessageDao;
+import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.db.dao.UserRoleDao;
 import com.moor.im.common.dialog.MaterialDialog;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.tcp.imservice.IMService;
@@ -26,6 +31,8 @@ import com.moor.im.tcp.imservice.IMService;
  */
 public class KickedActivity extends Activity{
     private Messenger messenger;
+    private SharedPreferences mSp;
+    private SharedPreferences.Editor mEditor;
     private ServiceConnection conn = new ServiceConnection() {
 
         @Override
@@ -43,6 +50,8 @@ public class KickedActivity extends Activity{
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_kicked);
+        mSp = getSharedPreferences(M7Constant.MAIN_SP, 0);
+        mEditor = mSp.edit();
         bindService(new Intent(this, IMService.class), conn, Context.BIND_AUTO_CREATE);
         final MaterialDialog mMaterialDialog = new MaterialDialog(KickedActivity.this);
         mMaterialDialog.setTitle("温馨提示")
@@ -76,7 +85,15 @@ public class KickedActivity extends Activity{
     }
 
     private void cancel() {
-        //退出应用就行了
+        //退出应用，重新登录
+        mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,false);
+        mEditor.commit();
+        getContentResolver().delete(SipProfile.ACCOUNT_URI, null, null);
+        MessageDao.getInstance().deleteAllMsgs();
+        NewMessageDao.getInstance().deleteAllMsgs();
+        UserDao.getInstance().deleteUser();
+        UserRoleDao.getInstance().deleteUserRole();
+        MobileApplication.cacheUtil.clear();
         MobileApplication.getInstance().exit();
     }
 

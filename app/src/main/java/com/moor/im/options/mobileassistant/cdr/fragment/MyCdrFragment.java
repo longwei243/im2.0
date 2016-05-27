@@ -259,67 +259,84 @@ public class MyCdrFragment extends BaseLazyFragment{
             }
         });
 
-        initData();
+        initData2();
+    }
+
+    private void initData2() {
+        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+        mCompositeSubscription.add(ObservableUtils.getCdrCache(user._id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingFragmentDialog.dismiss();
+                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        HashMap<String, String> datas = new HashMap<>();
+                        datas.put("DISPOSAL_AGENT", user._id);
+                        HttpManager.getInstance().queryCdr(user._id, datas, new QueryCdrResponseHandler());
+
+                    }
+                }));
     }
 
     private void initData() {
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue) == null || MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) == null) {
-            loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-            mCompositeSubscription.add(ObservableUtils.getAgentCacheObservable(user._id)
-                    .doOnError(new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            LogUtil.d("获取坐席缓存数据失败了");
-                        }
-                    })
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getQueueCacheObservable(user._id)
-                                    .doOnError(new Action1<Throwable>() {
-                                        @Override
-                                        public void call(Throwable throwable) {
-                                            LogUtil.d("获取技能组缓存数据失败了");
-                                        }
-                                    });
-                        }
-                    })
-                    .flatMap(new Func1<String, Observable<String>>() {
-                        @Override
-                        public Observable<String> call(String s) {
-                            return ObservableUtils.getOptionCacheObservable(user._id);
-                        }
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<String>() {
-                        @Override
-                        public void onCompleted() {
-                        }
+        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+        mCompositeSubscription.add(ObservableUtils.getAgentCacheObservable(user._id)
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        LogUtil.d("获取坐席缓存数据失败了");
+                    }
+                })
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return ObservableUtils.getQueueCacheObservable(user._id)
+                                .doOnError(new Action1<Throwable>() {
+                                    @Override
+                                    public void call(Throwable throwable) {
+                                        LogUtil.d("获取技能组缓存数据失败了");
+                                    }
+                                });
+                    }
+                })
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return ObservableUtils.getOptionCacheObservable(user._id);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+                    }
 
-                        @Override
-                        public void onError(Throwable e) {
-                            loadingFragmentDialog.dismiss();
-                            Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
-                        }
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingFragmentDialog.dismiss();
+                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                    }
 
-                        @Override
-                        public void onNext(String s) {
-                            HashMap<String, String> datas = new HashMap<>();
-                            datas.put("DISPOSAL_AGENT", user._id);
-                            HttpManager.getInstance().queryCdr(user._id, datas, new QueryCdrResponseHandler());
+                    @Override
+                    public void onNext(String s) {
+                        HashMap<String, String> datas = new HashMap<>();
+                        datas.put("DISPOSAL_AGENT", user._id);
+                        HttpManager.getInstance().queryCdr(user._id, datas, new QueryCdrResponseHandler());
 
-                        }
-                    }));
+                    }
+                }));
 
-
-        }else {
-            HashMap<String, String> datas = new HashMap<>();
-            datas.put("DISPOSAL_AGENT", user._id);
-            loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-            HttpManager.getInstance().queryCdr(user._id, datas, new QueryCdrResponseHandler());
-
-        }
     }
 
 
@@ -545,21 +562,21 @@ public class MyCdrFragment extends BaseLazyFragment{
 
             if("INVESTIGATE".equals(key)) {
 
-                if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
-                    HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
-                    for(String optionKey : optionMap.keySet()) {
-                        if("满意度调查选项".equals(optionKey)) {
-                            List<Option> investigates = optionMap.get(optionKey).options;
-                            for(int i=0; i<investigates.size(); i++) {
-                                if(datas.get(key).equals(investigates.get(i).options.get(0).name)) {
-                                    String investigateName = investigates.get(i).name;
-                                    sb.append(investigateName);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+//                if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
+//                    HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
+//                    for(String optionKey : optionMap.keySet()) {
+//                        if("满意度调查选项".equals(optionKey)) {
+//                            List<Option> investigates = optionMap.get(optionKey).options;
+//                            for(int i=0; i<investigates.size(); i++) {
+//                                if(datas.get(key).equals(investigates.get(i).options.get(0).name)) {
+//                                    String investigateName = investigates.get(i).name;
+//                                    sb.append(investigateName);
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
                 continue;
             }
             sb.append(datas.get(key));

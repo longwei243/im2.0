@@ -3,6 +3,7 @@ package com.moor.im.options.systemcontacts;
 import android.Manifest;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -22,10 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.moor.im.R;
+import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.model.Contacts;
 import com.moor.im.common.utils.GlideUtils;
 import com.moor.im.common.utils.PingYinUtil;
 import com.moor.im.common.utils.log.LogUtil;
+import com.moor.im.common.views.easyrecyclerview.holder.EasyRecyclerViewHolder;
 import com.moor.im.common.views.easyrecyclerview.recyclerview.EasyRecyclerView;
 import com.moor.im.common.views.recyclerviewsidebar.EasyFloatingImageView;
 import com.moor.im.common.views.recyclerviewsidebar.EasyRecyclerViewSidebar;
@@ -33,6 +36,7 @@ import com.moor.im.common.views.recyclerviewsidebar.sections.EasyImageSection;
 import com.moor.im.common.views.recyclerviewsidebar.sections.EasySection;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.contacts.utils.PinyinComparator;
+import com.moor.im.options.dial.dialog.CallChoiseDialog;
 import com.moor.im.options.systemcontacts.adapter.SystemContactAdapter;
 import com.moor.im.options.systemcontacts.model.ContactBean;
 
@@ -230,11 +234,24 @@ public class SystemContactsActivity extends BaseActivity implements EasyRecycler
             });
     }
 
-    private void initViews(List<ContactBean> contactBeen) {
+    private void initViews(final List<ContactBean> contactBeen) {
         dismissLoadingDialog();
         this.adapter.setList(contactBeen);
         this.adapter.notifyDataSetChanged();
         this.imageSidebar.setSections(adapter.getSections());
+
+        this.adapter.setOnItemClickListener(new EasyRecyclerViewHolder.OnItemClickListener() {
+            @Override
+            public void onItemClick(View convertView, int position) {
+                ContactBean cb = contactBeen.get(position);
+                String num = cb.getPhoneNum();
+                if(num != null && !"".equals(num)) {
+                    Intent intent = new Intent(SystemContactsActivity.this, CallChoiseDialog.class);
+                    intent.putExtra(M7Constant.PHONE_NUM, num);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     private List<ContactBean> processContactsData(List<ContactBean> contactsList) {

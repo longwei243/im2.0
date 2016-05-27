@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00000000" >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" >
+
+        <LinearLayout
+            android:id="@+id/LinearLayout001"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/call_choise_btn_sip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:src="@drawable/img_call_choise_sip" />
+
+            <ImageButton
+                android:id="@+id/call_choise_btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:src="@drawable/img_call_choise_back" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/LinearLayout002"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/LinearLayout001"
+            android:layout_weight="1" >
+
+            <ImageButton
+                android:id="@+id/call_choise_btn_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:src="@drawable/img_call_choise_phone" />
+
+            <ImageButton
+                android:id="@+id/call_choise_btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:src="@drawable/img_call_choise_cancel" />
+
+        </LinearLayout>
+
+        <com.moor.im.common.views.roundimage.RoundImageView
+            android:layout_width="82.0dip"
+            android:layout_height="82.0dip"
+            android:layout_centerInParent="true"
+            android:contentDescription="@null"
+            android:src="@drawable/img_call_choise_logo" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

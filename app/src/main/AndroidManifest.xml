@@ -32,8 +32,7 @@
         android:permissionGroup="android.permission-group.COST_MONEY"
         android:protectionLevel="dangerous" />
     <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:name=".app.MobileApplication"
@@ -113,6 +112,10 @@
         <activity android:name=".options.login.KickedActivity"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".options.dial.dialog.CallChoiseDialog"
+            android:screenOrientation="portrait"
+            android:theme="@style/acttranslucent"
+            />
 
 
         <receiver android:name=".common.receiver.SocketReceiver">
@@ -141,7 +144,43 @@
             </intent-filter>
         </receiver>
 
+        <!--kefu-->
+        <activity
+            android:name="com.m7.imkfsdk.chat.ChatActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            >
+        </activity>
+        <activity
+            android:name="com.m7.imkfsdk.chat.ImageViewLookActivity"
+            android:screenOrientation="portrait"
+            >
+        </activity>
 
+        <service
+            android:name="com.moor.imkf.tcpservice.service.IMService"
+            >
+        </service>
+
+        <receiver
+            android:name="com.moor.imkf.receiver.NetWorkReceiver"
+            >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+
+        <!--自己定义消息接收的广播-->
+        <receiver
+            android:name="com.m7.imkfsdk.receiver.NewMsgReceiver"
+            android:enabled="true"
+            >
+            <intent-filter>
+                <!--该action的值必须与SDK初始化方法中传入的值一致, 否则接收不到消息-->
+                <action android:name="com.moor.kefu.NEW_MSG" />
+            </intent-filter>
+        </receiver>
         <!--sip-->
         <activity
             android:name="com.csipsimple.ui.incall.InCallActivity"

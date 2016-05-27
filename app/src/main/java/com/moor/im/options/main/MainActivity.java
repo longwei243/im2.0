@@ -20,6 +20,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.AndroidCharacter;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,6 +32,7 @@ import com.csipsimple.api.SipProfile;
 import com.csipsimple.utils.Log;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
+import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.InfoDao;
 import com.moor.im.common.db.dao.MessageDao;
@@ -38,7 +40,11 @@ import com.moor.im.common.db.dao.NewMessageDao;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.db.dao.UserRoleDao;
 import com.moor.im.common.event.DialEvent;
+import com.moor.im.common.event.MsgRead;
 import com.moor.im.common.event.UnReadCount;
+import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.model.Discussion;
+import com.moor.im.common.model.Group;
 import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.ntb.NavigationTabBar;
@@ -52,13 +58,16 @@ import com.moor.im.options.setup.SetupFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
  * 主界面框架
  */
-public class MainActivity extends AppCompatActivity implements DialFragment.OnMakeCallListener{
+public class MainActivity extends AppCompatActivity{
 
     private ViewPager mViewPager;
     private List<Fragment> mTabsFragment = new ArrayList<Fragment>();
@@ -71,20 +80,6 @@ public class MainActivity extends AppCompatActivity implements DialFragment.OnMa
     private Fragment fragment_contact;
     private Fragment fragment_dial;
     private Fragment fragment_setup;
-
-    private ISipService service;
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName arg0, IBinder arg1) {
-            System.out.println("-----------执行了 ServiceConnection");
-            service = ISipService.Stub.asInterface(arg1);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            service = null;
-        }
-    };
 
     SharedPreferences myPreferences;
     SharedPreferences.Editor editor;
@@ -120,6 +115,50 @@ public class MainActivity extends AppCompatActivity implements DialFragment.OnMa
 
         checkPremission();
 
+        //提前缓存一下群组和讨论组
+        if(MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_GROUP) == null) {
+            HttpManager.getInstance().getGroupByUser(InfoDao.getInstance().getConnectionId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<Group>>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onNext(List<Group> groups) {
+                    RxBus.getInstance().send(new MsgRead());
+                }
+            });
+        }
+
+        if(MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_DISCUSSION) == null) {
+            HttpManager.getInstance().getDiscussionByUser(InfoDao.getInstance().getConnectionId())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<Discussion>>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onNext(List<Discussion> discussions) {
+                            RxBus.getInstance().send(new MsgRead());
+                        }
+                    });
+        }
     }
 
     private void init() {
@@ -148,9 +187,6 @@ public class MainActivity extends AppCompatActivity implements DialFragment.OnMa
         //注册sip账户
         Intent intent = new Intent(SipManager.ACTION_SIP_REQUEST_RESTART);
         sendBroadcast(intent);
-        bindService(new Intent().setComponent(new ComponentName("com.moor.im", "com.csipsimple.service.SipService"))
-                , connection,
-                Context.BIND_AUTO_CREATE);
     }
 
     /**
@@ -262,26 +298,8 @@ public class MainActivity extends AppCompatActivity implements DialFragment.OnMa
     protected void onDestroy() {
         super.onDestroy();
         _subscriptions.unsubscribe();
-        unbindService(connection);
     }
 
-    @Override
-    public void makeCall(String callee) {
-        Long id = -1L;
-        Cursor c = getContentResolver().query(SipProfile.ACCOUNT_URI, null,
-                null, null, null);
-        if (c != null) {
-            while (c.moveToNext()) {
-                id = c.getLong(c.getColumnIndex("id"));
-            }
-        }
-        try {
-            service.makeCall(callee, id.intValue());
-        } catch (RemoteException e) {
-            Toast.makeText(MainActivity.this, "拨打电话失败", Toast.LENGTH_SHORT)
-                    .show();
-        }
-    }
     private void checkPremission() {
         if(Build.VERSION.SDK_INT < 23) {
             init();
@@ -303,8 +321,6 @@ public class MainActivity extends AppCompatActivity implements DialFragment.OnMa
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     init();
-                }else {
-
                 }
                 break;
         }

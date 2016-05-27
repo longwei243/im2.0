@@ -169,7 +169,7 @@ public class ErpActionProcessActivity extends BaseActivity{
      * 提交
      */
     private void submitProcess() {
-        showLoadingDialog();
+
         HashMap<String, String> datas = new HashMap<>();
         HashMap<String, JSONArray> jadatas = new HashMap<>();
         int childSize = erp_action_pro_field.getChildCount();
@@ -178,16 +178,37 @@ public class ErpActionProcessActivity extends BaseActivity{
             String type = (String) childView.getTag();
             switch(type) {
                 case "single":
+
                     EditText et = (EditText) childView.getChildAt(1);
                     String id = (String) et.getTag();
                     String value = et.getText().toString().trim();
+                    TextView tv_single_required = (TextView) childView.getChildAt(0);
+                    String fieldName = tv_single_required.getText().toString();
+                    String required = (String) tv_single_required.getTag();
+                    if("required".equals(required)) {
+                        if("".equals(value)) {
+                            Toast.makeText(ErpActionProcessActivity.this, fieldName + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id, value);
                     System.out.println("id is:" + id + "," + "value is:" + value);
                     break;
                 case "multi":
+
                     EditText et_multi = (EditText) childView.getChildAt(1);
                     String id_multi = (String) et_multi.getTag();
                     String value_multi = et_multi.getText().toString().trim();
+
+                    TextView tv_multi_required = (TextView) childView.getChildAt(0);
+                    String fieldName_multi = tv_multi_required.getText().toString();
+                    String required_multi = (String) tv_multi_required.getTag();
+                    if("required".equals(required_multi)) {
+                        if("".equals(value_multi)) {
+                            Toast.makeText(ErpActionProcessActivity.this, fieldName_multi + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id_multi, value_multi);
                     System.out.println("id_multi is:"+id_multi+","+"value_multi is:"+value_multi);
                     break;
@@ -195,19 +216,50 @@ public class ErpActionProcessActivity extends BaseActivity{
                     EditText et_number = (EditText) childView.getChildAt(1);
                     String id_number = (String) et_number.getTag();
                     String value_number = et_number.getText().toString().trim();
+                    TextView tv_number_required = (TextView) childView.getChildAt(0);
+                    String fieldName_number = tv_number_required.getText().toString();
+                    String required_number = (String) tv_number_required.getTag();
+                    if("required".equals(required_number)) {
+                        if("".equals(value_number)) {
+                            Toast.makeText(ErpActionProcessActivity.this, fieldName_number + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id_number, value_number);
                     System.out.println("id_number is:"+id_number+","+"value_number is:"+value_number);
                     break;
                 case "date":
+
                     EditText et_data = (EditText) childView.getChildAt(1);
                     String id_data = (String) et_data.getTag();
                     String value_data = et_data.getText().toString().trim();
+
+                    TextView tv_data_required = (TextView) childView.getChildAt(0);
+                    String fieldName_data = tv_data_required.getText().toString();
+                    String required_data = (String) tv_data_required.getTag();
+                    System.out.println("日期==========data is:"+value_data+",required is:"+required_data);
+                    if("required".equals(required_data)) {
+                        if("".equals(value_data)) {
+                            Toast.makeText(ErpActionProcessActivity.this, fieldName_data + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id_data, value_data);
                     System.out.println("id_data is:"+id_data+","+"value_number is:"+value_data);
                     break;
                 case "radio":
                     RadioGroup radioGroup = (RadioGroup) childView.getChildAt(1);
                     int selectId = radioGroup.getCheckedRadioButtonId();
+
+                    TextView tv_radio_required = (TextView) childView.getChildAt(0);
+                    String fieldName_radio = tv_radio_required.getText().toString();
+                    String required_radio = (String) tv_radio_required.getTag();
+                    if("required".equals(required_radio)) {
+                        if(selectId == -1) {
+                            Toast.makeText(ErpActionProcessActivity.this, fieldName_radio + "是必选项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     if(selectId != -1) {
                         RadioButton rb = (RadioButton) radioGroup.findViewById(selectId);
                         String id_radio = (String) radioGroup.getTag();
@@ -218,12 +270,17 @@ public class ErpActionProcessActivity extends BaseActivity{
                     break;
                 case "checkbox":
                     //数组
+
                     JSONArray jsonArray = new JSONArray();
                     JSONArray jsonArray_default = new JSONArray();
                     GridViewInScrollView gv = (GridViewInScrollView) childView.getChildAt(1);
                     String cbFieldId = (String) gv.getTag();
                     List<Option> options = ((ErpCBAdapter)gv.getAdapter()).getOptions();
-                    HashMap<Integer, Boolean> selected = ErpCBAdapter.getIsSelected();
+                    HashMap<Integer, Boolean> selected = ((ErpCBAdapter)gv.getAdapter()).getIsSelected();
+                    TextView tv_checkbox_required = (TextView) childView.getChildAt(0);
+                    String fieldName_checkbox = tv_checkbox_required.getText().toString();
+                    String required_checkbox = (String) tv_checkbox_required.getTag();
+                    System.out.println("复选框 fiedl is:"+fieldName_checkbox+",required is:"+required_checkbox);
                     for (int o = 0; o < selected.size(); o++) {
                         if(selected.get(o)) {
                             Option option = options.get(o);
@@ -231,6 +288,13 @@ public class ErpActionProcessActivity extends BaseActivity{
                             jsonArray_default.put(option.name);
                             System.out.println("checkbox name is:"+option.name);
                         }
+                    }
+                    if("required".equals(required_checkbox)) {
+                        if(jsonArray.length() == 0) {
+                            Toast.makeText(ErpActionProcessActivity.this, fieldName_checkbox + "是必选项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                     }
                     jadatas.put(cbFieldId, jsonArray);
                     jadatas.put(cbFieldId+"_default", jsonArray_default);
@@ -290,10 +354,22 @@ public class ErpActionProcessActivity extends BaseActivity{
                     }
                     break;
                 case "file":
+                    LinearLayout ll_file = (LinearLayout) childView.getChildAt(0);
+                    TextView tv_file_required = (TextView) ll_file.getChildAt(0);
+                    String fieldName_file = tv_file_required.getText().toString();
+                    String required_file = (String) tv_file_required.getTag();
+
                     LinearLayout filell = (LinearLayout) childView.getChildAt(1);
                     String fileFieldId = (String) filell.getTag();
                     System.out.println("附件的字段id是:"+fileFieldId);
                     int fileCount = filell.getChildCount();
+                    if("required".equals(required_file)) {
+                        if(fileCount == 0) {
+                            Toast.makeText(ErpActionProcessActivity.this, fieldName_file+"是必上传项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                    }
                     JSONArray ja = new JSONArray();
                     for(int f=0; f<fileCount; f++) {
                         JSONObject jb = new JSONObject();
@@ -329,6 +405,7 @@ public class ErpActionProcessActivity extends BaseActivity{
         datas.put("_id", business._id);
         datas.put("actionId", actionId);
         datas.put("master", agentId);
+        showLoadingDialog();
         HttpManager.getInstance().excuteBusinessStepAction(user._id, datas, jadatas, new ExcuteBusHandler());
     }
 
@@ -371,12 +448,14 @@ public class ErpActionProcessActivity extends BaseActivity{
                     MAFields maField = col.fields.get(k);
                     MABusinessField cacheField = getFieldById(flowFields, maField._id);
                     if(cacheField != null) {
+                        System.out.println("requier is:"+cacheField.required);
                         switch (cacheField.type) {
                             case "single":
                                 RelativeLayout singleView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.erp_field_single, null);
                                 singleView.setTag("single");
                                 TextView erp_field_single_tv_name = (TextView) singleView.findViewById(R.id.erp_field_single_tv_name);
                                 erp_field_single_tv_name.setText(cacheField.name);
+                                erp_field_single_tv_name.setTag(cacheField.required);
                                 EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.erp_field_single_et_value);
                                 erp_field_single_et_value.setTag(cacheField._id);
                                 pane.addView(singleView);
@@ -386,6 +465,7 @@ public class ErpActionProcessActivity extends BaseActivity{
                                 multiView.setTag("multi");
                                 TextView erp_field_multi_tv_name = (TextView) multiView.findViewById(R.id.erp_field_multi_tv_name);
                                 erp_field_multi_tv_name.setText(cacheField.name);
+                                erp_field_multi_tv_name.setTag(cacheField.required);
                                 EditText erp_field_multi_et_value = (EditText) multiView.findViewById(R.id.erp_field_multi_et_value);
                                 erp_field_multi_et_value.setTag(cacheField._id);
                                 pane.addView(multiView);
@@ -398,6 +478,7 @@ public class ErpActionProcessActivity extends BaseActivity{
                                 numberView.setTag("number");
                                 TextView erp_field_number_tv_name = (TextView) numberView.findViewById(R.id.erp_field_number_tv_name);
                                 erp_field_number_tv_name.setText(cacheField.name);
+                                erp_field_number_tv_name.setTag(cacheField.required);
                                 EditText erp_field_number_et_value = (EditText) numberView.findViewById(R.id.erp_field_number_et_value);
                                 erp_field_number_et_value.setTag(cacheField._id);
                                 pane.addView(numberView);
@@ -414,7 +495,6 @@ public class ErpActionProcessActivity extends BaseActivity{
                             case "file":
                                 initFileView(cacheField, pane);
                                 break;
-
                         }
                     }
                 }
@@ -572,28 +652,27 @@ public class ErpActionProcessActivity extends BaseActivity{
         checkboxView.setTag("checkbox");
         TextView erp_field_checkbox_tv_name = (TextView) checkboxView.findViewById(R.id.erp_field_checkbox_tv_name);
         erp_field_checkbox_tv_name.setText(cacheField.name);
+        erp_field_checkbox_tv_name.setTag(cacheField.required);
         GridViewInScrollView checkbox_gv = (GridViewInScrollView) checkboxView.findViewById(R.id.erp_field_checkbox_gv_value);
         checkbox_gv.setTag(cacheField._id);
         if(cacheField.dic != null) {
             MAOption maoption = MobileAssitantCache.getInstance().getMAOption(cacheField.dic);
             if(maoption != null) {
                 List<Option> options = maoption.options;
-                for (int i=0; i<options.size(); i++) {
-                    Option o = options.get(i);
-                    checkbox_gv.setAdapter(new ErpCBAdapter(ErpActionProcessActivity.this, options));
-                    checkbox_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            ErpCBAdapter.ViewHolder holder = (ErpCBAdapter.ViewHolder) view.getTag();
-                            holder.cb.toggle();
-                            if (holder.cb.isChecked()) {
-                                ErpCBAdapter.getIsSelected().put(position, true);
-                            } else {
-                                ErpCBAdapter.getIsSelected().put(position, false);
-                            }
+                final ErpCBAdapter adapter = new ErpCBAdapter(ErpActionProcessActivity.this, options);
+                checkbox_gv.setAdapter(adapter);
+                checkbox_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        ErpCBAdapter.ViewHolder holder = (ErpCBAdapter.ViewHolder) view.getTag();
+                        holder.cb.toggle();
+                        if (holder.cb.isChecked()) {
+                            adapter.getIsSelected().put(position, true);
+                        } else {
+                            adapter.getIsSelected().put(position, false);
                         }
-                    });
-                }
+                    }
+                });
             }
         }
         pane.addView(checkboxView);
@@ -609,6 +688,7 @@ public class ErpActionProcessActivity extends BaseActivity{
         radioView.setTag("radio");
         TextView erp_field_radio_tv_name = (TextView) radioView.findViewById(R.id.erp_field_radio_tv_name);
         erp_field_radio_tv_name.setText(cacheField.name);
+        erp_field_radio_tv_name.setTag(cacheField.required);
         RadioGroup radioGroup = (RadioGroup) radioView.findViewById(R.id.erp_field_radio_rg_value);
         radioGroup.setTag(cacheField._id);
         if(cacheField.dic != null) {
@@ -642,6 +722,7 @@ public class ErpActionProcessActivity extends BaseActivity{
         dataView.setTag("date");
         TextView erp_field_data_tv_name = (TextView) dataView.findViewById(R.id.erp_field_data_tv_name);
         erp_field_data_tv_name.setText(cacheField.name);
+        erp_field_data_tv_name.setTag(cacheField.required);
         final EditText erp_field_data_et_value = (EditText) dataView.findViewById(R.id.erp_field_data_et_value);
         erp_field_data_et_value.setTag(cacheField._id);
         erp_field_data_et_value.setOnClickListener(new View.OnClickListener() {
@@ -745,6 +826,7 @@ public class ErpActionProcessActivity extends BaseActivity{
 
         TextView erp_field_file_tv_name = (TextView) fileView.findViewById(R.id.erp_field_file_tv_name);
         erp_field_file_tv_name.setText(cacheField.name);
+        erp_field_file_tv_name.setTag(cacheField.required);
         erp_field_file_ll_already = (LinearLayout) fileView.findViewById(R.id.erp_field_file_ll_already);
         erp_field_file_ll_already.setTag(cacheField._id);
         Button erp_field_file_btn_uploadfile = (Button) fileView.findViewById(R.id.erp_field_file_btn_uploadfile);
@@ -757,7 +839,7 @@ public class ErpActionProcessActivity extends BaseActivity{
                     intent.setType("*/*");//设置类型
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                 }else {
-                    intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 }
                 startActivityForResult(intent, 0x1111);
             }

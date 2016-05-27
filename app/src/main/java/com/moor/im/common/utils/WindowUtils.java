@@ -99,4 +99,10 @@ public class WindowUtils {
 	public static int round(Context context, int paramInt) {
 		return Math.round(paramInt / getDensity(context));
 	}
+
+	public static float getScaleDensity() {
+		DisplayMetrics dm = Resources.getSystem().getDisplayMetrics();
+		float value  = dm.scaledDensity;
+		return value;
+	}
 }

@@ -24,6 +24,8 @@ public class M7Constant {
     public static final String MAIN_SP = "main_sp";
     public static final String SP_FIRST_RUN_APP = "firstrunapp";
 
+    public static final String PHONE_NUM = "phonenumber";
+
     //action
     public static final String ACTION_LOGIN_SUCCESS = "com.m7.action.loginsuccess";
     public static final String ACTION_LOGIN_FAILED = "com.m7.action.loginfailed";

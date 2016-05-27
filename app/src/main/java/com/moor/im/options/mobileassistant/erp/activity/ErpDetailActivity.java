@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
+import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -220,9 +222,9 @@ public class ErpDetailActivity extends BaseActivity{
 
                 RoundImageView erp_history_iv_imicon = (RoundImageView) backInfoView.findViewById(R.id.erp_history_iv_imicon);
                 if(user.im_icon != null && !"".equals(user.im_icon)) {
-                    Glide.with(ErpDetailActivity.this).load(user.im_icon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.img_default_head).into(erp_history_iv_imicon);
+                    Glide.with(ErpDetailActivity.this).load(user.im_icon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erp_history_iv_imicon);
                 }else {
-                    Glide.with(ErpDetailActivity.this).load(R.drawable.img_default_head).asBitmap().into(erp_history_iv_imicon);
+                    Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erp_history_iv_imicon);
                 }
 
                 erpdetail_ll_history.addView(backInfoView, 0);
@@ -239,7 +241,7 @@ public class ErpDetailActivity extends BaseActivity{
 
         @Override
         public void onSuccess(String s) {
-            LogUtil.d("获取工单详情数据:"+s);
+            LogUtil.d("工单详情返回数据:"+s);
             if (HttpParser.getSucceed(s)) {
                 BackTask backTask = new BackTask();
                 backTask.execute(s);
@@ -272,9 +274,9 @@ public class ErpDetailActivity extends BaseActivity{
         erpdetail_tv_lastUpdateUser.setText(detail.lastUpdateUser);
         erpdetail_tv_lastUpdateTime.setText(detail.lastUpdateTime);
         if(!"".equals(detail.imIcon)) {
-            Glide.with(ErpDetailActivity.this).load(detail.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.img_default_head).into(erpdetail_iv_imicon);
+            Glide.with(ErpDetailActivity.this).load(detail.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erpdetail_iv_imicon);
         }else {
-            Glide.with(ErpDetailActivity.this).load(R.drawable.img_default_head).asBitmap().into(erpdetail_iv_imicon);
+            Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erpdetail_iv_imicon);
         }
         boolean isBegin = MobileAssitantCache.getInstance().getBusinessStep(detail.stepId).isBegin;
         if(isBegin) {
@@ -292,14 +294,18 @@ public class ErpDetailActivity extends BaseActivity{
                 fieldLL.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 fieldLL.setOrientation(LinearLayout.HORIZONTAL);
 
-                fieldLL.setPadding(WindowUtils.dip2px(16), 0, 0, 0);
+                fieldLL.setPadding(WindowUtils.dip2px(16), WindowUtils.dip2px(2), 0, WindowUtils.dip2px(2));
 
                 final FieldData fd = fdList.get(i);
                 if("file".equals(fd.getType())) {
                     //附件
                     TextView tv_field_name = new TextView(ErpDetailActivity.this);
-                    tv_field_name.setText(fd.getName());
+                    tv_field_name.setTextSize(16);
                     tv_field_name.setTextColor(getResources().getColor(R.color.all_black));
+                    tv_field_name.setText(fd.getName());
+                    tv_field_name.setSingleLine(true);
+                    tv_field_name.setMaxEms(5);
+                    tv_field_name.setEllipsize(TextUtils.TruncateAt.END);
                     LinearLayout.LayoutParams mLayoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     fieldLL.addView(tv_field_name, mLayoutParams);
@@ -319,7 +325,11 @@ public class ErpDetailActivity extends BaseActivity{
                     fieldLL.addView(tv_field_value, mLayoutParams);
                 }else {
                     TextView tv_field_name = new TextView(ErpDetailActivity.this);
+                    tv_field_name.setTextSize(16);
                     tv_field_name.setText(fdList.get(i).getName());
+                    tv_field_name.setSingleLine(true);
+                    tv_field_name.setMaxEms(5);
+                    tv_field_name.setEllipsize(TextUtils.TruncateAt.END);
                     tv_field_name.setTextColor(getResources().getColor(R.color.all_black));
                     LinearLayout.LayoutParams mLayoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -349,9 +359,9 @@ public class ErpDetailActivity extends BaseActivity{
             erp_history_tv_info.setText(historyData.info);
             RoundImageView erp_history_iv_imicon = (RoundImageView) infoView.findViewById(R.id.erp_history_iv_imicon);
             if(!"".equals(historyData.imIcon)) {
-                Glide.with(ErpDetailActivity.this).load(historyData.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.img_default_head).into(erp_history_iv_imicon);
+                Glide.with(ErpDetailActivity.this).load(historyData.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erp_history_iv_imicon);
             }else {
-                Glide.with(ErpDetailActivity.this).load(R.drawable.img_default_head).asBitmap().into(erp_history_iv_imicon);
+                Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erp_history_iv_imicon);
             }
             erpdetail_ll_history.addView(infoView);
 
@@ -365,12 +375,16 @@ public class ErpDetailActivity extends BaseActivity{
                 LinearLayout historyFieldLL = new LinearLayout(ErpDetailActivity.this);
                 historyFieldLL.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 historyFieldLL.setOrientation(LinearLayout.HORIZONTAL);
-                historyFieldLL.setPadding(WindowUtils.dip2px(16), 0, WindowUtils.dip2px(4), 0);
+                historyFieldLL.setPadding(WindowUtils.dip2px(16), WindowUtils.dip2px(2), WindowUtils.dip2px(4), WindowUtils.dip2px(2));
                 final FieldData fd = historyFieldDatas.get(f);
                 if("file".equals(fd.getType())) {
                     //附件
                     TextView tv_field_name = new TextView(ErpDetailActivity.this);
+                    tv_field_name.setTextSize(16);
                     tv_field_name.setText(fd.getName());
+                    tv_field_name.setSingleLine(true);
+                    tv_field_name.setMaxEms(5);
+                    tv_field_name.setEllipsize(TextUtils.TruncateAt.END);
                     tv_field_name.setTextColor(getResources().getColor(R.color.all_black));
                     LinearLayout.LayoutParams mLayoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -391,7 +405,11 @@ public class ErpDetailActivity extends BaseActivity{
                     historyFieldLL.addView(tv_field_value, mLayoutParams);
                 }else {
                     TextView tv_field_name = new TextView(ErpDetailActivity.this);
+                    tv_field_name.setTextSize(16);
                     tv_field_name.setText(fd.getName());
+                    tv_field_name.setSingleLine(true);
+                    tv_field_name.setMaxEms(5);
+                    tv_field_name.setEllipsize(TextUtils.TruncateAt.END);
                     tv_field_name.setTextColor(getResources().getColor(R.color.all_black));
                     LinearLayout.LayoutParams mLayoutParams = new LinearLayout.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -410,7 +428,7 @@ public class ErpDetailActivity extends BaseActivity{
                 View v = new View(ErpDetailActivity.this);
                 LinearLayout.LayoutParams vlp = new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, 2);
-                v.setBackgroundColor(getResources().getColor(R.color.grey));
+                v.setBackgroundColor(getResources().getColor(R.color.grey_erp));
                 v.setPadding(0,2,0,2);
                 erpdetail_ll_history.addView(v, vlp);
             }
@@ -1128,6 +1146,7 @@ public class ErpDetailActivity extends BaseActivity{
                                 singleView.setTag("single");
                                 TextView erp_field_single_tv_name = (TextView) singleView.findViewById(R.id.erp_field_single_tv_name);
                                 erp_field_single_tv_name.setText(cacheField.name);
+                                erp_field_single_tv_name.setTag(cacheField.required);
                                 EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.erp_field_single_et_value);
                                 erp_field_single_et_value.setTag(cacheField._id);
                                 pane.addView(singleView);
@@ -1137,6 +1156,7 @@ public class ErpDetailActivity extends BaseActivity{
                                 multiView.setTag("multi");
                                 TextView erp_field_multi_tv_name = (TextView) multiView.findViewById(R.id.erp_field_multi_tv_name);
                                 erp_field_multi_tv_name.setText(cacheField.name);
+                                erp_field_multi_tv_name.setTag(cacheField.required);
                                 EditText erp_field_multi_et_value = (EditText) multiView.findViewById(R.id.erp_field_multi_et_value);
                                 erp_field_multi_et_value.setTag(cacheField._id);
                                 pane.addView(multiView);
@@ -1149,6 +1169,7 @@ public class ErpDetailActivity extends BaseActivity{
                                 numberView.setTag("number");
                                 TextView erp_field_number_tv_name = (TextView) numberView.findViewById(R.id.erp_field_number_tv_name);
                                 erp_field_number_tv_name.setText(cacheField.name);
+                                erp_field_number_tv_name.setTag(cacheField.required);
                                 EditText erp_field_number_et_value = (EditText) numberView.findViewById(R.id.erp_field_number_et_value);
                                 erp_field_number_et_value.setTag(cacheField._id);
                                 pane.addView(numberView);
@@ -1323,33 +1344,31 @@ public class ErpDetailActivity extends BaseActivity{
         checkboxView.setTag("checkbox");
         TextView erp_field_checkbox_tv_name = (TextView) checkboxView.findViewById(R.id.erp_field_checkbox_tv_name);
         erp_field_checkbox_tv_name.setText(cacheField.name);
+        erp_field_checkbox_tv_name.setTag(cacheField.required);
         GridViewInScrollView checkbox_gv = (GridViewInScrollView) checkboxView.findViewById(R.id.erp_field_checkbox_gv_value);
         checkbox_gv.setTag(cacheField._id);
         if(cacheField.dic != null) {
             MAOption maoption = MobileAssitantCache.getInstance().getMAOption(cacheField.dic);
             if(maoption != null) {
                 List<Option> options = maoption.options;
-                for (int i=0; i<options.size(); i++) {
-                    Option o = options.get(i);
-                    checkbox_gv.setAdapter(new ErpCBAdapter(ErpDetailActivity.this, options));
-                    checkbox_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            ErpCBAdapter.ViewHolder holder = (ErpCBAdapter.ViewHolder) view.getTag();
-                            holder.cb.toggle();
-                            if (holder.cb.isChecked()) {
-                                ErpCBAdapter.getIsSelected().put(position, true);
-                            } else {
-                                ErpCBAdapter.getIsSelected().put(position, false);
-                            }
+                final ErpCBAdapter adapter = new ErpCBAdapter(ErpDetailActivity.this, options);
+                checkbox_gv.setAdapter(adapter);
+                checkbox_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        ErpCBAdapter.ViewHolder holder = (ErpCBAdapter.ViewHolder) view.getTag();
+                        holder.cb.toggle();
+                        if (holder.cb.isChecked()) {
+                            adapter.getIsSelected().put(position, true);
+                        } else {
+                            adapter.getIsSelected().put(position, false);
                         }
-                    });
-                }
+                    }
+                });
             }
         }
         pane.addView(checkboxView);
     }
-
     /**
      * 单选按钮界面
      * @param cacheField
@@ -1360,6 +1379,7 @@ public class ErpDetailActivity extends BaseActivity{
         radioView.setTag("radio");
         TextView erp_field_radio_tv_name = (TextView) radioView.findViewById(R.id.erp_field_radio_tv_name);
         erp_field_radio_tv_name.setText(cacheField.name);
+        erp_field_radio_tv_name.setTag(cacheField.required);
         RadioGroup radioGroup = (RadioGroup) radioView.findViewById(R.id.erp_field_radio_rg_value);
         radioGroup.setTag(cacheField._id);
         if(cacheField.dic != null) {
@@ -1382,7 +1402,6 @@ public class ErpDetailActivity extends BaseActivity{
         }
         pane.addView(radioView);
     }
-
     /**
      * 时间界面
      * @param cacheField
@@ -1393,6 +1412,7 @@ public class ErpDetailActivity extends BaseActivity{
         dataView.setTag("date");
         TextView erp_field_data_tv_name = (TextView) dataView.findViewById(R.id.erp_field_data_tv_name);
         erp_field_data_tv_name.setText(cacheField.name);
+        erp_field_data_tv_name.setTag(cacheField.required);
         final EditText erp_field_data_et_value = (EditText) dataView.findViewById(R.id.erp_field_data_et_value);
         erp_field_data_et_value.setTag(cacheField._id);
         erp_field_data_et_value.setOnClickListener(new View.OnClickListener() {
@@ -1471,6 +1491,7 @@ public class ErpDetailActivity extends BaseActivity{
 
         TextView erp_field_file_tv_name = (TextView) fileView.findViewById(R.id.erp_field_file_tv_name);
         erp_field_file_tv_name.setText(cacheField.name);
+        erp_field_file_tv_name.setTag(cacheField.required);
         erp_field_file_ll_already = (LinearLayout) fileView.findViewById(R.id.erp_field_file_ll_already);
         erp_field_file_ll_already.setTag(cacheField._id);
         Button erp_field_file_btn_uploadfile = (Button) fileView.findViewById(R.id.erp_field_file_btn_uploadfile);
@@ -1590,7 +1611,7 @@ public class ErpDetailActivity extends BaseActivity{
      * 提交
      */
     private void submitProcess(MAErpDetail business) {
-        showLoadingDialog();
+
         HashMap<String, String> datas = new HashMap<>();
         HashMap<String, JSONArray> jadatas = new HashMap<>();
         int childSize = erp_detail_start_ll_fields.getChildCount();
@@ -1599,16 +1620,37 @@ public class ErpDetailActivity extends BaseActivity{
             String type = (String) childView.getTag();
             switch(type) {
                 case "single":
+
                     EditText et = (EditText) childView.getChildAt(1);
                     String id = (String) et.getTag();
                     String value = et.getText().toString().trim();
+                    TextView tv_single_required = (TextView) childView.getChildAt(0);
+                    String fieldName = tv_single_required.getText().toString();
+                    String required = (String) tv_single_required.getTag();
+                    if("required".equals(required)) {
+                        if("".equals(value)) {
+                            Toast.makeText(ErpDetailActivity.this, fieldName + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id, value);
                     System.out.println("id is:" + id + "," + "value is:" + value);
                     break;
                 case "multi":
+
                     EditText et_multi = (EditText) childView.getChildAt(1);
                     String id_multi = (String) et_multi.getTag();
                     String value_multi = et_multi.getText().toString().trim();
+
+                    TextView tv_multi_required = (TextView) childView.getChildAt(0);
+                    String fieldName_multi = tv_multi_required.getText().toString();
+                    String required_multi = (String) tv_multi_required.getTag();
+                    if("required".equals(required_multi)) {
+                        if("".equals(value_multi)) {
+                            Toast.makeText(ErpDetailActivity.this, fieldName_multi + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id_multi, value_multi);
                     System.out.println("id_multi is:"+id_multi+","+"value_multi is:"+value_multi);
                     break;
@@ -1616,19 +1658,49 @@ public class ErpDetailActivity extends BaseActivity{
                     EditText et_number = (EditText) childView.getChildAt(1);
                     String id_number = (String) et_number.getTag();
                     String value_number = et_number.getText().toString().trim();
+                    TextView tv_number_required = (TextView) childView.getChildAt(0);
+                    String fieldName_number = tv_number_required.getText().toString();
+                    String required_number = (String) tv_number_required.getTag();
+                    if("required".equals(required_number)) {
+                        if("".equals(value_number)) {
+                            Toast.makeText(ErpDetailActivity.this, fieldName_number + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id_number, value_number);
                     System.out.println("id_number is:"+id_number+","+"value_number is:"+value_number);
                     break;
                 case "date":
+
                     EditText et_data = (EditText) childView.getChildAt(1);
                     String id_data = (String) et_data.getTag();
                     String value_data = et_data.getText().toString().trim();
+
+                    TextView tv_data_required = (TextView) childView.getChildAt(0);
+                    String fieldName_data = tv_data_required.getText().toString();
+                    String required_data = (String) tv_data_required.getTag();
+                    if("required".equals(required_data)) {
+                        if("".equals(value_data)) {
+                            Toast.makeText(ErpDetailActivity.this, fieldName_data + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     datas.put(id_data, value_data);
                     System.out.println("id_data is:"+id_data+","+"value_number is:"+value_data);
                     break;
                 case "radio":
                     RadioGroup radioGroup = (RadioGroup) childView.getChildAt(1);
                     int selectId = radioGroup.getCheckedRadioButtonId();
+
+                    TextView tv_radio_required = (TextView) childView.getChildAt(0);
+                    String fieldName_radio = tv_radio_required.getText().toString();
+                    String required_radio = (String) tv_radio_required.getTag();
+                    if("required".equals(required_radio)) {
+                        if(selectId == -1) {
+                            Toast.makeText(ErpDetailActivity.this, fieldName_radio + "是必选项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                     if(selectId != -1) {
                         RadioButton rb = (RadioButton) radioGroup.findViewById(selectId);
                         String id_radio = (String) radioGroup.getTag();
@@ -1639,12 +1711,17 @@ public class ErpDetailActivity extends BaseActivity{
                     break;
                 case "checkbox":
                     //数组
+
                     JSONArray jsonArray = new JSONArray();
                     JSONArray jsonArray_default = new JSONArray();
                     GridViewInScrollView gv = (GridViewInScrollView) childView.getChildAt(1);
                     String cbFieldId = (String) gv.getTag();
                     List<Option> options = ((ErpCBAdapter)gv.getAdapter()).getOptions();
-                    HashMap<Integer, Boolean> selected = ErpCBAdapter.getIsSelected();
+                    HashMap<Integer, Boolean> selected = ((ErpCBAdapter)gv.getAdapter()).getIsSelected();
+                    TextView tv_checkbox_required = (TextView) childView.getChildAt(0);
+                    String fieldName_checkbox = tv_checkbox_required.getText().toString();
+                    String required_checkbox = (String) tv_checkbox_required.getTag();
+
                     for (int o = 0; o < selected.size(); o++) {
                         if(selected.get(o)) {
                             Option option = options.get(o);
@@ -1652,6 +1729,13 @@ public class ErpDetailActivity extends BaseActivity{
                             jsonArray_default.put(option.name);
                             System.out.println("checkbox name is:"+option.name);
                         }
+                    }
+                    if("required".equals(required_checkbox)) {
+                        if(jsonArray.length() == 0) {
+                            Toast.makeText(ErpDetailActivity.this, fieldName_checkbox + "是必选项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                     }
                     jadatas.put(cbFieldId, jsonArray);
                     jadatas.put(cbFieldId+"_default", jsonArray_default);
@@ -1688,7 +1772,7 @@ public class ErpDetailActivity extends BaseActivity{
                         String id_dropdown1 = (String) sp1.getTag();
                         String value_dropdown1 = ((Option)sp1.getSelectedItem()).key;
                         datas.put(id_dropdown1, value_dropdown1);
-                        datas.put(id_dropdown1 + "_default", ((Option) sp1.getSelectedItem()).name);
+                        datas.put(id_dropdown1+"_default", ((Option)sp1.getSelectedItem()).name);
 
                         System.out.println("id_dropdown1 is:"+id_dropdown1+",value_dropdown1"+value_dropdown1);
 
@@ -1711,10 +1795,22 @@ public class ErpDetailActivity extends BaseActivity{
                     }
                     break;
                 case "file":
+                    LinearLayout ll_file = (LinearLayout) childView.getChildAt(0);
+                    TextView tv_file_required = (TextView) ll_file.getChildAt(0);
+                    String fieldName_file = tv_file_required.getText().toString();
+                    String required_file = (String) tv_file_required.getTag();
+
                     LinearLayout filell = (LinearLayout) childView.getChildAt(1);
                     String fileFieldId = (String) filell.getTag();
                     System.out.println("附件的字段id是:"+fileFieldId);
                     int fileCount = filell.getChildCount();
+                    if("required".equals(required_file)) {
+                        if(fileCount == 0) {
+                            Toast.makeText(ErpDetailActivity.this, fieldName_file+"是必上传项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                    }
                     JSONArray ja = new JSONArray();
                     for(int f=0; f<fileCount; f++) {
                         JSONObject jb = new JSONObject();
@@ -1757,6 +1853,7 @@ public class ErpDetailActivity extends BaseActivity{
         String flowId = flowQd.getValue();
         datas.put("flow", flowId);
 
+        showLoadingDialog();
         HttpManager.getInstance().reSaveBusiness(user._id, datas, jadatas, new ExcuteBusHandler());
     }
 

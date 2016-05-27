@@ -1,32 +1,17 @@
 package com.moor.im.options.mobileassistant.cdr.activity;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.moor.im.R;
-import com.moor.im.common.db.dao.UserDao;
-import com.moor.im.common.model.User;
+import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.utils.NullUtil;
 import com.moor.im.options.base.BaseActivity;
+import com.moor.im.options.dial.dialog.CallChoiseDialog;
 import com.moor.im.options.mobileassistant.cdr.view.MP3PlayerView;
 import com.moor.im.options.mobileassistant.model.MACallLogData;
 
@@ -51,21 +36,6 @@ public class MACallDetailActivity extends BaseActivity{
 
     private MP3PlayerView mycalldetail_mp3player;
 
-    User user = UserDao.getInstance().getUser();
-//    private ISipService service;
-//    private ServiceConnection connection = new ServiceConnection() {
-//
-//        @Override
-//        public void onServiceConnected(ComponentName arg0, IBinder arg1) {
-//            service = ISipService.Stub.asInterface(arg1);
-//
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName arg0) {
-//            service = null;
-//        }
-//    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,9 +48,6 @@ public class MACallDetailActivity extends BaseActivity{
         initViews();
         initData();
 
-//        bindService(new Intent().setComponent(new ComponentName("com.moor.im", "com.csipsimple.service.SipService"))
-//                , connection,
-//                Context.BIND_AUTO_CREATE);
     }
 
     private void initViews() {
@@ -147,7 +114,9 @@ public class MACallDetailActivity extends BaseActivity{
         mycalldetail_btn_call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callingDialog(finalNumber);
+                Intent intent = new Intent(MACallDetailActivity.this, CallChoiseDialog.class);
+                intent.putExtra(M7Constant.PHONE_NUM, finalNumber);
+                startActivity(intent);
             }
         });
 
@@ -163,123 +132,7 @@ public class MACallDetailActivity extends BaseActivity{
     protected void onDestroy() {
         super.onDestroy();
         mycalldetail_mp3player.stop();
-//        unbindService(connection);
     }
 
-    public void callingDialog(final String number) {
-//        LayoutInflater myInflater = LayoutInflater.from(MACallDetailActivity.this);
-//        final View myDialogView = myInflater.inflate(R.layout.calling_dialog,
-//                null);
-//        final AlertDialog.Builder dialog = new AlertDialog.Builder(MACallDetailActivity.this)
-//                .setView(myDialogView);
-//        final AlertDialog alert = dialog.show();
-//        alert.setCanceledOnTouchOutside(true);// 设置点击Dialog外部任意区域关闭Dialog
-//        alert.getWindow().setGravity(Gravity.BOTTOM);
-//
-//        // 直播
-//        LinearLayout mDirectSeeding = (LinearLayout) myDialogView
-//                .findViewById(R.id.direct_seeding_linear);
-//        mDirectSeeding.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                // TODO Auto-generated method stub
-//
-//                try {
-//                    if (Utils.isNetWorkConnected(MACallDetailActivity.this)) {
-//                        makeCall(number);
-//                    } else {
-//                        Toast.makeText(MACallDetailActivity.this, "网络错误，请重试！",
-//                                Toast.LENGTH_LONG).show();
-//                    }
-//                    alert.dismiss();
-////					editText_phone_number.setText("");
-//                } catch (Exception e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//        });
-//        // 回拨
-//        LinearLayout mCallReturn = (LinearLayout) myDialogView
-//                .findViewById(R.id.call_return_linear);
-////		if("zj".equals(user.product)) {
-////			mCallReturn.setVisibility(View.GONE);
-////		}
-//        mCallReturn.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//
-//                String mobile = user.mobile;
-//                if(mobile == null || "".equals(mobile)) {
-//                    Toast.makeText(MACallDetailActivity.this, "未绑定手机，不能进行回拨", Toast.LENGTH_SHORT).show();
-//
-//                }else {
-//                    // TODO Auto-generated method stub
-//                    if (Utils.isNetWorkConnected(MACallDetailActivity.this)) {
-//                        // 跳转到正在通话页面
-//                        Intent calling = new Intent(MACallDetailActivity.this,
-//                                CallingActivity.class);
-//                        calling.putExtra("phone_number", number);
-//                        startActivity(calling);
-//                    } else {
-//                        Toast.makeText(MACallDetailActivity.this, "网络错误，请重试！",
-//                                Toast.LENGTH_LONG).show();
-//                    }
-//                    alert.dismiss();
-//                }
-//
-//            }
-//        });
-//
-//        // 普通电话
-//        LinearLayout mOrdinaryCall = (LinearLayout) myDialogView
-//                .findViewById(R.id.ordinary_call_linear);
-//        mOrdinaryCall.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                // TODO Auto-generated method stub
-//                Intent intent = new Intent(Intent.ACTION_CALL, Uri
-//                        .parse("tel://"
-//                                + number));
-//                startActivity(intent);
-//                alert.dismiss();
-//            }
-//        });
-//        // 取消
-//        LinearLayout mCancelLinear = (LinearLayout) myDialogView
-//                .findViewById(R.id.cancel_linear);
-//        mCancelLinear.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                // TODO Auto-generated method stub
-//                alert.dismiss();
-//            }
-//        });
-    }
 
-    /**
-     * 拨打直拨电话
-     * @param callee
-     */
-//    public void makeCall(String callee) {
-//        //TODO 获取id
-//        Long id = -1L;
-//        Cursor c = getContentResolver().query(SipProfile.ACCOUNT_URI, null, null, null, null);
-//        if(c != null) {
-//            while(c.moveToNext()) {
-//                id = c.getLong(c.getColumnIndex("id"));
-//            }
-//        }
-////		System.out.println("sip账户ID是："+id);
-//        try {
-//            service.makeCall(callee, id.intValue());
-//        } catch (RemoteException e) {
-//            Toast.makeText(MACallDetailActivity.this, "拨打电话失败", Toast.LENGTH_SHORT).show();
-//        }
-//    }
 }

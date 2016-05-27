@@ -158,6 +158,7 @@ public class VoiceViewHolder extends BaseHolder {
             ViewHolderTag holderTag = ViewHolderTag.createTag(detail, ViewHolderTag.TagType.TAG_VOICE, position, holder.type, receive);
             holder.voicePlayAnim.setTag(holderTag);
             holder.voicePlayAnim.setOnClickListener(activity.getChatAdapter().getOnClickListener());
+            holder.voicePlayAnim.setOnLongClickListener(activity.getChatAdapter().getOnLongClickListener());
 
             holder.contentTv.setTextColor(Color.parseColor("#7390A0"));
             holder.contentTv.setShadowLayer(2.0F, 1.2F, 1.2F, Color.parseColor("#ffffffff"));

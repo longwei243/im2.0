@@ -203,6 +203,29 @@ public class HttpManager {
     }
 
     /**
+     *发送错误日志
+     * @param connectionId
+     * @param time
+     * @param log
+     */
+    public void sendErrorLog(String connectionId, String time, String log, String cause, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("ConnectionId", Utils.replaceBlank(connectionId));
+            json.put("Action", "sendErrorLog");
+            json.put("Time", time);
+            json.put("Log", log);
+            json.put("Cause", cause);
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPost(content, listener);
+    }
+
+    /**
      * 注销
      * @param connectionId
      * @param listener
@@ -385,6 +408,23 @@ public class HttpManager {
         map.put("ConnectionId", Utils.replaceBlank(connectionId));
         map.put("ReceivedMsgIds", array);
         map.put("Action", "getMsg");
+        JSONWriter jw = new JSONWriter();
+        jw.write(map);
+        String content = jw.write(map);
+        sendPost(content, listener);
+    }
+
+
+    /**
+     * 取大量消息
+     * @param connectionId
+     * @param listener
+     */
+    public void getLargeMsgs(String connectionId, ArrayList largeMsgIdarray, final ResponseListener listener) {
+        HashMap<String, Object> map = new HashMap<String, Object>();
+        map.put("ConnectionId", Utils.replaceBlank(connectionId));
+        map.put("LargeMsgId", largeMsgIdarray);
+        map.put("Action", "getLargeMsg");
         JSONWriter jw = new JSONWriter();
         jw.write(map);
         String content = jw.write(map);
@@ -1148,6 +1188,7 @@ public class HttpManager {
                         @Override
                         public void onResponse(Response response) throws IOException {
                             String st = response.body().string();
+                            LogUtil.d("获取坐席缓存数据:"+st);
                             if(!subscriber.isUnsubscribed()) {
                                 if(HttpParser.getSuccess(st)) {
                                     subscriber.onNext(st);
@@ -1689,4 +1730,112 @@ public class HttpManager {
         sendPostForMobileAssistant(content, listener);
     }
 
+    /**
+     *
+     * 设置工单推送是否开启
+     * @param sessionId
+     * @param listener
+     */
+    public void setErpPush(String sessionId, boolean on, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.alterBMRefuseStatus");
+            json.put("refuse", on);
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    public Observable<String> getCdrCache(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "getCdrCache");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            LogUtil.d("获取cdr缓存数据:"+st);
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    public Observable<String> getErpCache(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    LogUtil.d("获取erp缓存数据开始");
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "getErpCache");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            LogUtil.d("获取erp缓存数据:"+st);
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
 }

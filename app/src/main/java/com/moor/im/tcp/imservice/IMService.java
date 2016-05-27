@@ -60,7 +60,6 @@ public class IMService extends Service{
     private SocketManager mSocketManager;
     private SharedPreferences mSp;
     private SharedPreferences.Editor mEditor;
-    private static final Random random = new Random(System.currentTimeMillis());
     private NotificationManager notificationManager;
     private List<FromToMessage> fromToMessage;
     private String largeMsgId;
@@ -108,7 +107,7 @@ public class IMService extends Service{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:进入onStartCommand方法");
-
+        mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"被踢状态:"+mSocketManager.isLoginKicked());
         boolean isLoginSucceed = mSp.getBoolean(M7Constant.SP_LOGIN_SUCCEED, false);
         //进行自动登录
         if(isLoginSucceed
@@ -266,7 +265,7 @@ public class IMService extends Service{
                             if(isLargeMsg) {
                                 //有大量的数据
                                 mSocketManager.logger.debug("有大量消息要来了");
-//                                getLargeMsgsFromNet(largeMsgId);
+                                getLargeMsgsFromNet(largeMsgId);
                             }else {
                                 //没有大量的数据
                                 fromToMessage = HttpParser.getMsgs(responseStr);
@@ -488,6 +487,156 @@ public class IMService extends Service{
             }
         }
         return false;
+    }
+
+
+    /**
+     * 从网络获取大量消息数据
+     */
+    public void getLargeMsgsFromNet(String largeMsgId) {
+        ArrayList largeMsgIdarray = new ArrayList();
+        largeMsgIdarray.add(largeMsgId);
+        HttpManager.getInstance().getLargeMsgs(InfoDao.getInstance().getConnectionId(), largeMsgIdarray, new GetLargeMsgsResponseHandler());
+    }
+
+    // 取大量消息
+    class GetLargeMsgsResponseHandler implements ResponseListener {
+
+
+
+        @Override
+        public void onFailed() {
+        }
+
+        @Override
+        public void onSuccess(String responseString) {
+            largeMsgId = HttpParser.getLargeMsgId(responseString);
+            boolean hasMore = HttpParser.hasMoreMsgs(responseString);
+            fromToMessage.clear();
+            if(HttpParser.getSucceed(responseString)) {
+                fromToMessage = HttpParser.getMsgs(responseString);
+
+                // 判断数据是否被读取、及时更新
+                MessageDao.getInstance().updateMsgsIdDao();
+                // 存入手机数据库
+                MessageDao.getInstance().insertGetMsgsToDao(fromToMessage);
+                // 不等于0说明有新消息
+                if (fromToMessage.size() != 0) {
+                    // 查询是否有某个人的消息如果没有则插入，如果有则先删除在插入
+                    for (int i = 0; i < fromToMessage.size(); i++) {
+
+                        if("User".equals(fromToMessage.get(i).type)) {
+                            List<NewMessage> newMsgs = NewMessageDao.getInstance().isQueryMessage(
+                                    fromToMessage.get(i).from);
+
+                            // 每个人的最新消息
+                            if (newMsgs.size() == 0) {
+                                NewMessageDao.getInstance().insertNewMsgs(
+                                        fromToMessage.get(i).from,
+                                        fromToMessage.get(i).message,
+                                        fromToMessage.get(i).msgType,
+                                        ContactsDao.getInstance().getContactsName(
+                                                fromToMessage.get(i).from)
+                                                + "", fromToMessage.get(i).when, 1, fromToMessage.get(i).type, fromToMessage.get(i).from);
+                            } else {
+
+                                NewMessage nm = NewMessageDao.getInstance().getNewMsg(fromToMessage.get(i).sessionId);
+                                nm.message = fromToMessage.get(i).message;
+                                nm.msgType = fromToMessage.get(i).msgType;
+                                nm.fromName = ContactsDao.getInstance().getContactsName(
+                                        fromToMessage.get(i).from);
+                                nm.time = fromToMessage.get(i).when;
+                                nm.unReadCount = nm.unReadCount + 1;
+                                nm.type = fromToMessage.get(i).type;
+                                nm.from = fromToMessage.get(i).from;
+                                NewMessageDao.getInstance().updateMsg(nm);
+
+                            }
+                        }else if("Group".equals(fromToMessage.get(i).type)) {
+                            if("System".equals(fromToMessage.get(i).from)) {
+
+                                if(fromToMessage.get(i).message.contains("解散")) {
+                                    NewMessageDao.getInstance().deleteMsgById(fromToMessage.get(i).sessionId);
+                                }
+                                fromToMessage.get(i).sessionId = "System";
+                                fromToMessage.get(i).type = "System";
+                                MessageDao.getInstance().updateMsgToDao(fromToMessage.get(i));
+                                //获取一次群组的数据
+                                Intent groupIntent = new Intent(M7Constant.ACTION_GROUP_UPDATE);
+                                sendBroadcast(groupIntent);
+                            }
+                            List<NewMessage> newMsgs = NewMessageDao.getInstance().isQueryMessage(
+                                    fromToMessage.get(i).sessionId);
+
+                            // 每个人的最新消息
+                            if (newMsgs.size() == 0) {
+                                NewMessageDao.getInstance().insertNewMsgs(
+                                        fromToMessage.get(i).sessionId,
+                                        fromToMessage.get(i).message,
+                                        fromToMessage.get(i).msgType,
+                                        GroupParser.getInstance().getNameById(fromToMessage.get(i).sessionId)
+                                                + "", fromToMessage.get(i).when, 1, fromToMessage.get(i).type, fromToMessage.get(i).from);
+                            } else {
+
+                                NewMessage nm = NewMessageDao.getInstance().getNewMsg(fromToMessage.get(i).sessionId);
+                                nm.message = fromToMessage.get(i).message;
+                                nm.msgType = fromToMessage.get(i).msgType;
+                                nm.fromName = GroupParser.getInstance().getNameById(fromToMessage.get(i).sessionId);
+                                nm.time = fromToMessage.get(i).when;
+                                nm.unReadCount = nm.unReadCount + 1;
+                                nm.type = fromToMessage.get(i).type;
+                                nm.from = fromToMessage.get(i).from;
+                                NewMessageDao.getInstance().updateMsg(nm);
+
+                            }
+                        }else if("Discussion".equals(fromToMessage.get(i).type)) {
+                            // 讨论组的最新消息
+                            if("System".equals(fromToMessage.get(i).from)) {
+                                if(fromToMessage.get(i).message.contains("解散")) {
+                                    NewMessageDao.getInstance().deleteMsgById(fromToMessage.get(i).sessionId);
+                                }
+                                fromToMessage.get(i).sessionId = "System";
+                                fromToMessage.get(i).type = "System";
+                                MessageDao.getInstance().updateMsgToDao(fromToMessage.get(i));
+                                Intent discussionIntent = new Intent(M7Constant.ACTION_DISCUSSION_UPDATE);
+                                sendBroadcast(discussionIntent);
+                            }
+                            List<NewMessage> newMsgs = NewMessageDao.getInstance().isQueryMessage(
+                                    fromToMessage.get(i).sessionId);
+                            if (newMsgs.size() == 0) {
+
+                                NewMessageDao.getInstance().insertNewMsgs(
+                                        fromToMessage.get(i).sessionId,
+                                        fromToMessage.get(i).message,
+                                        fromToMessage.get(i).msgType,
+                                        DiscussionParser.getInstance().getNameById(fromToMessage.get(i).sessionId)
+                                                + "", fromToMessage.get(i).when, 1, fromToMessage.get(i).type, fromToMessage.get(i).from);
+                            } else {
+
+                                NewMessage nm = NewMessageDao.getInstance().getNewMsg(fromToMessage.get(i).sessionId);
+                                nm.message = fromToMessage.get(i).message;
+                                nm.msgType = fromToMessage.get(i).msgType;
+                                nm.fromName = DiscussionParser.getInstance().getNameById(fromToMessage.get(i).sessionId);
+                                nm.time = fromToMessage.get(i).when;
+                                nm.unReadCount = nm.unReadCount + 1;
+                                nm.type = fromToMessage.get(i).type;
+                                nm.from = fromToMessage.get(i).from;
+                                NewMessageDao.getInstance().updateMsg(nm);
+                            }
+                        }
+
+                    }
+                }
+
+                if(hasMore) {
+                    //还有更多的消息，继续去取
+                    getLargeMsgsFromNet(largeMsgId);
+                }else {
+                    //没有了，刷新界面
+                }
+
+            }
+        }
     }
 
 }

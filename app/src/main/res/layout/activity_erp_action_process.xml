@@ -50,6 +50,7 @@
 
             <RelativeLayout
                 android:id="@+id/erp_action_pro_agent"
+                android:layout_marginTop="4dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -74,7 +75,16 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="4dp"
                     />
+
+                <View
+                    android:layout_below="@id/erp_action_pro_sp_agent"
+                    android:layout_marginTop="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_erp"/>
             </RelativeLayout>
+
+
 
             <LinearLayout
                 android:id="@+id/erp_action_pro_field"
@@ -92,6 +102,8 @@
                 android:textSize="20sp"
                 android:textColor="@color/all_white"
                 android:layout_margin="16dp"
+                android:background="@drawable/btn_bg"
+                android:minHeight="36dp"
                 />
         </LinearLayout>
     </ScrollView>

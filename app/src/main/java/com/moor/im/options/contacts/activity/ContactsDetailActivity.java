@@ -2,6 +2,7 @@ package com.moor.im.options.contacts.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.telecom.Call;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -17,6 +18,7 @@ import com.moor.im.common.model.Contacts;
 import com.moor.im.common.model.User;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.chat.activity.ChatActivity;
+import com.moor.im.options.dial.dialog.CallChoiseDialog;
 import com.moor.im.options.imageviewlook.ImageViewLookActivity;
 
 /**
@@ -33,9 +35,6 @@ public class ContactsDetailActivity extends BaseActivity implements View.OnClick
             contact_detail_tv_product;
 
     private ImageView contact_detail_image;
-
-
-    User user = UserDao.getInstance().getUser();
 
     private Contacts contact;
 
@@ -130,6 +129,11 @@ public class ContactsDetailActivity extends BaseActivity implements View.OnClick
                 chat.putExtra("_id", _id);
 
                 startActivity(chat);
+                break;
+            case R.id.call_phone:
+                Intent intent = new Intent(ContactsDetailActivity.this, CallChoiseDialog.class);
+                intent.putExtra(M7Constant.PHONE_NUM, contact.mobile);
+                startActivity(intent);
                 break;
         }
     }

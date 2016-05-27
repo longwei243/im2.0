@@ -1,11 +1,14 @@
 package com.moor.im.common.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.db.dao.ContactsDao;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.model.Contacts;
 import com.moor.im.common.utils.log.LogUtil;
+import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.MobileAssitantParser;
 import com.moor.im.options.mobileassistant.model.MAAgent;
 import com.moor.im.options.mobileassistant.model.MABusinessField;
@@ -14,14 +17,18 @@ import com.moor.im.options.mobileassistant.model.MABusinessStep;
 import com.moor.im.options.mobileassistant.model.MAOption;
 import com.moor.im.options.mobileassistant.model.MAQueue;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -71,7 +78,7 @@ public class ObservableUtils {
                             if(o.getBoolean("success")) {
                                 List<MAAgent> agents = MobileAssitantParser.getAgents(s);
                                 HashMap<String, MAAgent> agentDatas = MobileAssitantParser.transformAgentData(agents);
-                                MobileApplication.cacheUtil.put(CacheKey.CACHE_MAAgent, agentDatas, CacheUtils.TIME_DAY);
+                                MobileAssitantCache.getInstance().setAgentMap(agentDatas);
                             }
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -91,14 +98,13 @@ public class ObservableUtils {
                 .doOnNext(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        LogUtil.d("获取技能组缓存数据:"+s);
+//                        LogUtil.d("获取技能组缓存数据:"+s);
                         try {
                             JSONObject o = new JSONObject(s);
                             if(o.getBoolean("success")) {
                                 List<MAQueue> queues = MobileAssitantParser.getQueues(s);
                                 HashMap<String, MAQueue> queueDatas = MobileAssitantParser.transformQueueData(queues);
-                                MobileApplication.cacheUtil.put(CacheKey.CACHE_MAQueue, queueDatas, CacheUtils.TIME_DAY);
-
+                                MobileAssitantCache.getInstance().setQueueMap(queueDatas);
                             }
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -118,13 +124,13 @@ public class ObservableUtils {
                 .doOnNext(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        LogUtil.d("获取option缓存数据:"+s);
+//                        LogUtil.d("获取option缓存数据:"+s);
                         try {
                             JSONObject o = new JSONObject(s);
                             if(o.getBoolean("success")) {
                                 List<MAOption> options = MobileAssitantParser.getOptions(s);
                                 HashMap<String, MAOption> optionDatas = MobileAssitantParser.transformOptionData(options);
-                                MobileApplication.cacheUtil.put(CacheKey.CACHE_MAOption, optionDatas, CacheUtils.TIME_DAY);
+                                MobileAssitantCache.getInstance().setOptionMap(optionDatas);
                             }
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -151,7 +157,7 @@ public class ObservableUtils {
                             if(o.getBoolean("success")) {
                                 List<MABusinessFlow> businessFlows = MobileAssitantParser.getBusinessFlow(s);
                                 HashMap<String, MABusinessFlow> businessFlowsMap = MobileAssitantParser.transformBusinessFlowData(businessFlows);
-                                MobileApplication.cacheUtil.put(CacheKey.CACHE_MABusinessFlow, businessFlowsMap, CacheUtils.TIME_DAY);
+                                MobileAssitantCache.getInstance().setFlowMap(businessFlowsMap);
                             }
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -171,13 +177,13 @@ public class ObservableUtils {
                 .doOnNext(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        LogUtil.d("获取getBusinessStep缓存数据:"+s);
+//                        LogUtil.d("获取getBusinessStep缓存数据:"+s);
                         try {
                             JSONObject o = new JSONObject(s);
                             if(o.getBoolean("success")) {
                                 List<MABusinessStep> businessSteps = MobileAssitantParser.getBusinessStep(s);
                                 HashMap<String, MABusinessStep> businessStepMap = MobileAssitantParser.transformBusinessStepData(businessSteps);
-                                MobileApplication.cacheUtil.put(CacheKey.CACHE_MABusinessStep, businessStepMap, CacheUtils.TIME_DAY);
+                                MobileAssitantCache.getInstance().setStepMap(businessStepMap);
                             }
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -198,13 +204,13 @@ public class ObservableUtils {
                 .doOnNext(new Action1<String>() {
                     @Override
                     public void call(String s) {
-                        LogUtil.d("获取getBusinessField缓存数据:"+s);
+//                        LogUtil.d("获取getBusinessField缓存数据:"+s);
                         try {
                             JSONObject o = new JSONObject(s);
                             if(o.getBoolean("success")) {
                                 List<MABusinessField> businessFields = MobileAssitantParser.getBusinessField(s);
                                 HashMap<String, MABusinessField> businessFieldData = MobileAssitantParser.transformBusinessFieldData(businessFields);
-                                MobileApplication.cacheUtil.put(CacheKey.CACHE_MABusinessField, businessFieldData, CacheUtils.TIME_DAY);
+                                MobileAssitantCache.getInstance().setFieldMap(businessFieldData);
                             }
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
@@ -215,4 +221,104 @@ public class ObservableUtils {
                 .subscribeOn(Schedulers.io());
     }
 
+    public static Observable<String> getCdrCache(String sessionId) {
+        return HttpManager.getInstance().getCdrCache(sessionId).doOnNext(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                List<MAAgent> agents = new ArrayList<>();
+                List<MAQueue> queues = new ArrayList<>();
+                try {
+                    Gson gson = new Gson();
+                    JSONObject o = new JSONObject(s);
+                    if(o.getBoolean("success")) {
+                        JSONObject jb = o.getJSONObject("data");
+                        JSONArray agentsArray = jb.getJSONArray("agents");
+                        agents = gson.fromJson(agentsArray.toString(),
+                                new TypeToken<List<MAAgent>>() {
+                                }.getType());
+                        HashMap<String, MAAgent> agentDatas = MobileAssitantParser.transformAgentData(agents);
+                        MobileAssitantCache.getInstance().setAgentMap(agentDatas);
+
+                        JSONArray queuesArray = jb.getJSONArray("queues");
+                        queues = gson.fromJson(queuesArray.toString(),
+                                new TypeToken<List<MAQueue>>() {
+                                }.getType());
+                        HashMap<String, MAQueue> queuesDatas = MobileAssitantParser.transformQueueData(queues);
+                        MobileAssitantCache.getInstance().setQueueMap(queuesDatas);
+                    }
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
+
+    public static Observable<String> getErpCache(String sessionId) {
+        return HttpManager.getInstance().getErpCache(sessionId).doOnNext(new Action1<String>() {
+            @Override
+            public void call(String s) {
+                List<MAAgent> agents = new ArrayList<>();
+                List<MAQueue> queues = new ArrayList<>();
+                List<MAOption> options = new ArrayList<>();
+                List<MABusinessStep> businessSteps = new ArrayList<>();
+                List<MABusinessField> businessFields = new ArrayList<>();
+                List<MABusinessFlow> businessFlows = new ArrayList<>();
+                LogUtil.d("处理工单缓存开始");
+                try {
+                    Gson gson = new Gson();
+                    JSONObject o = new JSONObject(s);
+                    if(o.getBoolean("success")) {
+                        JSONObject jb = o.getJSONObject("data");
+                        JSONArray agentsArray = jb.getJSONArray("agents");
+                        agents = gson.fromJson(agentsArray.toString(),
+                                new TypeToken<List<MAAgent>>() {
+                                }.getType());
+                        HashMap<String, MAAgent> agentDatas = MobileAssitantParser.transformAgentData(agents);
+                        MobileAssitantCache.getInstance().setAgentMap(agentDatas);
+
+                        JSONArray queuesArray = jb.getJSONArray("queues");
+                        queues = gson.fromJson(queuesArray.toString(),
+                                new TypeToken<List<MAQueue>>() {
+                                }.getType());
+                        HashMap<String, MAQueue> queuesDatas = MobileAssitantParser.transformQueueData(queues);
+                        MobileAssitantCache.getInstance().setQueueMap(queuesDatas);
+
+                        JSONArray optionsArray = jb.getJSONArray("options");
+                        options = gson.fromJson(optionsArray.toString(),
+                                new TypeToken<List<MAOption>>() {
+                                }.getType());
+                        HashMap<String, MAOption> optionDatas = MobileAssitantParser.transformOptionData(options);
+                        MobileAssitantCache.getInstance().setOptionMap(optionDatas);
+
+                        JSONArray stepsArray = jb.getJSONArray("steps");
+                        businessSteps = gson.fromJson(stepsArray.toString(),
+                                new TypeToken<List<MABusinessStep>>() {
+                                }.getType());
+                        HashMap<String, MABusinessStep> businessStepMap = MobileAssitantParser.transformBusinessStepData(businessSteps);
+                        MobileAssitantCache.getInstance().setStepMap(businessStepMap);
+
+                        JSONArray fieldsArray = jb.getJSONArray("fields");
+                        businessFields = gson.fromJson(fieldsArray.toString(),
+                                new TypeToken<List<MABusinessField>>() {
+                                }.getType());
+                        HashMap<String, MABusinessField> businessFieldData = MobileAssitantParser.transformBusinessFieldData(businessFields);
+                        MobileAssitantCache.getInstance().setFieldMap(businessFieldData);
+
+                        JSONArray flowsArray = jb.getJSONArray("flows");
+                        businessFlows = gson.fromJson(flowsArray.toString(),
+                                new TypeToken<List<MABusinessFlow>>() {
+                                }.getType());
+                        HashMap<String, MABusinessFlow> businessFlowsMap = MobileAssitantParser.transformBusinessFlowData(businessFlows);
+                        MobileAssitantCache.getInstance().setFlowMap(businessFlowsMap);
+                    }
+                    LogUtil.d("处理工单缓存结束");
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }).subscribeOn(Schedulers.io());
+    }
 }
+

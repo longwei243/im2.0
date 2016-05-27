@@ -474,21 +474,21 @@ public class AllCdrFragment extends BaseLazyFragment{
             }
 
             if("INVESTIGATE".equals(key)) {
-                if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
-                    HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
-                    for(String optionKey : optionMap.keySet()) {
-                        if("满意度调查选项".equals(optionKey)) {
-                            List<Option> investigates = optionMap.get(optionKey).options;
-                            for(int i=0; i<investigates.size(); i++) {
-                                if(datas.get(key).equals(investigates.get(i).options.get(0).name)) {
-                                    String investigateName = investigates.get(i).name;
-                                    sb.append(investigateName);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+//                if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
+//                    HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
+//                    for(String optionKey : optionMap.keySet()) {
+//                        if("满意度调查选项".equals(optionKey)) {
+//                            List<Option> investigates = optionMap.get(optionKey).options;
+//                            for(int i=0; i<investigates.size(); i++) {
+//                                if(datas.get(key).equals(investigates.get(i).options.get(0).name)) {
+//                                    String investigateName = investigates.get(i).name;
+//                                    sb.append(investigateName);
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
                 continue;
             }
             sb.append(datas.get(key));

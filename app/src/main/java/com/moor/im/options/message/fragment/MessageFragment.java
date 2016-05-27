@@ -22,6 +22,7 @@ import com.moor.im.common.event.MsgRead;
 import com.moor.im.common.event.NewMsgReceived;
 import com.moor.im.common.event.SendMsg;
 import com.moor.im.common.event.UnReadCount;
+import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.model.NewMessage;
 import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.Utils;

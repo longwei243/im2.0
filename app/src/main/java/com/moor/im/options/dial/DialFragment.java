@@ -36,6 +36,7 @@ import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.Utils;
 import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.dial.adapter.CallLogAdapter;
+import com.moor.im.options.dial.dialog.CallChoiseDialog;
 import com.moor.im.options.dial.model.CallLogModel;
 
 import java.lang.reflect.Method;
@@ -75,25 +76,11 @@ public class DialFragment extends BaseLazyFragment {
     private AsyncQueryHandler asyncQuery;
     private List<CallLogModel> callLogs;
 
-    private User user = UserDao.getInstance().getUser();
     private SharedPreferences settings;
     /**
      * 拨号盘高度
      */
     private int dialplate_layout_height;
-
-    public interface OnMakeCallListener{
-        void makeCall(String callee);
-    }
-
-    private OnMakeCallListener makeCallListener;
-
-    @Override
-    public void onAttach(Activity activity) {
-        // TODO Auto-generated method stub
-        super.onAttach(activity);
-        makeCallListener = (OnMakeCallListener) activity;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -202,7 +189,9 @@ public class DialFragment extends BaseLazyFragment {
                                     int position, long id) {
                 CallLogModel clm = (CallLogModel) parent.getAdapter().getItem(position);
                 String number = clm.getNumber();
-                callingDialog(number);
+                Intent intent = new Intent(getActivity(), CallChoiseDialog.class);
+                intent.putExtra(M7Constant.PHONE_NUM, number);
+                startActivity(intent);
             }
         });
 
@@ -341,7 +330,9 @@ public class DialFragment extends BaseLazyFragment {
                     break;
                 case R.id.dial_call:
                     if(!"".equals(editText_phone_number.getText().toString().trim())) {
-                        callingDialog(editText_phone_number.getText().toString().trim());
+                        Intent intent = new Intent(getActivity(), CallChoiseDialog.class);
+                        intent.putExtra(M7Constant.PHONE_NUM, editText_phone_number.getText().toString().trim());
+                        startActivity(intent);
                     }else{
                         Toast.makeText(getActivity(), "请输入号码后拨打", Toast.LENGTH_SHORT).show();
                     }
@@ -357,102 +348,6 @@ public class DialFragment extends BaseLazyFragment {
             }
         }
     };
-
-    public void callingDialog(final String number) {
-        LayoutInflater myInflater = LayoutInflater.from(getActivity());
-        final View myDialogView = myInflater.inflate(R.layout.calling_dialog,
-                null);
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity())
-                .setView(myDialogView);
-        final AlertDialog alert = dialog.show();
-        alert.setCanceledOnTouchOutside(true);// 设置点击Dialog外部任意区域关闭Dialog
-        alert.getWindow().setGravity(Gravity.BOTTOM);
-
-        // 直播
-        LinearLayout mDirectSeeding = (LinearLayout) myDialogView
-                .findViewById(R.id.direct_seeding_linear);
-        mDirectSeeding.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-
-                try {
-                    if (Utils.isNetWorkConnected(getActivity())) {
-                        makeCallListener.makeCall(number);
-                    } else {
-                        Toast.makeText(getActivity(), "网络错误，请重试！",
-                                Toast.LENGTH_LONG).show();
-                    }
-                    alert.dismiss();
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-
-            }
-        });
-        // 回拨
-        LinearLayout mCallReturn = (LinearLayout) myDialogView
-                .findViewById(R.id.call_return_linear);
-        mCallReturn.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                String mobile = user.mobile;
-                if(mobile == null || "".equals(mobile)) {
-                    Toast.makeText(getActivity(), "未绑定手机，不能进行回拨", Toast.LENGTH_SHORT).show();
-
-                }else {
-                    // TODO Auto-generated method stub
-                    if (Utils.isNetWorkConnected(getActivity())) {
-                        // 跳转到正在通话页面
-                        Intent calling = new Intent(getActivity(),
-                                CallingActivity.class);
-                        calling.putExtra("phone_number", number);
-                        startActivity(calling);
-                        editText_phone_number.setText("");
-                    } else {
-                        Toast.makeText(getActivity(), "网络错误，请重试！",
-                                Toast.LENGTH_LONG).show();
-                    }
-                    editText_phone_number.setText("");
-                    alert.dismiss();
-                }
-
-            }
-        });
-
-        // 普通电话
-        LinearLayout mOrdinaryCall = (LinearLayout) myDialogView
-                .findViewById(R.id.ordinary_call_linear);
-        mOrdinaryCall.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri
-                        .parse("tel://"
-                                + number));
-                startActivity(intent);
-                alert.dismiss();
-                editText_phone_number.setText("");
-            }
-        });
-        // 取消
-        LinearLayout mCancelLinear = (LinearLayout) myDialogView
-                .findViewById(R.id.cancel_linear);
-        mCancelLinear.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
-                alert.dismiss();
-                editText_phone_number.setText("");
-            }
-        });
-    }
 
     /**
      * 拨号盘关闭

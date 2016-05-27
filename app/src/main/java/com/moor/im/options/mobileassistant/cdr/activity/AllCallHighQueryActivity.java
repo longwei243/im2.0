@@ -17,6 +17,7 @@ import android.widget.TimePicker;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
+import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.cdr.adapter.SPAdapter;
 import com.moor.im.options.mobileassistant.model.MAAgent;
 import com.moor.im.options.mobileassistant.model.MAQueue;
@@ -94,15 +95,14 @@ public class AllCallHighQueryActivity  extends Activity implements View.OnClickL
         qd_anull.setName("请选择");
         qd_anull.setValue("");
         agentDatas.add(qd_anull);
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent) != null) {
-            HashMap<String, MAAgent> agentMap = (HashMap<String, MAAgent>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAAgent);
+            HashMap<String, MAAgent> agentMap = MobileAssitantCache.getInstance().getAgentMap();
             for(String key : agentMap.keySet()) {
                 QueryData qd = new QueryData();
                 qd.setName(agentMap.get(key).displayName);
                 qd.setValue(key);
                 agentDatas.add(qd);
             }
-        }
+
         SPAdapter agentAdapter = new SPAdapter(AllCallHighQueryActivity.this, agentDatas);
         mycall_high_query_sp_DISPOSAL_AGENT.setAdapter(agentAdapter);
 
@@ -112,15 +112,14 @@ public class AllCallHighQueryActivity  extends Activity implements View.OnClickL
         qd_qnull.setName("请选择");
         qd_qnull.setValue("");
         queueDatas.add(qd_qnull);
-        if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue) != null) {
-            HashMap<String, MAQueue> queueMap = (HashMap<String, MAQueue>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAQueue);
+            HashMap<String, MAQueue> queueMap = MobileAssitantCache.getInstance().getQueueMap();
             for(String key : queueMap.keySet()) {
                 QueryData qd = new QueryData();
                 qd.setName(queueMap.get(key).DisplayName);
                 qd.setValue(queueMap.get(key).Exten);
                 queueDatas.add(qd);
             }
-        }
+
         SPAdapter queueAdapter = new SPAdapter(AllCallHighQueryActivity.this, queueDatas);
         mycall_high_query_sp_ERROR_MEMO.setAdapter(queueAdapter);
 

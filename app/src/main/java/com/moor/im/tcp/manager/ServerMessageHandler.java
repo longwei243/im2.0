@@ -68,8 +68,6 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
 		super.messageReceived(ctx, e);
-		SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:服务器返回的id是：" + ctx.getChannel().getId());
-		SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:SocketThread中的id是：" + SocketManager.getInstance(MobileApplication.getInstance()).getChannelId());
 		if(ctx.getChannel().getId() != SocketManager.getInstance(MobileApplication.getInstance()).getChannelId()) {
 			return;
 		}

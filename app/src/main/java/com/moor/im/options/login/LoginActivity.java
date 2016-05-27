@@ -26,8 +26,10 @@ import com.csipsimple.SipCallManager;
 import com.csipsimple.api.SipProfile;
 import com.csipsimple.api.SipUri;
 import com.moor.im.R;
+import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.InfoDao;
+import com.moor.im.common.db.dao.MessageDao;
 import com.moor.im.common.db.dao.NewMessageDao;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.db.dao.UserRoleDao;
@@ -110,8 +112,8 @@ public class LoginActivity extends AppCompatActivity {
         login_til_password = (TextInputLayout) findViewById(R.id.login_til_password);
 
         //测试
-        login_til_name.getEditText().setText("8131@cgNewApp");
-        login_til_password.getEditText().setText("8131");
+//        login_til_name.getEditText().setText("8131@cgNewApp");
+//        login_til_password.getEditText().setText("8131");
 
         login_btn_submit = (Button) findViewById(R.id.login_btn_submit);
         login_pw = (ProgressWheel) findViewById(R.id.login_pw);
@@ -212,16 +214,25 @@ public class LoginActivity extends AppCompatActivity {
         boolean succeed = HttpParser.getSucceed(responseStr);
         if(succeed) {
             User user = HttpParser.getUserInfo(responseStr);
+            if(mSp.getBoolean("versionChanged", false)) {
+                //版本号发生过变化,清除原来数据
+                getContentResolver().delete(SipProfile.ACCOUNT_URI, null, null);
+                MessageDao.getInstance().deleteAllMsgs();
+                NewMessageDao.getInstance().deleteAllMsgs();
+                MobileApplication.cacheUtil.clear();
+            }
             // 用户信息存入数据库
             UserDao.getInstance().deleteUser();
             UserRoleDao.getInstance().deleteUserRole();
             UserDao.getInstance().insertUser(user);
             List<String> userRoles = user.role;
-            for (String role : userRoles) {
-                UserRole ur = new UserRole();
-                ur.role = role;
-                ur.user = user;
-                UserRoleDao.getInstance().insertUserRole(ur);
+            if(userRoles != null) {
+                for (String role : userRoles) {
+                    UserRole ur = new UserRole();
+                    ur.role = role;
+                    ur.user = user;
+                    UserRoleDao.getInstance().insertUserRole(ur);
+                }
             }
             //保存登陆成功到sp文件
             mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,true);

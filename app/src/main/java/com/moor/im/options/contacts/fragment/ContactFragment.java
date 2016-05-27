@@ -19,6 +19,7 @@ import com.moor.im.app.MobileApplication;
 import com.moor.im.common.db.dao.ContactsDao;
 import com.moor.im.common.db.dao.InfoDao;
 import com.moor.im.common.dialog.LoadingDialog;
+import com.moor.im.common.event.MsgRead;
 import com.moor.im.common.event.SendMsg;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;

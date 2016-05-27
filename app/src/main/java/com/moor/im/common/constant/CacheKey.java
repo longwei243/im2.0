@@ -22,34 +22,34 @@ public class CacheKey {
 	 * 用户的密码是否改变
 	 */
 	public static final String CACHE_CHANGED_PASSWORD = "cache_change_password";
-	/**
-	 * 坐席缓存
-	 */
-	public static final String CACHE_MAAgent = "cache_maagent";
-	/**
-	 * 技能组缓存
-	 */
-	public static final String CACHE_MAQueue = "cache_maqueue";
-	/**
-	 * option缓存
-	 */
-	public static final String CACHE_MAOption = "cache_option";
-	/**
-	 * cust缓存
-	 */
-	public static final String CACHE_MACust = "cache_cust";
-	/**
-	 * 工单流程缓存
-	 */
-	public static final String CACHE_MABusinessFlow = "cache_businessflow";
-	/**
-	 * 工单步骤缓存
-	 */
-	public static final String CACHE_MABusinessStep = "cache_businessstep";
-	/**
-	 * 工单字段缓存
-	 */
-	public static final String CACHE_MABusinessField = "cache_businessfield";
+//	/**
+//	 * 坐席缓存
+//	 */
+//	public static final String CACHE_MAAgent = "cache_maagent";
+//	/**
+//	 * 技能组缓存
+//	 */
+//	public static final String CACHE_MAQueue = "cache_maqueue";
+//	/**
+//	 * option缓存
+//	 */
+//	public static final String CACHE_MAOption = "cache_option";
+//	/**
+//	 * cust缓存
+//	 */
+//	public static final String CACHE_MACust = "cache_cust";
+//	/**
+//	 * 工单流程缓存
+//	 */
+//	public static final String CACHE_MABusinessFlow = "cache_businessflow";
+//	/**
+//	 * 工单步骤缓存
+//	 */
+//	public static final String CACHE_MABusinessStep = "cache_businessstep";
+//	/**
+//	 * 工单字段缓存
+//	 */
+//	public static final String CACHE_MABusinessField = "cache_businessfield";
 	/**
 	 * 我的通话查询条件缓存
 	 */

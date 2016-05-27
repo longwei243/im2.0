@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.moor.im.R;
 import com.moor.im.options.base.BaseActivity;
+import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.cdr.fragment.AllCdrFragment;
 import com.moor.im.options.mobileassistant.cdr.fragment.MyCdrFragment;
 
@@ -89,5 +90,11 @@ public class CdrActivity extends BaseActivity{
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MobileAssitantCache.getInstance().clear();
     }
 }

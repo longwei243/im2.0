@@ -20,7 +20,7 @@ public class ErpCBAdapter extends BaseAdapter{
 
     private Context context;
     private List<Option> options;
-    private static HashMap<Integer,Boolean> isSelected = new HashMap<Integer, Boolean>();;
+    private HashMap<Integer,Boolean> isSelected = new HashMap<Integer, Boolean>();;
     public ErpCBAdapter(Context context, List<Option> options) {
         this.context = context;
         this.options = options;
@@ -69,11 +69,11 @@ public class ErpCBAdapter extends BaseAdapter{
         public CheckBox cb;
     }
 
-    public static HashMap<Integer,Boolean> getIsSelected() {
+    public HashMap<Integer,Boolean> getIsSelected() {
         return isSelected;
     }
 
-    public static void setIsSelected(HashMap<Integer,Boolean> isSelected) {
-        ErpCBAdapter.isSelected = isSelected;
+    public void setIsSelected(HashMap<Integer,Boolean> isSelected) {
+        this.isSelected = isSelected;
     }
 }

@@ -12,7 +12,7 @@
         android:layout_centerVertical="true"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@drawable/img_default_head"/>
+        android:src="@drawable/erp_user_default"/>
 
     <LinearLayout
         android:layout_alignTop="@id/erp_history_iv_imicon"
@@ -32,6 +32,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/grey"
                 android:text="name"
+                android:textSize="14sp"
                 />
             <TextView
                 android:id="@+id/erp_history_tv_time"
@@ -41,14 +42,17 @@
                 android:layout_marginRight="8dp"
                 android:textColor="@color/grey"
                 android:text="time"
+                android:textSize="14sp"
                 />
         </RelativeLayout>
         <TextView
             android:id="@+id/erp_history_tv_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
+            android:layout_marginRight="2dp"
+            android:textSize="16sp"
             android:text="info"
+            android:textColor="@color/all_black"
             />
     </LinearLayout>
 </RelativeLayout>

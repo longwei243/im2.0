@@ -116,20 +116,20 @@ public class MobileAssitantParser {
                 maCallLogData.FILE_SERVER=maCallLog.FILE_SERVER;
                 maCallLogData.RECORD_FILE_NAME=maCallLog.RECORD_FILE_NAME;
 
-                if(maCallLog.INVESTIGATE != null) {
-                    if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
-                        HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
-                        for(String key : optionMap.keySet()) {
-                            if("满意度调查选项".equals(key)) {
-                                List<Option> investigates = optionMap.get(key).options;
-                                for(int m=0; m<investigates.size(); m++) {
-                                    maCallLogData.INVESTIGATE = investigates.get(m).name;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+//                if(maCallLog.INVESTIGATE != null) {
+//                    if (MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption) != null) {
+//                        HashMap<String, MAOption> optionMap = (HashMap<String, MAOption>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MAOption);
+//                        for(String key : optionMap.keySet()) {
+//                            if("满意度调查选项".equals(key)) {
+//                                List<Option> investigates = optionMap.get(key).options;
+//                                for(int m=0; m<investigates.size(); m++) {
+//                                    maCallLogData.INVESTIGATE = investigates.get(m).name;
+//                                    break;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
                 maCallLogDatas.add(maCallLogData);
             }
         } catch (JSONException e) {
@@ -219,7 +219,6 @@ public class MobileAssitantParser {
      */
     public static List<MAOption> getOptions(String responseString) {
         List<MAOption> options = new ArrayList<>();
-        System.out.println("获取option数据:"+responseString);
         try {
             JSONObject o = new JSONObject(responseString);
             if(o.getBoolean("success")) {
@@ -256,6 +255,7 @@ public class MobileAssitantParser {
     public static List<MABusiness> getBusiness(String responseString) {
         List<MABusiness> businesses = new ArrayList<>();
         List<MABusiness> busDatas = new ArrayList<>();
+
         try {
             JSONObject o = new JSONObject(responseString);
             if(o.getBoolean("Succeed")) {

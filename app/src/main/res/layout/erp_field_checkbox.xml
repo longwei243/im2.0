@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:layout_width="match_parent"
 android:layout_height="wrap_content"
-    android:padding="8dp"
     >
 
     <TextView
@@ -13,6 +12,9 @@ android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:maxEms="5"
+        android:ellipsize="end"
         android:textSize="16sp"
         android:text="字段名"/>
 
@@ -33,4 +35,11 @@ android:layout_height="wrap_content"
         >
 
     </com.moor.im.common.views.GridViewInScrollView>
+    <View
+        android:layout_below="@id/erp_field_checkbox_gv_value"
+        android:layout_marginTop="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey_erp"/>
+
 </RelativeLayout>

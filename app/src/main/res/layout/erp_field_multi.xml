@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp">
 
     <TextView
         android:id="@+id/erp_field_multi_tv_name"
@@ -11,6 +12,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:maxEms="5"
+        android:ellipsize="end"
         android:textSize="16sp"
         android:text="字段名"/>
 
@@ -19,6 +23,8 @@
         android:id="@+id/erp_field_multi_et_value"
         android:background="@drawable/erp_field_et_bg"
         android:layout_centerVertical="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:paddingLeft="4dp"
@@ -28,4 +34,10 @@
         android:maxLines="3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <View
+        android:layout_below="@id/erp_field_multi_et_value"
+        android:layout_marginTop="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey_erp"/>
 </RelativeLayout>

@@ -19,6 +19,9 @@ android:layout_height="wrap_content">
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
+            android:singleLine="true"
+            android:maxEms="5"
+            android:ellipsize="end"
             android:textSize="16sp"
             android:text="字段名"/>
 
@@ -32,7 +35,9 @@ android:layout_height="wrap_content">
             android:textSize="14sp"
             android:text="上传附件"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:minHeight="36dp"
+            />
     </LinearLayout>
 
 
@@ -45,6 +50,11 @@ android:layout_height="wrap_content">
         android:layout_height="wrap_content">
 
     </LinearLayout>
-
+    <View
+        android:layout_below="@id/erp_field_file_ll_already"
+        android:layout_marginTop="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey_erp"/>
 
 </RelativeLayout>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -43,9 +44,12 @@ import com.moor.im.common.event.DialEvent;
 import com.moor.im.common.event.MsgRead;
 import com.moor.im.common.event.UnReadCount;
 import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.http.HttpParser;
+import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.Discussion;
 import com.moor.im.common.model.Group;
 import com.moor.im.common.rxbus.RxBus;
+import com.moor.im.common.utils.NullUtil;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.ntb.NavigationTabBar;
 import com.moor.im.options.contacts.activity.ContactsSearchActivity;
@@ -54,6 +58,10 @@ import com.moor.im.options.dial.DialFragment;
 import com.moor.im.options.login.LoginActivity;
 import com.moor.im.options.message.fragment.MessageFragment;
 import com.moor.im.options.setup.SetupFragment;
+import com.moor.im.options.update.UpdateActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,6 +166,48 @@ public class MainActivity extends AppCompatActivity{
                             RxBus.getInstance().send(new MsgRead());
                         }
                     });
+        }
+
+
+        HttpManager.getInstance().getVersion(InfoDao.getInstance().getConnectionId(), new ResponseListener() {
+            @Override
+            public void onFailed() {
+
+            }
+
+            @Override
+            public void onSuccess(String responseStr) {
+                LogUtil.d("版本更新返回数据:"+responseStr);
+                if (HttpParser.getSucceed(responseStr)) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(responseStr);
+                        JSONObject jb = (JSONObject) jsonObject.get("AppVersion");
+                        String version = jb.getString("android");
+                        if(!getVersion().equals(NullUtil.checkNull(version))) {
+                            //有更新
+                            Intent updateIntent = new Intent(MainActivity.this, UpdateActivity.class);
+                            startActivity(updateIntent);
+                        }else {
+                            //没有更新
+                        }
+                    } catch (JSONException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    public String getVersion() {
+        try {
+            PackageManager manager = this.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(this.getPackageName(), 0);
+            String version = info.versionName;
+            return version;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
 

@@ -21,6 +21,7 @@ import android.widget.TimePicker;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
+import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.cdr.adapter.SPAdapter;
 import com.moor.im.options.mobileassistant.model.MAQueue;
@@ -38,7 +39,7 @@ import java.util.Locale;
 /**
  * Created by longwei on 2016/2/19.
  */
-public class MYCallHighQueryActivity extends Activity implements View.OnClickListener{
+public class MYCallHighQueryActivity extends BaseActivity implements View.OnClickListener{
 
     private EditText mycall_high_query_et_CALL_NO, mycall_high_query_et_CALLED_NO,
             mycall_high_query_et_CALL_TIME_LENGTH_BEGIN, mycall_high_query_et_CALL_TIME_LENGTH_END;

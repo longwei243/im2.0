@@ -216,6 +216,7 @@ public class IMService extends Service{
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(MobileApplication.getInstance());
             Notification notification = builder.setTicker("新工单")
+                    .setDefaults(Notification.DEFAULT_ALL)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setWhen(System.currentTimeMillis())
                     .setContentIntent(resultPendingIntent)
@@ -329,6 +330,7 @@ public class IMService extends Service{
                                     //新的通知
                                     NotificationCompat.Builder builder = new NotificationCompat.Builder(MobileApplication.getInstance());
                                     notification = builder.setTicker("您有新的消息")
+                                            .setDefaults(Notification.DEFAULT_ALL)
                                             .setSmallIcon(R.drawable.ic_launcher)
                                             .setWhen(System.currentTimeMillis())
                                             .setContentIntent(resultPendingIntent)

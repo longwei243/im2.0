@@ -74,6 +74,8 @@
         android:textSize="20sp"
         android:textColor="@color/all_white"
         android:layout_margin="16dp"
+        android:background="@drawable/btn_bg"
+        android:minHeight="36dp"
         android:text="退回"/>
 
 </LinearLayout>

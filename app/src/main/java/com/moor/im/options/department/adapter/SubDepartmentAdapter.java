@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.moor.im.R;
+import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.ContactsDao;
+import com.moor.im.common.utils.GlideUtils;
 import com.moor.im.options.department.model.DeptAndMember;
 
 public class SubDepartmentAdapter extends BaseAdapter{
@@ -67,9 +69,11 @@ public class SubDepartmentAdapter extends BaseAdapter{
 
 			String im_icon = ContactsDao.getInstance().getContactsIcon(deptAndMembers.get(position).getId());
 			if(!"".equals(im_icon) && im_icon != null) {
-				Glide.with(context).load(im_icon + "?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.head_default_local).into(holder.iv_icon);
+				GlideUtils.displayNet(holder.iv_icon, im_icon + M7Constant.QINIU_IMG_ICON);
+//				Glide.with(context).load(im_icon + "?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.head_default_local).into(holder.iv_icon);
 			}else {
-				Glide.with(context).load(R.drawable.head_default_local).asBitmap().into(holder.iv_icon);
+				GlideUtils.displayNative(holder.iv_icon, R.drawable.img_default_head);
+//				Glide.with(context).load(R.drawable.head_default_local).asBitmap().into(holder.iv_icon);
 			}
 
 		}else {

@@ -20,7 +20,10 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                >
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -32,6 +35,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
+                        android:textColor="@color/maincolor"
                         android:text="主叫"
                         />
                     <EditText
@@ -40,6 +44,10 @@
                         android:layout_height="wrap_content"
                         android:singleLine="true"
                         android:inputType="phone"
+                        android:background="@drawable/erp_field_et_bg"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
                         />
                 </LinearLayout>
                 <LinearLayout
@@ -51,6 +59,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
+                        android:textColor="@color/maincolor"
                         android:text="被叫"
                         />
                     <EditText
@@ -59,14 +68,18 @@
                         android:layout_height="wrap_content"
                         android:inputType="phone"
                         android:singleLine="true"
-                        android:layout_marginRight="16dp"
+                        android:background="@drawable/erp_field_et_bg"
+                        android:layout_marginRight="8dp"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
                         />
                 </LinearLayout>
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -81,6 +94,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textColor="@color/maincolor"
                     android:text="呼叫类型"/>
 
                 <Spinner
@@ -98,7 +112,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -113,6 +127,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textColor="@color/maincolor"
                     android:text="处理状态"/>
 
                 <Spinner
@@ -129,7 +144,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -145,7 +160,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:text="坐席"/>
+                    android:textColor="@color/maincolor"
+                    android:text="坐　席　"/>
 
                 <Spinner
                     android:layout_marginLeft="16dp"
@@ -162,7 +178,7 @@
             <View
                 android:id="@+id/mycall_view_agent"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
             <LinearLayout
@@ -176,7 +192,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:text="技能组"/>
+                    android:textColor="@color/maincolor"
+                    android:text="技能组　"/>
 
                 <Spinner
                     android:layout_marginLeft="16dp"
@@ -192,7 +209,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -201,12 +218,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
+                android:visibility="gone"
                 >
                 <TextView
                     android:layout_marginLeft="16dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textColor="@color/maincolor"
                     android:text="满意度"/>
 
                 <Spinner
@@ -222,8 +241,9 @@
             </LinearLayout>
 
             <View
+                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -238,6 +258,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textColor="@color/maincolor"
                     android:text="定位客户"/>
 
                 <Spinner
@@ -254,7 +275,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -267,9 +288,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="呼叫时间"
+                    android:textColor="@color/maincolor"
                     android:textSize="16sp"
                     />
                 <RelativeLayout
+                    android:layout_margin="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
@@ -287,6 +310,10 @@
                         android:layout_height="wrap_content"
                         android:editable="false"
                         android:singleLine="true"
+                        android:background="@drawable/erp_field_et_bg"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
                         android:layout_alignParentLeft="true"/>
 
                     <EditText
@@ -296,13 +323,17 @@
                         android:layout_height="wrap_content"
                         android:singleLine="true"
                         android:editable="false"
+                        android:background="@drawable/erp_field_et_bg"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
                         android:layout_alignParentRight="true"/>
                 </RelativeLayout>
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -316,8 +347,10 @@
                     android:layout_height="wrap_content"
                     android:text="通话时长"
                     android:textSize="16sp"
+                    android:textColor="@color/maincolor"
                     />
                 <RelativeLayout
+                    android:layout_margin="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
@@ -337,6 +370,10 @@
                         android:singleLine="true"
                         android:hint="请输入秒数"
                         android:textSize="14sp"
+                        android:background="@drawable/erp_field_et_bg"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
                         android:layout_alignParentLeft="true"/>
                     <EditText
                         android:id="@+id/mycall_high_query_et_CALL_TIME_LENGTH_END"
@@ -347,6 +384,10 @@
                         android:singleLine="true"
                         android:hint="请输入秒数"
                         android:textSize="14sp"
+                        android:background="@drawable/erp_field_et_bg"
+                        android:paddingLeft="4dp"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
                         android:layout_alignParentRight="true"
                         />
 
@@ -354,7 +395,7 @@
             </LinearLayout>
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:background="@color/grey"
                 />
 
@@ -378,6 +419,8 @@
                 android:layout_gravity="center"
                 android:text="确认"
                 android:textColor="@color/all_white"
+                android:background="@drawable/btn_bg"
+                android:minHeight="36dp"
                 />
 
         </LinearLayout>

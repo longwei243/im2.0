@@ -16,6 +16,7 @@ import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.model.Contacts;
 import com.moor.im.common.model.User;
+import com.moor.im.common.utils.GlideUtils;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.chat.activity.ChatActivity;
 import com.moor.im.options.dial.dialog.CallChoiseDialog;
@@ -93,9 +94,11 @@ public class ContactsDetailActivity extends BaseActivity implements View.OnClick
         contact_detail_image = (ImageView) findViewById(R.id.contact_detail_image);
         final String im_icon = contact.im_icon;
         if(im_icon != null && !"".equals(im_icon)) {
-            Glide.with(this).load(im_icon+ M7Constant.QINIU_IMG_ICON).asBitmap().placeholder(R.drawable.img_default_head).into(contact_detail_image);
+            GlideUtils.displayNet(contact_detail_image, im_icon+ M7Constant.QINIU_IMG_ICON);
+//            Glide.with(this).load(im_icon+ M7Constant.QINIU_IMG_ICON).asBitmap().placeholder(R.drawable.img_default_head).into(contact_detail_image);
         }else {
-            Glide.with(this).load(R.drawable.img_default_head).asBitmap().into(contact_detail_image);
+            GlideUtils.displayNative(contact_detail_image, R.drawable.img_default_head);
+//            Glide.with(this).load(R.drawable.img_default_head).asBitmap().into(contact_detail_image);
         }
         contact_detail_image.setOnClickListener(new View.OnClickListener() {
             @Override

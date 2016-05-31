@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.moor.im.R;
 import com.moor.im.app.RequestUrl;
+import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.dialog.LoadingDialog;
 import com.moor.im.common.http.HttpManager;
@@ -41,6 +42,7 @@ import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
 import com.moor.im.common.model.UserRole;
 import com.moor.im.common.rxbus.RxBus;
+import com.moor.im.common.utils.GlideUtils;
 import com.moor.im.common.utils.NullUtil;
 import com.moor.im.common.utils.WindowUtils;
 import com.moor.im.common.utils.log.LogUtil;
@@ -222,9 +224,11 @@ public class ErpDetailActivity extends BaseActivity{
 
                 RoundImageView erp_history_iv_imicon = (RoundImageView) backInfoView.findViewById(R.id.erp_history_iv_imicon);
                 if(user.im_icon != null && !"".equals(user.im_icon)) {
-                    Glide.with(ErpDetailActivity.this).load(user.im_icon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erp_history_iv_imicon);
+                    GlideUtils.displayNetForErp(erp_history_iv_imicon, user.im_icon+M7Constant.QINIU_IMG_ICON);
+//                    Glide.with(ErpDetailActivity.this).load(user.im_icon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erp_history_iv_imicon);
                 }else {
-                    Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erp_history_iv_imicon);
+                    GlideUtils.displayNative(erp_history_iv_imicon, R.drawable.erp_user_default);
+//                    Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erp_history_iv_imicon);
                 }
 
                 erpdetail_ll_history.addView(backInfoView, 0);
@@ -274,9 +278,11 @@ public class ErpDetailActivity extends BaseActivity{
         erpdetail_tv_lastUpdateUser.setText(detail.lastUpdateUser);
         erpdetail_tv_lastUpdateTime.setText(detail.lastUpdateTime);
         if(!"".equals(detail.imIcon)) {
-            Glide.with(ErpDetailActivity.this).load(detail.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erpdetail_iv_imicon);
+            GlideUtils.displayNetForErp(erpdetail_iv_imicon, detail.imIcon+M7Constant.QINIU_IMG_ICON);
+//            Glide.with(ErpDetailActivity.this).load(detail.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erpdetail_iv_imicon);
         }else {
-            Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erpdetail_iv_imicon);
+            GlideUtils.displayNative(erpdetail_iv_imicon, R.drawable.erp_user_default);
+//            Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erpdetail_iv_imicon);
         }
         boolean isBegin = MobileAssitantCache.getInstance().getBusinessStep(detail.stepId).isBegin;
         if(isBegin) {
@@ -359,9 +365,11 @@ public class ErpDetailActivity extends BaseActivity{
             erp_history_tv_info.setText(historyData.info);
             RoundImageView erp_history_iv_imicon = (RoundImageView) infoView.findViewById(R.id.erp_history_iv_imicon);
             if(!"".equals(historyData.imIcon)) {
-                Glide.with(ErpDetailActivity.this).load(historyData.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erp_history_iv_imicon);
+                GlideUtils.displayNetForErp(erp_history_iv_imicon, historyData.imIcon+M7Constant.QINIU_IMG_ICON);
+//                Glide.with(ErpDetailActivity.this).load(historyData.imIcon+"?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.erp_user_default).into(erp_history_iv_imicon);
             }else {
-                Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erp_history_iv_imicon);
+                GlideUtils.displayNative(erp_history_iv_imicon, R.drawable.erp_user_default);
+//                Glide.with(ErpDetailActivity.this).load(R.drawable.erp_user_default).asBitmap().into(erp_history_iv_imicon);
             }
             erpdetail_ll_history.addView(infoView);
 

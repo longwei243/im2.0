@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.moor.im.R;
+import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.model.Contacts;
+import com.moor.im.common.utils.GlideUtils;
 
 /**
  * 联系人列表的adapter
@@ -82,9 +84,11 @@ public class ContactListViewAdapter extends BaseAdapter implements SectionIndexe
 
         String im_icon = list.get(position).im_icon;
         if(im_icon != null && !"".equals(im_icon)) {
-            Glide.with(mContext).load(im_icon + "?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.img_default_head).into(viewHolder.contact_listview_item_iamgeview);
+            GlideUtils.displayNet(viewHolder.contact_listview_item_iamgeview, im_icon+ M7Constant.QINIU_IMG_ICON);
         }else {
-            Glide.with(mContext).load(R.drawable.img_default_head).asBitmap().into(viewHolder.contact_listview_item_iamgeview);
+            GlideUtils.displayNative(viewHolder.contact_listview_item_iamgeview, R.drawable.img_default_head);
+
+//            Glide.with(mContext).load(R.drawable.img_default_head).asBitmap().into(viewHolder.contact_listview_item_iamgeview);
         }
 
         return convertView;  

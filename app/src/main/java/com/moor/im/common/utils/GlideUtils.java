@@ -91,4 +91,34 @@ public class GlideUtils {
             e.printStackTrace();
         }
     }
+
+    public static void displayNetForErp(final ImageView view, String imgUrl) {
+        // 不能崩
+        if (view == null) {
+            Log.e(TAG, "GlideUtils -> display -> imageView is null");
+            return;
+        }
+        Context context = view.getContext();
+        // View你还活着吗？
+        if (context instanceof Activity) {
+            if (((Activity) context).isFinishing()) {
+                return;
+            }
+        }
+
+        try {
+            Glide.with(context)
+                    .load(imgUrl)
+                    .asBitmap()
+                    .placeholder(R.drawable.erp_user_default)
+                    .into(view)
+                    .getSize(new SizeReadyCallback() {
+                        @Override public void onSizeReady(int width, int height) {
+                            view.setVisibility(View.VISIBLE);
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

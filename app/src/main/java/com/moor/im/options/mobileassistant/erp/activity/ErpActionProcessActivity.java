@@ -37,6 +37,7 @@ import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
 import com.moor.im.common.rxbus.RxBus;
+import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.GridViewInScrollView;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.mobileassistant.MobileAssitantCache;
@@ -418,6 +419,7 @@ public class ErpActionProcessActivity extends BaseActivity{
 
         @Override
         public void onSuccess(String s) {
+            LogUtil.d("执行工单返回数据:"+s);
             dismissLoadingDialog();
             if(HttpParser.getSucceed(s)) {
                 //执行成功

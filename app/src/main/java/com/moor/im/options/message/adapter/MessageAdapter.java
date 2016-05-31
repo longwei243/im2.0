@@ -69,18 +69,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         if("User".equals(message.type)) {
             String im_icon = ContactsDao.getInstance().getContactsIcon(message.from);
             if(!"".equals(im_icon) && im_icon != null) {
-                Glide.with(context).load(im_icon + M7Constant.QINIU_IMG_ICON).asBitmap().placeholder(R.drawable.img_default_head).into(holder.img);
+                GlideUtils.displayNet(holder.img, im_icon + M7Constant.QINIU_IMG_ICON);
+//                Glide.with(context).load(im_icon + M7Constant.QINIU_IMG_ICON).asBitmap().placeholder(R.drawable.img_default_head).into(holder.img);
             }else {
-                Glide.with(context).load(R.drawable.img_default_head).asBitmap().into(holder.img);
+                GlideUtils.displayNative(holder.img, R.drawable.img_default_head);
+//                Glide.with(context).load(R.drawable.img_default_head).asBitmap().into(holder.img);
             }
         }else if("Group".equals(message.type)) {
-            Glide.with(context).load(R.drawable.ic_addfriend_group).asBitmap().into(holder.img);
+            GlideUtils.displayNative(holder.img, R.drawable.ic_addfriend_group);
+//            Glide.with(context).load(R.drawable.ic_addfriend_group).asBitmap().into(holder.img);
         }else if("Discussion".equals(message.type)) {
-            Glide.with(context).load(R.drawable.ic_addfriend_discuss).asBitmap().into(holder.img);
+            GlideUtils.displayNative(holder.img, R.drawable.ic_addfriend_discuss);
+//            Glide.with(context).load(R.drawable.ic_addfriend_discuss).asBitmap().into(holder.img);
         }else if("System".equals(message.type)) {
-            Glide.with(context).load(R.drawable.ic_launcher).asBitmap().into(holder.img);
+            GlideUtils.displayNative(holder.img, R.drawable.ic_launcher);
+//            Glide.with(context).load(R.drawable.ic_launcher).asBitmap().into(holder.img);
         }else if("MA".equals(message.type)) {
-            Glide.with(context).load(R.drawable.ic_launcher).asBitmap().into(holder.img);
+            GlideUtils.displayNative(holder.img, R.drawable.ic_launcher);
+//            Glide.with(context).load(R.drawable.ic_launcher).asBitmap().into(holder.img);
         }
 
         // 半角符转全角符

@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.moor.im.R;
+import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.model.GroupAdminAndMembers;
+import com.moor.im.common.utils.GlideUtils;
 
 import java.util.List;
 
@@ -58,9 +60,11 @@ public class GroupAdminAndMemberAdapter extends BaseAdapter{
 
         String imicon = groupAdminAndMembersList.get(position).getImicon();
         if(!"".equals(imicon)) {
-            Glide.with(context).load(imicon + "?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.head_default_local).into(holder.group_setting_list_item_iv_icon_group);
+            GlideUtils.displayNet(holder.group_setting_list_item_iv_icon_group, imicon+ M7Constant.QINIU_IMG_ICON);
+//            Glide.with(context).load(imicon + "?imageView2/0/w/100/h/100").asBitmap().placeholder(R.drawable.head_default_local).into(holder.group_setting_list_item_iv_icon_group);
         }else {
-            Glide.with(context).load(R.drawable.head_default_local).asBitmap().into(holder.group_setting_list_item_iv_icon_group);
+            GlideUtils.displayNative(holder.group_setting_list_item_iv_icon_group, R.drawable.img_default_head);
+//            Glide.with(context).load(R.drawable.head_default_local).asBitmap().into(holder.group_setting_list_item_iv_icon_group);
         }
 
         holder.tv_name.setText(groupAdminAndMembersList.get(position).getName());

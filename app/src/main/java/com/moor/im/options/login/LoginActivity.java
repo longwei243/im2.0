@@ -147,6 +147,7 @@ public class LoginActivity extends AppCompatActivity {
                             });
                         }else if(event instanceof LoginFailed) {
                             LogUtil.d("登录失败");
+                            Toast.makeText(LoginActivity.this, "用户名或密码错误", Toast.LENGTH_SHORT).show();
                             login_btn_submit.setVisibility(View.VISIBLE);
                             login_pw.setVisibility(View.GONE);
                         }

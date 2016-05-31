@@ -154,6 +154,8 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:textColor="@color/all_white"
+                    android:background="@drawable/btn_bg"
+                    android:minHeight="36dp"
                     android:text="提交"/>
             </LinearLayout>
 

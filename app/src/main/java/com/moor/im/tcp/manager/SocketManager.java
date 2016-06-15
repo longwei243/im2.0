@@ -48,9 +48,9 @@ public class SocketManager {
     private SocketManager (Context context) {
         this.context = context;
         //日志配置
-        PropertyConfigurator.getConfigurator(context).configure();
-        final FileAppender fa = (FileAppender)logger.getAppender(1);
-        fa.setAppend(true);
+//        PropertyConfigurator.getConfigurator(context).configure();
+//        final FileAppender fa = (FileAppender)logger.getAppender(1);
+//        fa.setAppend(true);
         heartBeatManager = new HeartBeatManager(context, this);
     }
 

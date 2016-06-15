@@ -15,11 +15,12 @@ import com.moor.im.BuildConfig;
 import com.moor.im.common.event.LoginKicked;
 import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.CacheUtils;
-import com.moor.im.common.utils.CrashHandler;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.utils.log.Settings;
 import com.moor.im.options.chat.utils.FaceConversionUtil;
 import com.moor.im.options.login.KickedActivity;
+import com.squareup.leakcanary.LeakCanary;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,12 +47,12 @@ public class MobileApplication extends Application{
         String processName = getProcessName(this, android.os.Process.myPid());
         if (!TextUtils.isEmpty(processName) && processName.equals(this.getPackageName())) {//判断进程名，保证只有主进程运行
             //主进程初始化逻辑
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectNetwork()
-                    .penaltyLog()
-                    .build());
+//            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//                    .detectDiskReads()
+//                    .detectDiskWrites()
+//                    .detectNetwork()
+//                    .penaltyLog()
+//                    .build());
             initLogUtil();
             startIMService();
             startSipService();
@@ -61,15 +62,21 @@ public class MobileApplication extends Application{
                     FaceConversionUtil.getInstace().getFileText(instance);
                 }
             }).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    com.m7.imkfsdk.utils.FaceConversionUtil.getInstace().getFileText(instance);
+                }
+            }).start();
 
             addRxBusListener();
 
             //异常处理
-            CrashHandler crashHandler = CrashHandler.getInstance();
-            crashHandler.init(instance);
-
+//            CrashHandler crashHandler = CrashHandler.getInstance();
+//            crashHandler.init(instance);
         }
-
+        CrashReport.initCrashReport(instance, "900005144", false);
+        LeakCanary.install(instance);
     }
 
     public static MobileApplication getInstance() {

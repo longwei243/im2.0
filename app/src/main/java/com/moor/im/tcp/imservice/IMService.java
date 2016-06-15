@@ -167,6 +167,8 @@ public class IMService extends Service{
 
     public void onEventMainThread(LoginFailedEvent loginFailedEvent) {
         //登录失败,发送广播通知主进程
+        mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED, false);
+        mEditor.commit();
         mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到登录失败的事件");
         Intent loginFailedIntent = new Intent();
         loginFailedIntent.setAction(M7Constant.ACTION_LOGIN_FAILED);
@@ -174,6 +176,8 @@ public class IMService extends Service{
     }
     public void onEventMainThread(LoginKickedEvent loginKickedEvent) {
         //被踢了,发送广播通知主进程
+        mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED, false);
+        mEditor.commit();
         mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到被踢的事件");
         Intent loginKickedIntent = new Intent();
         loginKickedIntent.setAction(M7Constant.ACTION_LOGIN_KICKED);

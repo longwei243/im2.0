@@ -16,6 +16,7 @@ import com.moor.im.common.db.dao.NewMessageDao;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.event.MsgRead;
 import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.NewMessage;
 import com.moor.im.common.model.User;
@@ -97,13 +98,35 @@ public class SettingActivity extends BaseActivity{
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    mEditor.putBoolean("iserppush", true);
-                    mEditor.commit();
-                    HttpManager.getInstance().setErpPush(user._id, false, new SetPushListener());
+                    HttpManager.getInstance().setErpPush(user._id, false, new ResponseListener() {
+                        @Override
+                        public void onFailed() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(String responseStr) {
+                            if(HttpParser.getSuccess(responseStr)) {
+                                mEditor.putBoolean("iserppush", true);
+                                mEditor.commit();
+                            }
+                        }
+                    });
                 }else {
-                    mEditor.putBoolean("iserppush", false);
-                    mEditor.commit();
-                    HttpManager.getInstance().setErpPush(user._id, true, new SetPushListener());
+                    HttpManager.getInstance().setErpPush(user._id, true, new ResponseListener() {
+                        @Override
+                        public void onFailed() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(String responseStr) {
+                            if(HttpParser.getSuccess(responseStr)) {
+                                mEditor.putBoolean("iserppush", false);
+                                mEditor.commit();
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -124,20 +147,6 @@ public class SettingActivity extends BaseActivity{
         maMsg.type = "MA";
         maMsg.from = "";
         NewMessageDao.getInstance().insertMAMsg(maMsg);
-    }
-
-
-    class SetPushListener implements ResponseListener{
-
-        @Override
-        public void onFailed() {
-
-        }
-
-        @Override
-        public void onSuccess(String responseStr) {
-            LogUtil.d("set erp push result is:"+responseStr);
-        }
     }
 
 }

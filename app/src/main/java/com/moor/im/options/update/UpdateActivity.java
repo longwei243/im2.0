@@ -40,11 +40,11 @@ public class UpdateActivity extends Activity{
 	public final static int DownLoad_Finish = 13;
 	public final static int DownLoad_Error = -1;
 
-	private static LoadingView loadingView;
-	private static TextView textView;
-	private static ProgressBar progressBar;
+	private LoadingView loadingView;
+	private TextView textView;
+	private ProgressBar progressBar;
 	private Thread initLoadingThread;
-	private static Button parentdialog_cancel_Button,
+	private Button parentdialog_cancel_Button,
 			parentdialog_confirm_Button;
 	private String version;
 	@Override

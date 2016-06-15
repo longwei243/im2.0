@@ -1838,4 +1838,51 @@ public class HttpManager {
             }
         });
     }
+
+    /**
+     * 获取工作台数据
+     * @param sessionId
+     * @return
+     */
+    public Observable<String> getWorkBenchInfo(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "mobileAssistant.getWorkBenchInfo");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSucceed(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
 }

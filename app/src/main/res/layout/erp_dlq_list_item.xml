@@ -34,7 +34,7 @@
                 android:singleLine="true"
                 android:maxEms="6"
                 android:ellipsize="end"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:textColor="@color/all_black"
                 android:text="客户名"/>
             <TextView

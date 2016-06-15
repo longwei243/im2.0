@@ -2,6 +2,7 @@ package com.m7.imkfsdk.chat;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,5 +101,22 @@ public class OfflineMessageDialog extends DialogFragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void show(FragmentManager manager, String tag) {
+        if(!this.isAdded()) {
+            try {
+                super.show(manager, tag);
+            }catch (Exception e) {}
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        try {
+            super.dismiss();
+        }catch (Exception e) {}
+
     }
 }

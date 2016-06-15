@@ -12,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:background="@color/maincolor"
         >
-        <ImageView 
+        <ImageView
             android:id="@+id/chat_btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -21,14 +21,14 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             />
-        
+
         <TextView
             android:id="@+id/other_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textColor="@color/all_white"
-            android:text="客服聊天"
+            android:text="9999"
             android:textSize="18dp" />
 
         <Button
@@ -43,6 +43,35 @@
             android:text="转人工服务"/>
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_below="@id/chat_title"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:padding="4dp"
+        android:id="@+id/chat_queue_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@color/lightgrey">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="当前咨询人数较多,你排在第"/>
+        <TextView
+            android:id="@+id/chat_queue_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/maincolor"
+            android:text="1"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="位"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bar_bottom"
@@ -92,11 +121,11 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/recorder_normal"
-            	android:textColor="#727272"
+                android:textColor="#727272"
                 android:background="@drawable/kf_btn_recorder_normal"
                 android:visibility="gone" >
 
-                
+
             </com.m7.imkfsdk.recordbutton.AudioRecorderButton>
 
             <RelativeLayout

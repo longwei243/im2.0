@@ -9,7 +9,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 20
-        versionName "1.3.0"
+        versionName "1.3.1"
         generatedDensities = []
     }
     buildTypes {
@@ -32,6 +32,7 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.0'
     compile 'com.squareup.okhttp:okhttp:2.7.2'
     compile 'com.google.code.gson:gson:2.2.4'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
     compile project(':sipcall')
-    compile files('libs/classes.jar')
+    compile files('libs/chart.jar')
 }

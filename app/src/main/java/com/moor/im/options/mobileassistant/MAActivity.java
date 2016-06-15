@@ -12,6 +12,7 @@ import com.moor.im.R;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.mobileassistant.cdr.activity.CdrActivity;
 import com.moor.im.options.mobileassistant.erp.activity.ErpActivity;
+import com.moor.im.options.mobileassistant.report.ReportActivity;
 
 
 /**
@@ -19,7 +20,7 @@ import com.moor.im.options.mobileassistant.erp.activity.ErpActivity;
  */
 public class MAActivity extends BaseActivity{
 
-    LinearLayout ma_cdr, ma_erp;
+    LinearLayout ma_cdr, ma_erp, ma_report;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,7 @@ public class MAActivity extends BaseActivity{
 
         ma_cdr = (LinearLayout) findViewById(R.id.ma_cdr);
         ma_erp = (LinearLayout) findViewById(R.id.ma_erp);
+        ma_report = (LinearLayout) findViewById(R.id.ma_report);
 
         ma_cdr.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +52,13 @@ public class MAActivity extends BaseActivity{
             public void onClick(View v) {
                 Intent erpIntent = new Intent(MAActivity.this, ErpActivity.class);
 				startActivity(erpIntent);
+            }
+        });
+        ma_report.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent reportIntent = new Intent(MAActivity.this, ReportActivity.class);
+				startActivity(reportIntent);
             }
         });
     }

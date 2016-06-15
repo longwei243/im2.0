@@ -2,8 +2,10 @@ package com.m7.imkfsdk.chat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -53,7 +55,9 @@ import com.m7.imkfsdk.recordbutton.AudioRecorderButton;
 import com.m7.imkfsdk.utils.FaceConversionUtil;
 import com.m7.imkfsdk.view.ChatListView;
 import com.moor.im.R;
+import com.moor.im.app.MobileApplication;
 import com.moor.imkf.ChatListener;
+import com.moor.imkf.GetPeersListener;
 import com.moor.imkf.IMChat;
 import com.moor.imkf.IMChatManager;
 import com.moor.imkf.IMMessage;
@@ -63,9 +67,11 @@ import com.moor.imkf.model.entity.ChatEmoji;
 import com.moor.imkf.model.entity.ChatMore;
 import com.moor.imkf.model.entity.FromToMessage;
 import com.moor.imkf.model.entity.Investigate;
+import com.moor.imkf.model.entity.Peer;
 import com.moor.imkf.tcpservice.service.IMService;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -122,6 +128,8 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 
 	private String peerId;
 
+	LinearLayout chat_queue_ll;
+	TextView chat_queue_tv;
 
 	private Handler handler = new Handler() {
 
@@ -143,7 +151,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 
 			if(msg.what == 0x222) {
 				//当前是客服
-				Toast.makeText(ChatActivity.this, "当前是客服为你服务", Toast.LENGTH_SHORT).show();
+				Toast.makeText(ChatActivity.this, "当前客服在线", Toast.LENGTH_SHORT).show();
 				chat_btn_convert.setVisibility(View.GONE);
 			}
 
@@ -157,7 +165,21 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 			if(msg.what == 0x444) {
 				sendInvestigate();
 			}
-			
+
+			if(msg.what == 0x555) {
+				String queueNem = (String) msg.obj;
+				showQueueNumLabel(queueNem);
+			}
+
+			if(msg.what == 0x666) {
+				chat_queue_ll.setVisibility(View.GONE);
+				Toast.makeText(ChatActivity.this, "当前是客服为你服务", Toast.LENGTH_SHORT).show();
+			}
+
+			if(msg.what == 0x777) {
+				showSessionFinishDialog();
+			}
+
 			if(msg.what == 0x88) {
 				updateMessage();
 			}
@@ -177,8 +199,6 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 						ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.CAMERA}, 0x3333);
 					}
 				}
-
-
 			} else if ("图库".equals(msg.obj)) {
 
 				if(Build.VERSION.SDK_INT < 23) {
@@ -205,6 +225,65 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		}
 	};
 
+	private void showSessionFinishDialog() {
+		new AlertDialog.Builder(this).setTitle("温馨提示")
+				.setMessage("客服结束了会话，你想要")
+				.setPositiveButton("继续咨询", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						IMChatManager.getInstance().getPeers(new GetPeersListener() {
+							@Override
+							public void onSuccess(List<Peer> peers) {
+								if (peers.size() > 1) {
+									PeerDialog dialog = new PeerDialog();
+									Bundle b = new Bundle();
+									b.putSerializable("Peers", (Serializable) peers);
+									b.putString("type", "chat");
+									dialog.setArguments(b);
+									dialog.show(getSupportFragmentManager(), "");
+
+								} else if (peers.size() == 1) {
+									beginSession(peers.get(0).getId());
+								} else {
+									beginSession("");
+								}
+							}
+
+							@Override
+							public void onFailed() {
+
+							}
+						});
+					}
+				})
+				.setNegativeButton("退出", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						MobileApplication.isKFSDK = false;
+						IMChatManager.getInstance().quit();
+						finish();
+					}
+				})
+				.setCancelable(false)
+				.create()
+				.show();
+
+	}
+
+	/**
+	 * 显示排队数
+	 */
+	private void showQueueNumLabel(String queueNum) {
+
+		if(Integer.parseInt(queueNum) > 0) {
+			chat_queue_ll.setVisibility(View.VISIBLE);
+			chat_queue_tv.setText(queueNum);
+		}else {
+			chat_queue_ll.setVisibility(View.GONE);
+		}
+
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -225,8 +304,10 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		kefuIntentFilter.addAction(IMChatManager.ROBOT_ACTION);
 		kefuIntentFilter.addAction(IMChatManager.ONLINE_ACTION);
 		kefuIntentFilter.addAction(IMChatManager.OFFLINE_ACTION);
+		kefuIntentFilter.addAction(IMChatManager.CLIAM_ACTION);
 		kefuIntentFilter.addAction(IMChatManager.INVESTIGATE_ACTION);
 		kefuIntentFilter.addAction(IMChatManager.QUEUENUM_ACTION);
+		kefuIntentFilter.addAction(IMChatManager.FINISH_ACTION);
 		keFuStatusReceiver = new KeFuStatusReceiver();
 		registerReceiver(keFuStatusReceiver, kefuIntentFilter);
 
@@ -356,7 +437,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		chat_btn_convert = (Button) this.findViewById(R.id.chat_btn_convert);
 
 		mOtherName = (TextView) this.findViewById(R.id.other_name);
-//		mOtherName.setText(otherName + "");
+		mOtherName.setText("联系客服");
 
 		mChatInput.setOnFocusChangeListener(new OnFocusChangeListener() {
 
@@ -393,7 +474,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 
 			@Override
 			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
+									  int count) {
 				if (!TextUtils.isEmpty(s)) {
 					mChatMore.setVisibility(View.GONE);
 					mChatSend.setVisibility(View.VISIBLE);
@@ -405,7 +486,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
+										  int after) {
 			}
 
 			@Override
@@ -462,6 +543,9 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		mChatIvImageFace = (LinearLayout) findViewById(R.id.chat_iv_image_face);
 		mChatIvImageMore = (LinearLayout) findViewById(R.id.chat_iv_image_more);
 
+
+		chat_queue_ll = (LinearLayout) findViewById(R.id.chat_queue_ll);
+		chat_queue_tv = (TextView) findViewById(R.id.chat_queue_tv);
 	}
 
 	// 注册监听方法
@@ -509,131 +593,131 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
-		case R.id.chat_btn_back:
-			finish();
-			break;
-		case R.id.chat_btn_convert:
-			//转人工服务
-			IMChatManager.getInstance().convertManual(new OnConvertManualListener() {
-				@Override
-				public void onLine() {
-					//有客服在线,隐藏转人工按钮
-					chat_btn_convert.setVisibility(View.GONE);
-					Toast.makeText(ChatActivity.this, "转人工服务成功", Toast.LENGTH_SHORT).show();
-				}
+			case R.id.chat_btn_back:
+				finish();
+				break;
+			case R.id.chat_btn_convert:
+				//转人工服务
+				IMChatManager.getInstance().convertManual(new OnConvertManualListener() {
+					@Override
+					public void onLine() {
+						//有客服在线,隐藏转人工按钮
+						chat_btn_convert.setVisibility(View.GONE);
+						Toast.makeText(ChatActivity.this, "转人工服务成功", Toast.LENGTH_SHORT).show();
+					}
 
-				@Override
-				public void offLine() {
-					//当前没有客服在线
-					showOffineDialog();
-				}
-			});
-			break;
-		case R.id.chat_send:
-			String txt = mChatInput.getText().toString();
+					@Override
+					public void offLine() {
+						//当前没有客服在线
+						showOffineDialog();
+					}
+				});
+				break;
+			case R.id.chat_send:
+				String txt = mChatInput.getText().toString();
 
-			FromToMessage fromToMessage = IMMessage.createTxtMessage(txt);
+				FromToMessage fromToMessage = IMMessage.createTxtMessage(txt);
 
-			//界面显示
-			descFromToMessage.add(fromToMessage);
-			chatAdapter.notifyDataSetChanged();
-			mChatList.setSelection(descFromToMessage.size());
-			mChatInput.setText("");
+				//界面显示
+				descFromToMessage.add(fromToMessage);
+				chatAdapter.notifyDataSetChanged();
+				mChatList.setSelection(descFromToMessage.size());
+				mChatInput.setText("");
 
-			//发送消息
-			IMChat.getInstance().sendMessage(fromToMessage, new ChatListener() {
-				@Override
-				public void onSuccess() {
-					//消息发送成功
-					Log.d("ChatActivity", "文本消息发送成功");
-					updateMessage();
-				}
+				//发送消息
+				IMChat.getInstance().sendMessage(fromToMessage, new ChatListener() {
+					@Override
+					public void onSuccess() {
+						//消息发送成功
+						Log.d("ChatActivity", "文本消息发送成功");
+						updateMessage();
+					}
 
-				@Override
-				public void onFailed() {
-					//消息发送失败
-					Log.d("ChatActivity", "文本消息发送失败");
-					updateMessage();
-				}
+					@Override
+					public void onFailed() {
+						//消息发送失败
+						Log.d("ChatActivity", "文本消息发送失败");
+						updateMessage();
+					}
 
-				@Override
-				public void onProcess() {
+					@Override
+					public void onProcess() {
 
-				}
-			});
+					}
+				});
 
-			break;
+				break;
 
-		case R.id.chat_set_mode_voice:
-			if(Build.VERSION.SDK_INT < 23) {
-				showVoice();
-			}else {
-				//6.0
-				if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-					//该权限已经有了
+			case R.id.chat_set_mode_voice:
+				if(Build.VERSION.SDK_INT < 23) {
 					showVoice();
 				}else {
-					//申请该权限
-					ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0x4444);
+					//6.0
+					if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+						//该权限已经有了
+						showVoice();
+					}else {
+						//申请该权限
+						ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0x4444);
+					}
 				}
-			}
 
-			break;
+				break;
 
-		case R.id.chat_set_mode_keyboard:
-			mChatEdittextLayout.setVisibility(View.VISIBLE);
-			mChatSetModeKeyboard.setVisibility(View.GONE);
-			mChatSetModeVoice.setVisibility(View.VISIBLE);
-			mChatInput.requestFocus();
-			mRecorderButton.setVisibility(View.GONE);
-			mChatFaceContainer.setVisibility(View.GONE);
+			case R.id.chat_set_mode_keyboard:
+				mChatEdittextLayout.setVisibility(View.VISIBLE);
+				mChatSetModeKeyboard.setVisibility(View.GONE);
+				mChatSetModeVoice.setVisibility(View.VISIBLE);
+				mChatInput.requestFocus();
+				mRecorderButton.setVisibility(View.GONE);
+				mChatFaceContainer.setVisibility(View.GONE);
 
-			if (TextUtils.isEmpty(mChatInput.getText())) {
-				mChatMore.setVisibility(View.VISIBLE);
-				mChatSend.setVisibility(View.GONE);
-			} else {
-				mChatMore.setVisibility(View.GONE);
-				mChatSend.setVisibility(View.VISIBLE);
-			}
+				if (TextUtils.isEmpty(mChatInput.getText())) {
+					mChatMore.setVisibility(View.VISIBLE);
+					mChatSend.setVisibility(View.GONE);
+				} else {
+					mChatMore.setVisibility(View.GONE);
+					mChatSend.setVisibility(View.VISIBLE);
+				}
 
-			break;
-		case R.id.chat_emoji_normal:
-			hideKeyboard();
-			mMore.setVisibility(View.VISIBLE);
-			mChatEmojiNormal.setVisibility(View.GONE);
-			mChatEmojiChecked.setVisibility(View.VISIBLE);
-			mChatMoreContainer.setVisibility(View.GONE);
-			mChatFaceContainer.setVisibility(View.VISIBLE);
-			mChatMoreVPager.setVisibility(View.GONE);
-			mChatEmojiVPager.setVisibility(View.VISIBLE);
-			break;
-		case R.id.chat_emoji_checked:
-			mChatEmojiNormal.setVisibility(View.VISIBLE);
-			mChatEmojiChecked.setVisibility(View.GONE);
-			mChatMoreContainer.setVisibility(View.GONE);
-			mChatFaceContainer.setVisibility(View.GONE);
-			mMore.setVisibility(View.GONE);
-			break;
-
-		case R.id.chat_more:
-			if (mChatMoreVPager.getVisibility() == View.VISIBLE) {
-				mChatMoreVPager.setVisibility(View.GONE);
-				mMore.setVisibility(View.GONE);
-			} else {
-				mChatMoreVPager.setVisibility(View.VISIBLE);
+				break;
+			case R.id.chat_emoji_normal:
+				hideKeyboard();
 				mMore.setVisibility(View.VISIBLE);
+				mChatEmojiNormal.setVisibility(View.GONE);
+				mChatEmojiChecked.setVisibility(View.VISIBLE);
+				mChatMoreContainer.setVisibility(View.GONE);
+				mChatFaceContainer.setVisibility(View.VISIBLE);
+				mChatMoreVPager.setVisibility(View.GONE);
+				mChatEmojiVPager.setVisibility(View.VISIBLE);
+				break;
+			case R.id.chat_emoji_checked:
 				mChatEmojiNormal.setVisibility(View.VISIBLE);
 				mChatEmojiChecked.setVisibility(View.GONE);
+				mChatMoreContainer.setVisibility(View.GONE);
 				mChatFaceContainer.setVisibility(View.GONE);
-				mChatMoreContainer.setVisibility(View.VISIBLE);
-				mChatEmojiVPager.setVisibility(View.GONE);
+				mMore.setVisibility(View.GONE);
+				break;
 
-				hideKeyboard();
-			}
+			case R.id.chat_more:
+				if (mChatMoreVPager.getVisibility() == View.VISIBLE) {
+					mChatMoreVPager.setVisibility(View.GONE);
+					mMore.setVisibility(View.GONE);
+				} else {
+					mChatMoreVPager.setVisibility(View.VISIBLE);
+					mMore.setVisibility(View.VISIBLE);
+					mChatEmojiNormal.setVisibility(View.VISIBLE);
+					mChatEmojiChecked.setVisibility(View.GONE);
+					mChatFaceContainer.setVisibility(View.GONE);
+					mChatMoreContainer.setVisibility(View.VISIBLE);
+					mChatEmojiVPager.setVisibility(View.GONE);
 
-			break;
-		default:
-			break;
+					hideKeyboard();
+				}
+
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -751,7 +835,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 				if (arg0 == pointViewsMore.size() - 1 || arg0 == 0) {
 					if (arg0 == 0) {
 						mChatMoreVPager.setCurrentItem(arg0 + 1);// 第二屏
-																	// 会再次实现该回调方法实现跳转.
+						// 会再次实现该回调方法实现跳转.
 						pointViewsMore.get(1).setBackgroundResource(
 								R.drawable.kf_d2);
 					} else {
@@ -872,7 +956,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 				if (arg0 == pointViewsFace.size() - 1 || arg0 == 0) {
 					if (arg0 == 0) {
 						mChatEmojiVPager.setCurrentItem(arg0 + 1);// 第二屏
-																	// 会再次实现该回调方法实现跳转.
+						// 会再次实现该回调方法实现跳转.
 						pointViewsFace.get(1).setBackgroundResource(
 								R.drawable.kf_d2);
 					} else {
@@ -1103,7 +1187,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		// TODO Auto-generated method stub
 		super.onResume();
 	}
-	
+
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -1201,10 +1285,20 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 				handler.sendEmptyMessage(0x444);
 			}else if(IMChatManager.QUEUENUM_ACTION.equals(action)) {
 				//技能组排队数
+				System.out.println("接收到排队人数的广播");
 				if(intent.getStringExtra(IMChatManager.QUEUENUM_ACTION) != null) {
 					String queueNum = intent.getStringExtra(IMChatManager.QUEUENUM_ACTION);
-					Toast.makeText(ChatActivity.this, "当前排队人数为:"+queueNum, Toast.LENGTH_SHORT).show();
+					Message queueMsg = Message.obtain();
+					queueMsg.what = 0x555;
+					queueMsg.obj = queueNum;
+					handler.sendMessage(queueMsg);
 				}
+			}else if(IMChatManager.CLIAM_ACTION.equals(action)) {
+				//客服领取了会话
+				handler.sendEmptyMessage(0x666);
+			}else if(IMChatManager.FINISH_ACTION.equals(action)) {
+				//客服关闭了会话
+				handler.sendEmptyMessage(0x777);
 			}
 		}
 	}

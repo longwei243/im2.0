@@ -20,6 +20,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.GET_TASKS" />
 
 
@@ -116,7 +117,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/acttranslucent"
             />
-
+        <activity android:name=".options.mobileassistant.report.ReportActivity" android:screenOrientation="portrait"/>
 
         <receiver android:name=".common.receiver.SocketReceiver">
             <intent-filter>

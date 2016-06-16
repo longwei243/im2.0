@@ -1,10 +1,12 @@
 package com.moor.im.options.mobileassistant.report.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,12 +20,17 @@ import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.utils.TimeUtil;
 import com.moor.im.common.utils.log.LogUtil;
+import com.moor.im.common.views.GridViewInScrollView;
 import com.moor.im.options.base.BaseLazyFragment;
+import com.moor.im.options.mobileassistant.model.Cust;
 import com.moor.im.options.mobileassistant.report.view.RoundProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -34,13 +41,13 @@ import rx.schedulers.Schedulers;
  */
 public class WorkbanchFragment extends BaseLazyFragment{
     private RoundProgressBar rpb_callin, rpb_callout;
-    private LinearLayout workbanch_ll_plan, workbanch_customer_ll_line1, workbanch_customer_ll_line2;
+    private LinearLayout workbanch_ll_plan;
     private TextView workbanch_callin_tv_timelength, workbanch_callin_tv_link, workbanch_callin_tv_count;
     private TextView workbanch_callout_tv_timelength, workbanch_callout_tv_link, workbanch_callout_tv_count;
     private TextView workbanch_erp_tv_dcl, workbanch_erp_tv_dlq;
     private TextView workbanch_webchat_tv_count, workbanch_pc_tv_count, workbanch_app_tv_count, workbanch_email_tv_count;
     private ProgressBar workbanch_webchat_pb,workbanch_pc_pb,workbanch_app_pb,workbanch_email_pb;
-
+    private GridViewInScrollView workbanch_cust_gv;
     private LinearLayout workbanch_layout;
     private LoadingDialog loadingDialog;
     @Nullable
@@ -49,26 +56,26 @@ public class WorkbanchFragment extends BaseLazyFragment{
         View view = inflater.inflate(R.layout.fragment_workbanch, null);
         loadingDialog = new LoadingDialog();
         initViews(view);
-        loadingDialog.show(getFragmentManager(), "");
-        HttpManager.getInstance().getWorkBenchInfo(UserDao.getInstance().getUser()._id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        initData(s);
-                    }
-                });
+//        loadingDialog.show(getFragmentManager(), "");
+//        HttpManager.getInstance().getWorkBenchInfo(UserDao.getInstance().getUser()._id)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<String>() {
+//                    @Override
+//                    public void onCompleted() {
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+//                    }
+//
+//                    @Override
+//                    public void onNext(String s) {
+//                        initData(s);
+//                    }
+//                });
         return view;
     }
 
@@ -107,24 +114,29 @@ public class WorkbanchFragment extends BaseLazyFragment{
                     int time = call.getInt("linkedTime");
                     int count = call.getInt("count");
                     int link = call.getInt("linked");
-                    int progress = (link  * 100 / count);
+                    if(count != 0) {
+                        int progress = (link  * 100 / count);
 
-                    workbanch_callin_tv_timelength.setText("总通话时长:"+TimeUtil.getContactsLogTime(time)+"秒");
-                    workbanch_callin_tv_link.setText(link+"");
-                    workbanch_callin_tv_count.setText(count+"");
-                    rpb_callin.setProgress(progress);
+                        workbanch_callin_tv_timelength.setText("总通话时长:"+TimeUtil.getContactsLogTime(time)+"秒");
+                        workbanch_callin_tv_link.setText(link+"");
+                        workbanch_callin_tv_count.setText(count+"");
+                        rpb_callin.setProgress(progress);
+                    }
+
                 }
 
                 if("dialout".equals(call.getString("_id"))) {
                     int time = call.getInt("linkedTime");
                     int count = call.getInt("count");
                     int link = call.getInt("linked");
-                    int progress = (link  * 100 / count);
+                    if(count != 0) {
+                        int progress = (link  * 100 / count);
 
-                    workbanch_callout_tv_timelength.setText("总通话时长:"+TimeUtil.getContactsLogTime(time)+"秒");
-                    workbanch_callout_tv_link.setText(link+"");
-                    workbanch_callout_tv_count.setText(count+"");
-                    rpb_callout.setProgress(progress);
+                        workbanch_callout_tv_timelength.setText("总通话时长:"+TimeUtil.getContactsLogTime(time)+"秒");
+                        workbanch_callout_tv_link.setText(link+"");
+                        workbanch_callout_tv_count.setText(count+"");
+                        rpb_callout.setProgress(progress);
+                    }
                 }
             }
 
@@ -156,56 +168,41 @@ public class WorkbanchFragment extends BaseLazyFragment{
             }
             totalCount = pcCount + webchatCount + appCount + emailCount;
 
-            int pcProgress = pcCount * 100 / totalCount;
-            int webchatProgress = webchatCount * 100 / totalCount;
-            int appProgress = appCount * 100 / totalCount;
-            int emailProgress = emailCount * 100 / totalCount;
+            if(totalCount != 0) {
+                int pcProgress = pcCount * 100 / totalCount;
+                int webchatProgress = webchatCount * 100 / totalCount;
+                int appProgress = appCount * 100 / totalCount;
+                int emailProgress = emailCount * 100 / totalCount;
 
-            workbanch_webchat_tv_count.setText(webchatCount+"条/占比"+webchatProgress+"%");
-            workbanch_pc_tv_count.setText(pcCount+"条/占比"+pcProgress+"%");
-            workbanch_app_tv_count.setText(appCount+"条/占比"+appProgress+"%");
-            workbanch_email_tv_count.setText(emailCount+"条/占比"+emailProgress+"%");
+                workbanch_webchat_tv_count.setText(webchatCount+"条/占比"+webchatProgress+"%");
+                workbanch_pc_tv_count.setText(pcCount+"条/占比"+pcProgress+"%");
+                workbanch_app_tv_count.setText(appCount+"条/占比"+appProgress+"%");
+                workbanch_email_tv_count.setText(emailCount+"条/占比"+emailProgress+"%");
 
-            workbanch_webchat_pb.setProgress(webchatProgress);
-            workbanch_pc_pb.setProgress(pcProgress);
-            workbanch_app_pb.setProgress(appProgress);
-            workbanch_email_pb.setProgress(emailProgress);
+                workbanch_webchat_pb.setProgress(webchatProgress);
+                workbanch_pc_pb.setProgress(pcProgress);
+                workbanch_app_pb.setProgress(appProgress);
+                workbanch_email_pb.setProgress(emailProgress);
+            }
 
             //客户
-            workbanch_customer_ll_line1.removeAllViews();
-            workbanch_customer_ll_line2.removeAllViews();
+            List<Cust> custList = new ArrayList<>();
             JSONArray custArray = jsonObject.getJSONArray("custStatusList");
-            if(custArray.length() <= 5) {
-                for (int i=0; i<custArray.length(); i++) {
-                    JSONObject cust = custArray.getJSONObject(i);
-                    LinearLayout cust_item = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.workbanch_item_cust, null);
-                    TextView workbanch_item_cust_tv_count = (TextView) cust_item.findViewById(R.id.workbanch_item_cust_tv_count);
-                    TextView workbanch_item_cust_tv_name = (TextView) cust_item.findViewById(R.id.workbanch_item_cust_tv_name);
-                    workbanch_item_cust_tv_name.setText(cust.getString("name"));
-                    workbanch_item_cust_tv_count.setText(cust.getInt("count")+"");
-                    workbanch_customer_ll_line1.addView(cust_item);
-                }
-            }else if(custArray.length() > 5) {
-                for (int i=0; i<custArray.length(); i++) {
-                    if(i <= 4) {
-                        JSONObject cust = custArray.getJSONObject(i);
-                        LinearLayout cust_item = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.workbanch_item_cust, null);
-                        TextView workbanch_item_cust_tv_count = (TextView) cust_item.findViewById(R.id.workbanch_item_cust_tv_count);
-                        TextView workbanch_item_cust_tv_name = (TextView) cust_item.findViewById(R.id.workbanch_item_cust_tv_name);
-                        workbanch_item_cust_tv_name.setText(cust.getString("name"));
-                        workbanch_item_cust_tv_count.setText(cust.getInt("count")+"");
-                        workbanch_customer_ll_line1.addView(cust_item);
-                    }else {
-                        JSONObject cust = custArray.getJSONObject(i);
-                        LinearLayout cust_item = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.workbanch_item_cust, null);
-                        TextView workbanch_item_cust_tv_count = (TextView) cust_item.findViewById(R.id.workbanch_item_cust_tv_count);
-                        TextView workbanch_item_cust_tv_name = (TextView) cust_item.findViewById(R.id.workbanch_item_cust_tv_name);
-                        workbanch_item_cust_tv_name.setText(cust.getString("name"));
-                        workbanch_item_cust_tv_count.setText(cust.getInt("count")+"");
-                        workbanch_customer_ll_line2.addView(cust_item);
-                    }
+            for (int i=0; i<custArray.length(); i++) {
+                JSONObject cust = custArray.getJSONObject(i);
+                String name = cust.getString("name");
+                String count = cust.getInt("count")+"";
+
+                if(!"".equals(name)) {
+                    Cust c = new Cust();
+                    c.setName(name);
+                    c.setCount(count);
+                    custList.add(c);
                 }
             }
+            CustAdapter adapter = new CustAdapter(getActivity(), custList);
+            workbanch_cust_gv.setAdapter(adapter);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -219,8 +216,6 @@ public class WorkbanchFragment extends BaseLazyFragment{
         rpb_callin = (RoundProgressBar) view.findViewById(R.id.rpb_callin);
         rpb_callout = (RoundProgressBar) view.findViewById(R.id.rpb_callout);
         workbanch_ll_plan = (LinearLayout) view.findViewById(R.id.workbanch_ll_plan);
-        workbanch_customer_ll_line1 = (LinearLayout) view.findViewById(R.id.workbanch_customer_ll_line1);
-        workbanch_customer_ll_line2 = (LinearLayout) view.findViewById(R.id.workbanch_customer_ll_line2);
         workbanch_callin_tv_timelength = (TextView) view.findViewById(R.id.workbanch_callin_tv_timelength);
         workbanch_callin_tv_link = (TextView) view.findViewById(R.id.workbanch_callin_tv_link);
         workbanch_callin_tv_count = (TextView) view.findViewById(R.id.workbanch_callin_tv_count);
@@ -237,6 +232,53 @@ public class WorkbanchFragment extends BaseLazyFragment{
         workbanch_pc_pb = (ProgressBar) view.findViewById(R.id.workbanch_pc_pb);
         workbanch_app_pb = (ProgressBar) view.findViewById(R.id.workbanch_app_pb);
         workbanch_email_pb = (ProgressBar) view.findViewById(R.id.workbanch_email_pb);
+        workbanch_cust_gv = (GridViewInScrollView) view.findViewById(R.id.workbanch_cust_gv);
+    }
 
+
+    class CustAdapter extends BaseAdapter{
+
+        Context context;
+        List<Cust> custList;
+        public CustAdapter(Context context,List<Cust> custList) {
+            this.context = context;
+            this.custList = custList;
+        }
+        @Override
+        public int getCount() {
+            return custList.size();
+        }
+
+        @Override
+        public Cust getItem(int position) {
+            return custList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder = null;
+            if(convertView == null) {
+                holder = new ViewHolder();
+                convertView = LayoutInflater.from(context).inflate(R.layout.workbanch_item_cust, null);
+                holder.tv_name = (TextView) convertView.findViewById(R.id.workbanch_item_cust_tv_name);
+                holder.tv_count = (TextView) convertView.findViewById(R.id.workbanch_item_cust_tv_count);
+                convertView.setTag(holder);
+            }else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.tv_name.setText(custList.get(position).getName());
+            holder.tv_count.setText(custList.get(position).getCount());
+            return convertView;
+        }
+    }
+
+    class ViewHolder {
+        public TextView tv_name;
+        public TextView tv_count;
     }
 }

@@ -15,6 +15,7 @@ import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.mobileassistant.report.adapter.DividerItemDecoration;
 import com.moor.im.options.mobileassistant.report.adapter.ItemDragHelperCallback;
 import com.moor.im.options.mobileassistant.report.adapter.ReportAdapter;
+import com.moor.im.options.mobileassistant.report.model.ReportData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +38,32 @@ public class ReportFragment extends BaseLazyFragment{
     }
 
     private void init() {
-        final List<String> items = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            items.add("Index " + i);
-        }
+        final List<ReportData> items = new ArrayList<>();
+        ReportData rd = new ReportData();
+        rd.type = ReportData.TYPE_CALL_IN;
+        rd.name = "呼入";
+        items.add(rd);
+        ReportData rd1 = new ReportData();
+        rd1.type = ReportData.TYPE_CALL_OUT;
+        rd1.name = "呼出";
+        items.add(rd1);
+        ReportData rd2 = new ReportData();
+        rd2.type = ReportData.TYPE_QUEUE;
+        rd2.name = "技能组";
+        items.add(rd2);
+        ReportData rd3 = new ReportData();
+        rd3.type = ReportData.TYPE_IM;
+        rd3.name = "客服";
+        items.add(rd3);
+        ReportData rd4 = new ReportData();
+        rd4.type = ReportData.TYPE_SESSION;
+        rd4.name = "会话";
+        items.add(rd4);
+        ReportData rd5 = new ReportData();
+        rd5.type = ReportData.TYPE_CUSTOMER;
+        rd5.name = "客户";
+        items.add(rd5);
+
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         report_rv.setLayoutManager(manager);

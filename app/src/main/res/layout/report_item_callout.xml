@@ -51,7 +51,7 @@
     </RelativeLayout>
 
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/report_item_callin_linechart"
+        android:id="@+id/report_item_callout_linechart"
         android:layout_width="match_parent"
         android:layout_height="240dp">
 

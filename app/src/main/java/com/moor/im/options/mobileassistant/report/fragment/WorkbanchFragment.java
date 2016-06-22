@@ -56,26 +56,26 @@ public class WorkbanchFragment extends BaseLazyFragment{
         View view = inflater.inflate(R.layout.fragment_workbanch, null);
         loadingDialog = new LoadingDialog();
         initViews(view);
-//        loadingDialog.show(getFragmentManager(), "");
-//        HttpManager.getInstance().getWorkBenchInfo(UserDao.getInstance().getUser()._id)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Observer<String>() {
-//                    @Override
-//                    public void onCompleted() {
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onNext(String s) {
-//                        initData(s);
-//                    }
-//                });
+        loadingDialog.show(getFragmentManager(), "");
+        HttpManager.getInstance().getWorkBenchInfo(UserDao.getInstance().getUser()._id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        initData(s);
+                    }
+                });
         return view;
     }
 
@@ -214,7 +214,9 @@ public class WorkbanchFragment extends BaseLazyFragment{
         workbanch_layout = (LinearLayout) view.findViewById(R.id.workbanch_layout);
 
         rpb_callin = (RoundProgressBar) view.findViewById(R.id.rpb_callin);
+        rpb_callin.setProgress(0);
         rpb_callout = (RoundProgressBar) view.findViewById(R.id.rpb_callout);
+        rpb_callout.setProgress(0);
         workbanch_ll_plan = (LinearLayout) view.findViewById(R.id.workbanch_ll_plan);
         workbanch_callin_tv_timelength = (TextView) view.findViewById(R.id.workbanch_callin_tv_timelength);
         workbanch_callin_tv_link = (TextView) view.findViewById(R.id.workbanch_callin_tv_link);

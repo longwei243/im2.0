@@ -16,5 +16,10 @@ public class ReportData {
 
     public int type;
     public String name;
-    public List<String> datas;
+    public List<CallInData> callInDatas;
+    public List<CallOutData> callOutDatas;
+    public List<QueueData> queueDatas;
+    public List<IMData> imDatas;
+    public List<SessionData> sessionDatas;
+    public List<CustData> custDatas;
 }

@@ -24,9 +24,9 @@ public class RequestUrl {
 
 	//本地10.222.10.57
 //	public static final String baseTcpHost = "10.222.10.57";
-//	public static final String baseHttp1 = "http://10.222.10.57:7001";
-//	public static final String baseHttpMobile = "http://10.222.10.57:7001/mobile";
-//	public static final String baseHttpMobileQiNiu = "http://10.222.10.57:7001/qiniu";
+//	public static final String baseHttp1 = "http://10.222.10.57:7010";
+//	public static final String baseHttpMobile = "http://10.222.10.57:7010/mobile";
+//	public static final String baseHttpMobileQiNiu = "http://10.222.10.57:7010/qiniu";
 
 
 }

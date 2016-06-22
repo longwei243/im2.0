@@ -10,15 +10,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moor.im.R;
+import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.mobileassistant.report.adapter.DividerItemDecoration;
 import com.moor.im.options.mobileassistant.report.adapter.ItemDragHelperCallback;
 import com.moor.im.options.mobileassistant.report.adapter.ReportAdapter;
+import com.moor.im.options.mobileassistant.report.model.CallInData;
+import com.moor.im.options.mobileassistant.report.model.CallOutData;
+import com.moor.im.options.mobileassistant.report.model.IMData;
+import com.moor.im.options.mobileassistant.report.model.QueueData;
 import com.moor.im.options.mobileassistant.report.model.ReportData;
+import com.moor.im.options.mobileassistant.report.model.SessionData;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by longwei on 2016/6/13.
@@ -33,38 +50,113 @@ public class ReportFragment extends BaseLazyFragment{
         View view = inflater.inflate(R.layout.fragment_report, null);
 
         report_rv = (RecyclerView) view.findViewById(R.id.report_rv);
-        init();
+        HttpManager.getInstance().doReport(UserDao.getInstance().getUser()._id, "queryall", "day")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        LogUtil.d("获取报表数据失败");
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        LogUtil.d("报表返回数据:"+s);
+                        processReportData(s);
+                    }
+                });
         return view;
     }
 
-    private void init() {
-        final List<ReportData> items = new ArrayList<>();
-        ReportData rd = new ReportData();
-        rd.type = ReportData.TYPE_CALL_IN;
-        rd.name = "呼入";
-        items.add(rd);
-        ReportData rd1 = new ReportData();
-        rd1.type = ReportData.TYPE_CALL_OUT;
-        rd1.name = "呼出";
-        items.add(rd1);
-        ReportData rd2 = new ReportData();
-        rd2.type = ReportData.TYPE_QUEUE;
-        rd2.name = "技能组";
-        items.add(rd2);
-        ReportData rd3 = new ReportData();
-        rd3.type = ReportData.TYPE_IM;
-        rd3.name = "客服";
-        items.add(rd3);
-        ReportData rd4 = new ReportData();
-        rd4.type = ReportData.TYPE_SESSION;
-        rd4.name = "会话";
-        items.add(rd4);
-        ReportData rd5 = new ReportData();
-        rd5.type = ReportData.TYPE_CUSTOMER;
-        rd5.name = "客户";
-        items.add(rd5);
+    private void processReportData(String s) {
+        List<ReportData> reportDataList = new ArrayList<>();
+        Gson gson = new Gson();
+        try {
+            JSONObject jsonObject = new JSONObject(s);
+            if(jsonObject.getBoolean("Succeed")) {
+                //呼入
+                JSONObject callin = jsonObject.getJSONObject("callin");
+                if(callin.getBoolean("success")) {
+                    ReportData callinRd = new ReportData();
+                    callinRd.type = ReportData.TYPE_CALL_IN;
+                    callinRd.name = "呼入";
+                    callinRd.callInDatas = gson.fromJson(callin.getJSONArray("data").toString(),
+                            new TypeToken<List<CallInData>>() {
+                            }.getType());
+                    reportDataList.add(callinRd);
+                }
+                //呼出
+                JSONObject callout = jsonObject.getJSONObject("callout");
+                if(callout.getBoolean("success")) {
+                    ReportData calloutRd = new ReportData();
+                    calloutRd.type = ReportData.TYPE_CALL_OUT;
+                    calloutRd.name = "呼出";
+                    calloutRd.callOutDatas = gson.fromJson(callin.getJSONArray("data").toString(),
+                            new TypeToken<List<CallOutData>>() {
+                            }.getType());
+                    reportDataList.add(calloutRd);
+                }
+                //技能组
+                JSONObject skillgroup = jsonObject.getJSONObject("skillgroup");
+                if(skillgroup.getBoolean("success")) {
+                    ReportData skillgroupRd = new ReportData();
+                    skillgroupRd.type = ReportData.TYPE_QUEUE;
+                    skillgroupRd.name = "技能组";
+                    skillgroupRd.queueDatas = gson.fromJson(skillgroup.getJSONArray("data").toString(),
+                            new TypeToken<List<QueueData>>() {
+                            }.getType());
+                    reportDataList.add(skillgroupRd);
+                }
+                //im
+                JSONObject immessage = jsonObject.getJSONObject("immessage");
+                if(immessage.getBoolean("success")) {
+                    ReportData immessageRd = new ReportData();
+                    immessageRd.type = ReportData.TYPE_IM;
+                    immessageRd.name = "在线客服消息";
+                    immessageRd.imDatas = gson.fromJson(immessage.getJSONArray("data").toString(),
+                            new TypeToken<List<IMData>>() {
+                            }.getType());
+                    reportDataList.add(immessageRd);
+                }
 
+                //session
+                JSONObject imsession = jsonObject.getJSONObject("imsession");
+                if(imsession.getBoolean("success")) {
+                    ReportData imsessionRd = new ReportData();
+                    imsessionRd.type = ReportData.TYPE_SESSION;
+                    imsessionRd.name = "会话数";
+                    imsessionRd.imDatas = gson.fromJson(imsession.getJSONArray("data").toString(),
+                            new TypeToken<List<SessionData>>() {
+                            }.getType());
+                    reportDataList.add(imsessionRd);
+                }
 
+                //客户来源
+                JSONObject customerinc = jsonObject.getJSONObject("customerinc");
+                if(customerinc.getBoolean("success")) {
+                    ReportData customerincRd = new ReportData();
+                    customerincRd.type = ReportData.TYPE_CUSTOMER;
+                    customerincRd.name = "客户来源";
+                    customerincRd.imDatas = gson.fromJson(customerinc.getJSONArray("data").toString(),
+                            new TypeToken<List<SessionData>>() {
+                            }.getType());
+                    reportDataList.add(customerincRd);
+                }
+
+                initData(reportDataList);
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initData(List<ReportData> reportDataList) {
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         report_rv.setLayoutManager(manager);
         report_rv.addItemDecoration(new DividerItemDecoration(getActivity(),
@@ -79,7 +171,8 @@ public class ReportFragment extends BaseLazyFragment{
         ItemTouchHelper helper = new ItemTouchHelper(callback);
         helper.attachToRecyclerView(report_rv);
 
-        ReportAdapter adapter = new ReportAdapter(getActivity(), items);
+        ReportAdapter adapter = new ReportAdapter(getActivity(), reportDataList);
         report_rv.setAdapter(adapter);
     }
+
 }

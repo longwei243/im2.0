@@ -24,11 +24,24 @@ import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moor.im.R;
+import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.utils.log.LogUtil;
+import com.moor.im.options.mobileassistant.report.model.CallInData;
 import com.moor.im.options.mobileassistant.report.model.ReportData;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by longwei on 2016/6/16.
@@ -75,10 +88,52 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ReportData reportData = datas.get(position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+        final ReportData reportData = datas.get(position);
         if(datas.get(position).type == ReportData.TYPE_CALL_IN) {
             ((CallInViewHolder)holder).tv.setText(reportData.name);
+            ((CallInViewHolder)holder).report_item_callin_time_week.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HttpManager.getInstance().doReport(UserDao.getInstance().getUser()._id, "callin", "week")
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Observer<String>() {
+                                @Override
+                                public void onCompleted() {
+
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    LogUtil.d("获取报表数据失败");
+                                }
+
+                                @Override
+                                public void onNext(String s) {
+                                    LogUtil.d("报表呼入返回数据:"+s);
+                                    JSONObject jsonObject = null;
+                                    Gson gson = new Gson();
+                                    try {
+                                        jsonObject = new JSONObject(s);
+                                        if(jsonObject.getBoolean("Succeed")) {
+                                            JSONObject callin = jsonObject.getJSONObject("callin");
+                                            if(callin.getBoolean("success")) {
+                                                reportData.callInDatas = gson.fromJson(callin.getJSONArray("data").toString(),
+                                                        new TypeToken<List<CallInData>>() {
+                                                        }.getType());
+                                                notifyDataSetChanged();
+                                            }
+
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+                }
+            });
 
             ((CallInViewHolder)holder).report_item_callin_linechart.setDrawGridBackground(false);
             ((CallInViewHolder)holder).report_item_callin_linechart.setDescription("");
@@ -101,38 +156,47 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((CallInViewHolder)holder).report_item_callin_linechart.setPinchZoom(false);
 
             ArrayList<String> xVals = new ArrayList<String>();
-            for (int i = 0; i < 8; i++) {
-                xVals.add((i) + "");
+            for (int i = 0; i < reportData.callInDatas.size(); i++) {
+                xVals.add(reportData.callInDatas.get(i).DayID);
             }
 
             ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
 
-            for (int z = 0; z < 2; z++) {
+            ArrayList<Entry> values1 = new ArrayList<Entry>();
 
-                ArrayList<Entry> values = new ArrayList<Entry>();
-
-                for (int i = 0; i < 8; i++) {
-                    double val = (Math.random() * 8) + 3;
-                    values.add(new Entry((float) val, i));
-                }
-
-                LineDataSet d = new LineDataSet(values, "DataSet " + (z + 1));
-                d.setLineWidth(2.5f);
-                d.setCircleRadius(4f);
-
-                int color = mColors[z % mColors.length];
-                d.setColor(color);
-                d.setCircleColor(color);
-                dataSets.add(d);
+            for (int i = 0; i < reportData.callInDatas.size(); i++) {
+                double val = reportData.callInDatas.get(i).DealingCount;
+                values1.add(new Entry((float) val, i));
             }
+
+            LineDataSet d1 = new LineDataSet(values1, "接听数");
+            d1.setLineWidth(2.5f);
+            d1.setCircleRadius(4f);
+
+            int color = mColors[0];
+            d1.setColor(color);
+            d1.setCircleColor(color);
+            dataSets.add(d1);
+
+            ArrayList<Entry> values2 = new ArrayList<Entry>();
+
+            for (int i = 0; i < reportData.callInDatas.size(); i++) {
+                double val = reportData.callInDatas.get(i).AccessCount;
+                values2.add(new Entry((float) val, i));
+            }
+
+            LineDataSet d2 = new LineDataSet(values2, "总数");
+            d1.setLineWidth(2.5f);
+            d1.setCircleRadius(4f);
+
+            int color2 = mColors[1];
+            d2.setColor(color2);
+            d2.setCircleColor(color2);
+            dataSets.add(d2);
 
             LineData data = new LineData(xVals, dataSets);
             ((CallInViewHolder)holder).report_item_callin_linechart.setData(data);
             ((CallInViewHolder)holder).report_item_callin_linechart.invalidate();
-
-
-
-
 
 
         }else if(datas.get(position).type == ReportData.TYPE_CALL_OUT) {
@@ -160,30 +224,42 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((CallOutViewHolder)holder).report_item_callout_linechart.setPinchZoom(false);
 
             ArrayList<String> xVals = new ArrayList<String>();
-            for (int i = 0; i < 8; i++) {
-                xVals.add((i) + "");
+            for (int i = 0; i < reportData.callOutDatas.size(); i++) {
+                xVals.add(reportData.callOutDatas.get(i).ReportTime);
             }
 
             ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
 
-            for (int z = 0; z < 2; z++) {
+            ArrayList<Entry> values1 = new ArrayList<Entry>();
 
-                ArrayList<Entry> values = new ArrayList<Entry>();
-
-                for (int i = 0; i < 8; i++) {
-                    double val = (Math.random() * 8) + 3;
-                    values.add(new Entry((float) val, i));
-                }
-
-                LineDataSet d = new LineDataSet(values, "DataSet " + (z + 1));
-                d.setLineWidth(2.5f);
-                d.setCircleRadius(4f);
-
-                int color = mColors[z % mColors.length];
-                d.setColor(color);
-                d.setCircleColor(color);
-                dataSets.add(d);
+            for (int i = 0; i < reportData.callOutDatas.size(); i++) {
+                double val = reportData.callOutDatas.get(i).DealingCount;
+                values1.add(new Entry((float) val, i));
             }
+            LineDataSet d1 = new LineDataSet(values1, "接听数");
+            d1.setLineWidth(2.5f);
+            d1.setCircleRadius(4f);
+
+            int color = mColors[0];
+            d1.setColor(color);
+            d1.setCircleColor(color);
+            dataSets.add(d1);
+
+            ArrayList<Entry> values2 = new ArrayList<Entry>();
+
+            for (int i = 0; i < reportData.callOutDatas.size(); i++) {
+                double val = reportData.callOutDatas.get(i).AccessCount;
+                values2.add(new Entry((float) val, i));
+            }
+
+            LineDataSet d2 = new LineDataSet(values2, "总数");
+            d1.setLineWidth(2.5f);
+            d1.setCircleRadius(4f);
+
+            int color2 = mColors[1];
+            d2.setColor(color2);
+            d2.setCircleColor(color2);
+            dataSets.add(d2);
 
             LineData data = new LineData(xVals, dataSets);
             ((CallOutViewHolder)holder).report_item_callout_linechart.setData(data);
@@ -207,68 +283,41 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((QueueViewHolder)holder).report_item_queue_barchart.getAxisRight().setEnabled(false);
 
             ArrayList<String> xVals = new ArrayList<String>();
-            for (int i = 0; i < 6; i++) {
-                xVals.add((i+1990) + "");
+            for (int i = 0; i < reportData.queueDatas.size(); i++) {
+                xVals.add(reportData.queueDatas.get(i).QueueName);
             }
 
             ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
             ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
-            ArrayList<BarEntry> yVals3 = new ArrayList<BarEntry>();
 
-            float mult = 6 * 1000f;
-
-            for (int i = 0; i < 6; i++) {
-                float val = (float) (Math.random() * mult) + 3;
+            for (int i = 0; i < reportData.queueDatas.size(); i++) {
+                float val = reportData.queueDatas.get(i).AccessCount;
                 yVals1.add(new BarEntry(val, i));
             }
 
-            for (int i = 0; i < 6; i++) {
-                float val = (float) (Math.random() * mult) + 3;
+            for (int i = 0; i < reportData.queueDatas.size(); i++) {
+                float val = reportData.queueDatas.get(i).AcceptCount;
                 yVals2.add(new BarEntry(val, i));
             }
 
-            for (int i = 0; i < 6; i++) {
-                float val = (float) (Math.random() * mult) + 3;
-                yVals3.add(new BarEntry(val, i));
-            }
+            BarDataSet set1, set2;
 
-            BarDataSet set1, set2, set3;
+            // create 3 datasets with different types
+            set1 = new BarDataSet(yVals1, "排队总数");
+            set1.setColor(Color.rgb(104, 241, 175));
+            set2 = new BarDataSet(yVals2, "接通数");
+            set2.setColor(Color.rgb(164, 228, 251));
 
-            if (((QueueViewHolder)holder).report_item_queue_barchart.getData() != null &&
-                    ((QueueViewHolder)holder).report_item_queue_barchart.getData().getDataSetCount() > 0) {
-                set1 = (BarDataSet)((QueueViewHolder)holder).report_item_queue_barchart.getData().getDataSetByIndex(0);
-                set2 = (BarDataSet)((QueueViewHolder)holder).report_item_queue_barchart.getData().getDataSetByIndex(1);
-                set3 = (BarDataSet)((QueueViewHolder)holder).report_item_queue_barchart.getData().getDataSetByIndex(2);
-                set1.setYVals(yVals1);
-                set2.setYVals(yVals2);
-                set3.setYVals(yVals3);
-                ((QueueViewHolder)holder).report_item_queue_barchart.getData().setXVals(xVals);
-                ((QueueViewHolder)holder).report_item_queue_barchart.getData().notifyDataChanged();
-                ((QueueViewHolder)holder).report_item_queue_barchart.notifyDataSetChanged();
-            } else {
-                // create 3 datasets with different types
-                set1 = new BarDataSet(yVals1, "Company A");
-                // set1.setColors(ColorTemplate.createColors(getApplicationContext(),
-                // ColorTemplate.FRESH_COLORS));
-                set1.setColor(Color.rgb(104, 241, 175));
-                set2 = new BarDataSet(yVals2, "Company B");
-                set2.setColor(Color.rgb(164, 228, 251));
-                set3 = new BarDataSet(yVals3, "Company C");
-                set3.setColor(Color.rgb(242, 247, 158));
+            ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+            dataSets.add(set1);
+            dataSets.add(set2);
 
-                ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-                dataSets.add(set1);
-                dataSets.add(set2);
-                dataSets.add(set3);
+            BarData data = new BarData(xVals, dataSets);
 
-                BarData data = new BarData(xVals, dataSets);
+            // add space between the dataset groups in percent of bar-width
+            data.setGroupSpace(80f);
 
-                // add space between the dataset groups in percent of bar-width
-                data.setGroupSpace(80f);
-
-                ((QueueViewHolder)holder).report_item_queue_barchart.setData(data);
-            }
-
+            ((QueueViewHolder)holder).report_item_queue_barchart.setData(data);
             ((QueueViewHolder)holder).report_item_queue_barchart.invalidate();
 
 
@@ -302,11 +351,15 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     class CallInViewHolder extends RecyclerView.ViewHolder implements OnDragVHListener{
         TextView tv;
         LineChart report_item_callin_linechart;
+        TextView report_item_callin_time_day, report_item_callin_time_week, report_item_callin_time_month;
 
         public CallInViewHolder(View itemView) {
             super(itemView);
             tv = (TextView) itemView.findViewById(R.id.report_item_tv_name);
             report_item_callin_linechart = (LineChart) itemView.findViewById(R.id.report_item_callin_linechart);
+            report_item_callin_time_day = (TextView) itemView.findViewById(R.id.report_item_callin_time_day);
+            report_item_callin_time_week = (TextView) itemView.findViewById(R.id.report_item_callin_time_week);
+            report_item_callin_time_month = (TextView) itemView.findViewById(R.id.report_item_callin_time_month);
         }
 
         @Override

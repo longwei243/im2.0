@@ -47,4 +47,7 @@
 
     <color name="acttransparent">#50000000</color>
     <color name="grey_erp">#f1f1f1</color>
+    <color name="report_table_content">#9b9c9d</color>
+    <color name="report_callin_time_tv">#fb6c3f</color>
+    <color name="report_callout_time_tv">#1fabe7</color>
 </resources>

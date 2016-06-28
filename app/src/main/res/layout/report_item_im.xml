@@ -17,7 +17,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:textSize="20sp"
-            android:text="呼入"/>
+            android:text="客服"/>
 
         <LinearLayout
             android:layout_centerVertical="true"
@@ -28,40 +28,40 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/report_item_queue_tv_time_day"
+                android:id="@+id/report_item_im_tv_time_day"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="日"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:background="@drawable/bg_report_callin_day_checked"
+                android:background="@drawable/bg_report_callout_day_checked"
                 android:textColor="@color/all_white"
                 />
             <TextView
-                android:id="@+id/report_item_queue_tv_time_week"
+                android:id="@+id/report_item_im_tv_time_week"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="周"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:background="@drawable/bg_report_callin_week_normal"
-                android:textColor="@color/report_callin_time_tv"
+                android:background="@drawable/bg_report_callout_week_normal"
+                android:textColor="@color/report_callout_time_tv"
                 />
             <TextView
-                android:id="@+id/report_item_queue_tv_time_month"
+                android:id="@+id/report_item_im_tv_time_month"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="月"
                 android:textSize="20sp"
                 android:gravity="center"
-                android:background="@drawable/bg_report_callin_month_normal"
-                android:textColor="@color/report_callin_time_tv"
+                android:background="@drawable/bg_report_callout_month_normal"
+                android:textColor="@color/report_callout_time_tv"
                 />
         </LinearLayout>
     </RelativeLayout>
 
     <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/report_item_queue_barchart"
+        android:id="@+id/report_item_im_barchart"
         android:layout_width="match_parent"
         android:layout_height="240dp">
 

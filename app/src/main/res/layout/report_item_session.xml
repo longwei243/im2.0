@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
-                android:id="@+id/report_item_queue_tv_time_day"
+                android:id="@+id/report_item_session_time_day"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="日"
@@ -38,7 +38,7 @@
                 android:textColor="@color/all_white"
                 />
             <TextView
-                android:id="@+id/report_item_queue_tv_time_week"
+                android:id="@+id/report_item_session_time_week"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="周"
@@ -48,7 +48,7 @@
                 android:textColor="@color/report_callin_time_tv"
                 />
             <TextView
-                android:id="@+id/report_item_queue_tv_time_month"
+                android:id="@+id/report_item_session_time_month"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="月"
@@ -60,12 +60,12 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/report_item_queue_barchart"
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/report_item_session_linechart"
         android:layout_width="match_parent"
         android:layout_height="240dp">
 
-    </com.github.mikephil.charting.charts.BarChart>
+    </com.github.mikephil.charting.charts.LineChart>
 
     <TableLayout
         android:layout_width="match_parent"

@@ -4,7 +4,7 @@ package com.moor.im.options.mobileassistant.report.model;
  * Created by longwei on 2016/6/22.
  */
 public class SessionData {
-
+    public String ReportTime;
     public String dayId;
     public int sessionCount;
     public int robotSessionCount;
@@ -14,4 +14,5 @@ public class SessionData {
     public int badCount;
     public int mediumCount;
     public int lostSessionCount;
+    public String X_axis;
 }

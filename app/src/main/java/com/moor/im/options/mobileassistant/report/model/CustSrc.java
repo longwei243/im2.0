@@ -8,5 +8,5 @@ import java.io.Serializable;
 public class CustSrc implements Serializable{
     public String srcId;
     public String srcName;
-    public String srcCount;
+    public int srcCount;
 }

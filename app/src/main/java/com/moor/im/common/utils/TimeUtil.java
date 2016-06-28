@@ -99,7 +99,7 @@ public class TimeUtil {
 			time = "0";
 		}else if(seconds < 60) {
 			time = seconds + "";
-		}else if(seconds > 60) {
+		}else if(seconds >= 60) {
 			int min = (int)(seconds / 60);
 			int sec = (int)(seconds % 60);
 			time = min +"分"+sec;

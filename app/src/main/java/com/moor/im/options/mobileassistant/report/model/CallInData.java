@@ -14,5 +14,6 @@ public class CallInData {
     public int BlackListCount;
     public int VoicemailCount;
     public int AccessCount;
+    public String X_axis;
 
 }

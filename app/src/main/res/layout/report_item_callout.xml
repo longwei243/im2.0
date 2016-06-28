@@ -23,29 +23,39 @@
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <TextView
+                android:id="@+id/report_item_callout_time_day"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="日"
                 android:textSize="20sp"
                 android:gravity="center"
+                android:background="@drawable/bg_report_callout_day_checked"
+                android:textColor="@color/all_white"
                 />
             <TextView
+                android:id="@+id/report_item_callout_time_week"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="周"
                 android:textSize="20sp"
                 android:gravity="center"
+                android:background="@drawable/bg_report_callout_week_normal"
+                android:textColor="@color/report_callout_time_tv"
                 />
             <TextView
+                android:id="@+id/report_item_callout_time_month"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="月"
                 android:textSize="20sp"
                 android:gravity="center"
+                android:background="@drawable/bg_report_callout_month_normal"
+                android:textColor="@color/report_callout_time_tv"
                 />
         </LinearLayout>
     </RelativeLayout>
@@ -57,79 +67,98 @@
 
     </com.github.mikephil.charting.charts.LineChart>
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+        android:stretchColumns="1,2,3,4"
+        android:layout_margin="16dp"
+        >
+        <TableRow>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
                 android:textSize="18sp"
                 android:text="时间"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="xxxxxxx"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
                 android:textSize="18sp"
                 android:text="总数"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="0"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
                 android:textSize="18sp"
                 android:text="接听数"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="0"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
                 android:textSize="18sp"
                 android:text="接听率"/>
+        </TableRow>
+        <TableRow>
             <TextView
+                android:id="@+id/report_item_callout_table_tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:textColor="@color/report_table_content"
+                android:textSize="18sp"
+                android:text="20160201"/>
+            <TextView
+                android:id="@+id/report_item_callout_table_tv_access"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/report_table_content"
                 android:textSize="18sp"
                 android:text="0"/>
-        </LinearLayout>
-    </LinearLayout>
+            <TextView
+                android:id="@+id/report_item_callout_table_tv_deal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/report_table_content"
+                android:textSize="18sp"
+                android:text="0"/>
+            <TextView
+                android:id="@+id/report_item_callout_table_tv_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_report_table"
+                android:gravity="center"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/report_table_content"
+                android:textSize="18sp"
+                android:text="0%"/>
+        </TableRow>
+    </TableLayout>
 
 </LinearLayout>

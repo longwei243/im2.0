@@ -22,6 +22,7 @@ import com.moor.im.options.mobileassistant.report.adapter.ItemDragHelperCallback
 import com.moor.im.options.mobileassistant.report.adapter.ReportAdapter;
 import com.moor.im.options.mobileassistant.report.model.CallInData;
 import com.moor.im.options.mobileassistant.report.model.CallOutData;
+import com.moor.im.options.mobileassistant.report.model.CustData;
 import com.moor.im.options.mobileassistant.report.model.IMData;
 import com.moor.im.options.mobileassistant.report.model.QueueData;
 import com.moor.im.options.mobileassistant.report.model.ReportData;
@@ -130,7 +131,7 @@ public class ReportFragment extends BaseLazyFragment{
                     ReportData imsessionRd = new ReportData();
                     imsessionRd.type = ReportData.TYPE_SESSION;
                     imsessionRd.name = "会话数";
-                    imsessionRd.imDatas = gson.fromJson(imsession.getJSONArray("data").toString(),
+                    imsessionRd.sessionDatas = gson.fromJson(imsession.getJSONArray("data").toString(),
                             new TypeToken<List<SessionData>>() {
                             }.getType());
                     reportDataList.add(imsessionRd);
@@ -142,8 +143,8 @@ public class ReportFragment extends BaseLazyFragment{
                     ReportData customerincRd = new ReportData();
                     customerincRd.type = ReportData.TYPE_CUSTOMER;
                     customerincRd.name = "客户来源";
-                    customerincRd.imDatas = gson.fromJson(customerinc.getJSONArray("data").toString(),
-                            new TypeToken<List<SessionData>>() {
+                    customerincRd.custDatas = gson.fromJson(customerinc.getJSONArray("data").toString(),
+                            new TypeToken<List<CustData>>() {
                             }.getType());
                     reportDataList.add(customerincRd);
                 }

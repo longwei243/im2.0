@@ -13,4 +13,5 @@ public class CallOutData {
     public int AccessCount;
     public int DealingRate;
     public int CallTimeLengthAvg;
+    public String X_axis;
 }

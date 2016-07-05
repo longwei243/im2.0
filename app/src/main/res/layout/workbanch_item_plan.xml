@@ -6,7 +6,7 @@
     android:orientation="vertical"
     >
     <RelativeLayout
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="16dp"
+            android:layout_marginLeft="8dp"
             android:textSize="20sp"
             android:textColor="@color/maincolor"
             android:text="王经理"/>
@@ -23,16 +23,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="16dp"
+            android:layout_marginRight="8dp"
             android:textSize="16sp"
             android:text="2016-06-13"/>
     </RelativeLayout>
     <TextView
         android:id="@+id/workbanch_item_plan_tv_action"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginTop="6dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:text="联系大家的拉开放大发啊"/>
+
+    <View
+        android:id="@+id/workbanch_item_plan_view_sp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="3dp"
+        android:background="@color/lightgrey"/>
+
 </LinearLayout>

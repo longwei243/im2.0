@@ -33,7 +33,7 @@ public class ReportActivity extends BaseActivity{
         report_text = (TextView) findViewById(R.id.report_text);
 
         TextView titlebar_name = (TextView) findViewById(R.id.titlebar_name);
-        titlebar_name.setText("报表");
+        titlebar_name.setText("仪表盘");
         findViewById(R.id.titlebar_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

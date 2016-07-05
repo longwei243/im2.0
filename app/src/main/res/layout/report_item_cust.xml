@@ -68,97 +68,13 @@
     </com.github.mikephil.charting.charts.LineChart>
 
     <TableLayout
+        android:id="@+id/report_item_cust_tablelayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:stretchColumns="1,2,3,4"
         android:layout_margin="16dp"
         >
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textSize="18sp"
-                android:text="时间"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textSize="18sp"
-                android:text="总数"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textSize="18sp"
-                android:text="接听数"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textSize="18sp"
-                android:text="接听率"/>
-        </TableRow>
-        <TableRow>
-            <TextView
-                android:id="@+id/report_item_callout_table_tv_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:textColor="@color/report_table_content"
-                android:textSize="18sp"
-                android:text="20160201"/>
-            <TextView
-                android:id="@+id/report_item_callout_table_tv_access"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textColor="@color/report_table_content"
-                android:textSize="18sp"
-                android:text="0"/>
-            <TextView
-                android:id="@+id/report_item_callout_table_tv_deal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textColor="@color/report_table_content"
-                android:textSize="18sp"
-                android:text="0"/>
-            <TextView
-                android:id="@+id/report_item_callout_table_tv_progress"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
-                android:gravity="center"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textColor="@color/report_table_content"
-                android:textSize="18sp"
-                android:text="0%"/>
-        </TableRow>
+
     </TableLayout>
 
 </LinearLayout>

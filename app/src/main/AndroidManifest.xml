@@ -118,6 +118,7 @@
             android:theme="@style/acttranslucent"
             />
         <activity android:name=".options.mobileassistant.report.ReportActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.report.PlanActivity" android:screenOrientation="portrait"/>
 
         <receiver android:name=".common.receiver.SocketReceiver">
             <intent-filter>

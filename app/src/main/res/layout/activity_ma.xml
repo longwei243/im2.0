@@ -67,9 +67,8 @@
     </LinearLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:background="@color/lightgrey"
-        android:layout_marginBottom="2dp"
         />
     <LinearLayout
         android:id="@+id/ma_erp"
@@ -135,9 +134,8 @@
     </LinearLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:background="@color/lightgrey"
-        android:layout_marginBottom="2dp"
         />
     <LinearLayout
         android:id="@+id/ma_report"
@@ -154,7 +152,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
             android:scaleType="fitXY"
-            android:src="@drawable/head_default_file"
+            android:src="@drawable/head_default_report"
             />
 
         <LinearLayout
@@ -174,7 +172,7 @@
                     android:textSize="18sp"
                     android:textColor="@color/all_black"
                     android:layout_weight="1"
-                    android:text="报表"
+                    android:text="仪表盘"
                     />
 
                 <TextView
@@ -203,8 +201,7 @@
     </LinearLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.5dp"
         android:background="@color/lightgrey"
-        android:layout_marginBottom="2dp"
         />
 </LinearLayout>

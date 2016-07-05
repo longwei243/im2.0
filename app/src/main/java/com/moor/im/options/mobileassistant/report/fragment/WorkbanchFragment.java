@@ -1,6 +1,7 @@
 package com.moor.im.options.mobileassistant.report.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -12,6 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.moor.im.R;
 import com.moor.im.common.db.dao.InfoDao;
 import com.moor.im.common.db.dao.UserDao;
@@ -23,12 +26,16 @@ import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.GridViewInScrollView;
 import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.mobileassistant.model.Cust;
+import com.moor.im.options.mobileassistant.report.PlanActivity;
+import com.moor.im.options.mobileassistant.report.model.CallInData;
+import com.moor.im.options.mobileassistant.report.model.Plan;
 import com.moor.im.options.mobileassistant.report.view.RoundProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +49,7 @@ import rx.schedulers.Schedulers;
 public class WorkbanchFragment extends BaseLazyFragment{
     private RoundProgressBar rpb_callin, rpb_callout;
     private LinearLayout workbanch_ll_plan;
+    private TextView workbanch_plan_tv_more;
     private TextView workbanch_callin_tv_timelength, workbanch_callin_tv_link, workbanch_callin_tv_count;
     private TextView workbanch_callout_tv_timelength, workbanch_callout_tv_link, workbanch_callout_tv_count;
     private TextView workbanch_erp_tv_dcl, workbanch_erp_tv_dlq;
@@ -83,10 +91,54 @@ public class WorkbanchFragment extends BaseLazyFragment{
         try {
             JSONObject jsonObject = new JSONObject(s);
             //联系计划
-            JSONArray planArray = jsonObject.getJSONArray("dateList");
+            final JSONArray planArray = jsonObject.getJSONArray("dateList");
             workbanch_ll_plan.removeAllViews();
             if(planArray.length() <= 3) {
-                for(int i=0; i<planArray.length(); i++) {
+                workbanch_plan_tv_more.setVisibility(View.GONE);
+                if(planArray.length() == 0) {
+                    TextView tv = new TextView(getActivity());
+                    tv.setText("目前没有联系计划");
+                    workbanch_ll_plan.addView(tv);
+                }else {
+                    for(int i=0; i<planArray.length(); i++) {
+                        JSONObject plan = planArray.getJSONObject(i);
+                        String name = plan.getString("name");
+                        String time = plan.getString("notifyTime");
+                        String action = plan.getString("action");
+
+                        LinearLayout plan_item = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.workbanch_item_plan, null);
+                        TextView workbanch_item_plan_tv_name = (TextView) plan_item.findViewById(R.id.workbanch_item_plan_tv_name);
+                        TextView workbanch_item_plan_tv_time = (TextView) plan_item.findViewById(R.id.workbanch_item_plan_tv_time);
+                        TextView workbanch_item_plan_tv_action = (TextView) plan_item.findViewById(R.id.workbanch_item_plan_tv_action);
+                        workbanch_item_plan_tv_name.setText(name);
+                        workbanch_item_plan_tv_time.setText(time);
+                        workbanch_item_plan_tv_action.setText(action);
+
+                        View  view_sp = plan_item.findViewById(R.id.workbanch_item_plan_view_sp);
+                        if(i == planArray.length()-1) {
+                            view_sp.setVisibility(View.GONE);
+                        }
+
+                        workbanch_ll_plan.addView(plan_item);
+                    }
+                }
+
+            }else {
+                Gson gson = new Gson();
+                final List<Plan> plans = gson.fromJson(planArray.toString(),
+                        new TypeToken<List<Plan>>() {
+                        }.getType());
+                workbanch_plan_tv_more.setVisibility(View.VISIBLE);
+                workbanch_plan_tv_more.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent planIntent = new Intent(getActivity(), PlanActivity.class);
+                        planIntent.putExtra("plan", (Serializable) plans);
+                        startActivity(planIntent);
+                    }
+                });
+
+                for(int i=0; i<3; i++) {
                     JSONObject plan = planArray.getJSONObject(i);
                     String name = plan.getString("name");
                     String time = plan.getString("notifyTime");
@@ -100,10 +152,13 @@ public class WorkbanchFragment extends BaseLazyFragment{
                     workbanch_item_plan_tv_time.setText(time);
                     workbanch_item_plan_tv_action.setText(action);
 
+                    View  view_sp = plan_item.findViewById(R.id.workbanch_item_plan_view_sp);
+                    if(i == 2) {
+                        view_sp.setVisibility(View.GONE);
+                    }
+
                     workbanch_ll_plan.addView(plan_item);
                 }
-            }else {
-
             }
 
             //通话情况
@@ -235,6 +290,8 @@ public class WorkbanchFragment extends BaseLazyFragment{
         workbanch_app_pb = (ProgressBar) view.findViewById(R.id.workbanch_app_pb);
         workbanch_email_pb = (ProgressBar) view.findViewById(R.id.workbanch_email_pb);
         workbanch_cust_gv = (GridViewInScrollView) view.findViewById(R.id.workbanch_cust_gv);
+        workbanch_plan_tv_more = (TextView) view.findViewById(R.id.workbanch_plan_tv_more);
+
     }
 
 

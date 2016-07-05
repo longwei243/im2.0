@@ -3,6 +3,6 @@
 
     <solid android:color="@color/all_white"/>
     <stroke android:color="@color/report_callin_time_tv" android:width="1dp"/>
-    <corners android:topRightRadius="6dp"
-        android:bottomRightRadius="6dp"/>
+    <corners android:topRightRadius="3dp"
+        android:bottomRightRadius="3dp"/>
 </shape>

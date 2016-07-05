@@ -2,16 +2,16 @@ package com.moor.im.options.mobileassistant.report.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -20,7 +20,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.LargeValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -35,7 +34,6 @@ import com.moor.im.options.mobileassistant.report.MyValueFormatter;
 import com.moor.im.options.mobileassistant.report.model.CallInData;
 import com.moor.im.options.mobileassistant.report.model.CallOutData;
 import com.moor.im.options.mobileassistant.report.model.CustData;
-import com.moor.im.options.mobileassistant.report.model.CustSrc;
 import com.moor.im.options.mobileassistant.report.model.IMData;
 import com.moor.im.options.mobileassistant.report.model.QueueData;
 import com.moor.im.options.mobileassistant.report.model.ReportData;
@@ -60,11 +58,13 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private List<ReportData> datas;
 
     private int[] mColors = new int[] {
-            ColorTemplate.VORDIPLOM_COLORS[0],
-            ColorTemplate.VORDIPLOM_COLORS[1],
-            ColorTemplate.VORDIPLOM_COLORS[2],
-            ColorTemplate.VORDIPLOM_COLORS[3]
+            Color.rgb(237, 114, 76),
+            Color.rgb(31, 217, 156),
+            Color.rgb(29, 172, 229),
+            Color.rgb(125, 137, 238)
     };
+
+    private String callInTime="今天", callOutTime="今天", sessionTime="今天", custTime="今天";
 
     public ReportAdapter(Context context, List<ReportData> datas) {
         this.context = context;
@@ -111,6 +111,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CallInViewHolder)holder).report_item_callin_time_month.setBackgroundResource(R.drawable.bg_report_callin_month_normal);
                     ((CallInViewHolder)holder).report_item_callin_time_month.setTextColor(context.getResources().getColor(R.color.report_callin_time_tv));
 
+                    callInTime = "今天";
                     refreshData("callin", "day", reportData);
 
                 }
@@ -125,6 +126,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CallInViewHolder)holder).report_item_callin_time_month.setBackgroundResource(R.drawable.bg_report_callin_month_normal);
                     ((CallInViewHolder)holder).report_item_callin_time_month.setTextColor(context.getResources().getColor(R.color.report_callin_time_tv));
 
+                    callInTime = "一周内";
                     refreshData("callin", "week", reportData);
 
                 }
@@ -139,6 +141,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CallInViewHolder)holder).report_item_callin_time_month.setBackgroundResource(R.drawable.bg_report_callin_month_checked);
                     ((CallInViewHolder)holder).report_item_callin_time_month.setTextColor(context.getResources().getColor(R.color.all_white));
 
+                    callInTime = "一月内";
                     refreshData("callin", "month", reportData);
 
                 }
@@ -165,8 +168,8 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
 
             LineDataSet d1 = new LineDataSet(values1, "接听数");
-            d1.setLineWidth(2.5f);
-            d1.setCircleRadius(4f);
+            d1.setLineWidth(2f);
+            d1.setCircleRadius(2f);
 
             int color = mColors[0];
             d1.setColor(color);
@@ -182,8 +185,8 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
 
             LineDataSet d2 = new LineDataSet(values2, "总数");
-            d2.setLineWidth(2.5f);
-            d2.setCircleRadius(4f);
+            d2.setLineWidth(2f);
+            d2.setCircleRadius(2f);
 
             int color2 = mColors[1];
             d2.setColor(color2);
@@ -199,12 +202,12 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if(accessCountSum != 0) {
                 int progress = dealingCountSum * 100 /accessCountSum;
                 //界面展示
-                ((CallInViewHolder)holder).report_item_callin_table_tv_time.setText("xxx");
+                ((CallInViewHolder)holder).report_item_callin_table_tv_time.setText(callInTime);
                 ((CallInViewHolder)holder).report_item_callin_table_tv_access.setText(accessCountSum+"");
                 ((CallInViewHolder)holder).report_item_callin_table_tv_deal.setText(dealingCountSum+"");
                 ((CallInViewHolder)holder).report_item_callin_table_tv_progress.setText(progress+"%");
             }else {
-                ((CallInViewHolder)holder).report_item_callin_table_tv_time.setText("xxx");
+                ((CallInViewHolder)holder).report_item_callin_table_tv_time.setText(callInTime);
                 ((CallInViewHolder)holder).report_item_callin_table_tv_access.setText("0");
                 ((CallInViewHolder)holder).report_item_callin_table_tv_deal.setText("0");
                 ((CallInViewHolder)holder).report_item_callin_table_tv_progress.setText("0%");
@@ -223,6 +226,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CallOutViewHolder)holder).report_item_callout_time_month.setBackgroundResource(R.drawable.bg_report_callout_month_normal);
                     ((CallOutViewHolder)holder).report_item_callout_time_month.setTextColor(context.getResources().getColor(R.color.report_callout_time_tv));
 
+                    callOutTime = "今天";
                     refreshData("callout", "day", reportData);
 
                 }
@@ -237,6 +241,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CallOutViewHolder)holder).report_item_callout_time_month.setBackgroundResource(R.drawable.bg_report_callout_month_normal);
                     ((CallOutViewHolder)holder).report_item_callout_time_month.setTextColor(context.getResources().getColor(R.color.report_callout_time_tv));
 
+                    callOutTime = "一周内";
                     refreshData("callout", "week", reportData);
 
                 }
@@ -251,6 +256,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CallOutViewHolder)holder).report_item_callout_time_month.setBackgroundResource(R.drawable.bg_report_callout_month_checked);
                     ((CallOutViewHolder)holder).report_item_callout_time_month.setTextColor(context.getResources().getColor(R.color.all_white));
 
+                    callOutTime = "一月内";
                     refreshData("callout", "month", reportData);
 
                 }
@@ -266,15 +272,19 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
 
+
+            int dealingCountSum = 0;
+            int accessCountSum = 0;
             ArrayList<Entry> values1 = new ArrayList<Entry>();
 
             for (int i = 0; i < reportData.callOutDatas.size(); i++) {
                 double val = reportData.callOutDatas.get(i).DealingCount;
                 values1.add(new Entry((float) val, i));
+                dealingCountSum += val;
             }
             LineDataSet d1 = new LineDataSet(values1, "接听数");
-            d1.setLineWidth(2.5f);
-            d1.setCircleRadius(4f);
+            d1.setLineWidth(2f);
+            d1.setCircleRadius(2f);
 
             int color = mColors[0];
             d1.setColor(color);
@@ -286,11 +296,12 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             for (int i = 0; i < reportData.callOutDatas.size(); i++) {
                 double val = reportData.callOutDatas.get(i).AccessCount;
                 values2.add(new Entry((float) val, i));
+                accessCountSum += val;
             }
 
             LineDataSet d2 = new LineDataSet(values2, "总数");
-            d2.setLineWidth(2.5f);
-            d2.setCircleRadius(4f);
+            d2.setLineWidth(2f);
+            d2.setCircleRadius(2f);
 
             int color2 = mColors[1];
             d2.setColor(color2);
@@ -301,6 +312,20 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             data.setValueFormatter(new MyValueFormatter());
             ((CallOutViewHolder)holder).report_item_callout_linechart.setData(data);
             ((CallOutViewHolder)holder).report_item_callout_linechart.invalidate();
+
+            if(accessCountSum != 0) {
+                int progress = dealingCountSum * 100 /accessCountSum;
+                //界面展示
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_time.setText(callOutTime);
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_access.setText(accessCountSum+"");
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_deal.setText(dealingCountSum+"");
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_progress.setText(progress+"%");
+            }else {
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_time.setText(callOutTime);
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_access.setText("0");
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_deal.setText("0");
+                ((CallOutViewHolder)holder).report_item_callout_table_tv_progress.setText("0%");
+            }
 
         }else if(datas.get(position).type == ReportData.TYPE_QUEUE) {
             ((QueueViewHolder)holder).tv.setText(reportData.name);
@@ -370,20 +395,17 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             for (int i = 0; i < reportData.queueDatas.size(); i++) {
                 float val = reportData.queueDatas.get(i).AccessCount;
                 yVals1.add(new BarEntry(val, i));
-            }
-
-            for (int i = 0; i < reportData.queueDatas.size(); i++) {
-                float val = reportData.queueDatas.get(i).AcceptCount;
-                yVals2.add(new BarEntry(val, i));
+                float val1 = reportData.queueDatas.get(i).AcceptCount;
+                yVals2.add(new BarEntry(val1, i));
             }
 
             BarDataSet set1, set2;
 
             // create 2 datasets with different types
             set1 = new BarDataSet(yVals1, "排队总数");
-            set1.setColor(Color.rgb(104, 241, 175));
+            set1.setColor(mColors[0]);
             set2 = new BarDataSet(yVals2, "接通数");
-            set2.setColor(Color.rgb(164, 228, 251));
+            set2.setColor(mColors[1]);
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set1);
@@ -397,7 +419,31 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((QueueViewHolder)holder).report_item_queue_barchart.setData(data);
             ((QueueViewHolder)holder).report_item_queue_barchart.invalidate();
 
+            ((QueueViewHolder)holder).report_item_queue_tablelayout.removeAllViews();
+            if(reportData.queueDatas.size() > 0) {
+                TableRow headTableRow = (TableRow) LayoutInflater.from(context).inflate(R.layout.report_item_queue_table_head, null);
+                ((QueueViewHolder)holder).report_item_queue_tablelayout.addView(headTableRow);
+                for(int i = 0; i < reportData.queueDatas.size(); i++) {
+                    String name = reportData.queueDatas.get(i).QueueName;
+                    String accessCountStr = reportData.queueDatas.get(i).AccessCount + "";
+                    String acceptCountStr = reportData.queueDatas.get(i).AcceptCount + "";
+                    String progress = reportData.queueDatas.get(i).AcceptRate;
 
+                    TableRow tableRow = (TableRow) LayoutInflater.from(context).inflate(R.layout.report_item_queue_table_layout, null);
+                    TextView tv_name = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_name);
+                    TextView tv_access = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_access);
+                    TextView tv_accept = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_accept);
+                    TextView tv_progress = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_progress);
+
+                    tv_name.setText(name);
+                    tv_access.setText(accessCountStr);
+                    tv_accept.setText(acceptCountStr);
+                    tv_progress.setText(progress);
+
+                    ((QueueViewHolder)holder).report_item_queue_tablelayout.addView(tableRow);
+                }
+
+            }
 
         }else if(datas.get(position).type == ReportData.TYPE_IM) {
             ((IMViewHolder)holder).tv.setText(reportData.name);
@@ -459,7 +505,12 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             ArrayList<String> xVals = new ArrayList<String>();
             for (int i = 0; i < reportData.imDatas.size(); i++) {
-                xVals.add(NullUtil.checkNull(reportData.imDatas.get(i).platform));
+                if(reportData.imDatas.get(i).platform != null) {
+                    xVals.add(reportData.imDatas.get(i).platform);
+                }else {
+                    xVals.add("未知");
+                }
+
             }
 
             ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
@@ -470,34 +521,25 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             for (int i = 0; i < reportData.imDatas.size(); i++) {
                 float val = reportData.imDatas.get(i).sessionCount;
                 yVals1.add(new BarEntry(val, i));
+                float val1 = reportData.imDatas.get(i).visitorCount;
+                yVals2.add(new BarEntry(val1, i));
+                float val2 = reportData.imDatas.get(i).messageCount;
+                yVals3.add(new BarEntry(val2, i));
+                float val3 = reportData.imDatas.get(i).robotMessageCount;
+                yVals4.add(new BarEntry(val3, i));
             }
-
-            for (int i = 0; i < reportData.imDatas.size(); i++) {
-                float val = reportData.imDatas.get(i).visitorCount;
-                yVals2.add(new BarEntry(val, i));
-            }
-            for (int i = 0; i < reportData.imDatas.size(); i++) {
-                float val = reportData.imDatas.get(i).messageCount;
-                yVals3.add(new BarEntry(val, i));
-            }
-            for (int i = 0; i < reportData.imDatas.size(); i++) {
-                float val = reportData.imDatas.get(i).robotMessageCount;
-                yVals4.add(new BarEntry(val, i));
-            }
-
-
 
             BarDataSet set1, set2, set3, set4;
 
             // create 2 datasets with different types
             set1 = new BarDataSet(yVals1, "对话数");
-            set1.setColor(Color.rgb(104, 241, 175));
+            set1.setColor(mColors[0]);
             set2 = new BarDataSet(yVals2, "访客数");
-            set2.setColor(Color.rgb(164, 228, 251));
+            set2.setColor(mColors[1]);
             set3 = new BarDataSet(yVals3, "消息数");
-            set3.setColor(Color.rgb(111, 111, 251));
+            set3.setColor(mColors[2]);
             set4 = new BarDataSet(yVals4, "机器人消息数");
-            set4.setColor(Color.rgb(222, 228, 251));
+            set4.setColor(mColors[3]);
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
             dataSets.add(set1);
@@ -514,6 +556,34 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             ((IMViewHolder)holder).report_item_im_barchart.invalidate();
 
 
+            ((IMViewHolder)holder).report_item_im_tablelayout.removeAllViews();
+            if(reportData.imDatas.size() > 0) {
+                TableRow headTableRow = (TableRow) LayoutInflater.from(context).inflate(R.layout.report_item_im_table_head, null);
+                ((IMViewHolder) holder).report_item_im_tablelayout.addView(headTableRow);
+                for (int i = 0; i < reportData.imDatas.size(); i++) {
+                    String name = "未知";
+                    if(reportData.imDatas.get(i).platform != null) {
+                        name = reportData.imDatas.get(i).platform;
+                    }
+                    String accessCountStr = reportData.imDatas.get(i).sessionCount + "";
+                    String acceptCountStr = reportData.imDatas.get(i).visitorCount + "";
+                    String progress = reportData.imDatas.get(i).messageCount + "";
+
+                    TableRow tableRow = (TableRow) LayoutInflater.from(context).inflate(R.layout.report_item_im_table_layout, null);
+                    TextView tv_name = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_name);
+                    TextView tv_access = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_access);
+                    TextView tv_accept = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_accept);
+                    TextView tv_progress = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_progress);
+
+                    tv_name.setText(name);
+                    tv_access.setText(accessCountStr);
+                    tv_accept.setText(acceptCountStr);
+                    tv_progress.setText(progress);
+
+                    ((IMViewHolder) holder).report_item_im_tablelayout.addView(tableRow);
+                }
+            }
+
         }else if(datas.get(position).type == ReportData.TYPE_SESSION) {
             ((SessionViewHolder)holder).tv.setText(reportData.name);
             ((SessionViewHolder)holder).report_item_session_time_day.setOnClickListener(new View.OnClickListener() {
@@ -526,6 +596,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((SessionViewHolder)holder).report_item_session_time_month.setBackgroundResource(R.drawable.bg_report_callin_month_normal);
                     ((SessionViewHolder)holder).report_item_session_time_month.setTextColor(context.getResources().getColor(R.color.report_callin_time_tv));
 
+                    sessionTime = "今天";
                     refreshData("imsession", "day", reportData);
 
                 }
@@ -541,6 +612,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((SessionViewHolder)holder).report_item_session_time_month.setBackgroundResource(R.drawable.bg_report_callin_month_normal);
                     ((SessionViewHolder)holder).report_item_session_time_month.setTextColor(context.getResources().getColor(R.color.report_callin_time_tv));
 
+                    sessionTime = "一周内";
                     refreshData("imsession", "week", reportData);
 
                 }
@@ -555,6 +627,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((SessionViewHolder)holder).report_item_session_time_month.setBackgroundResource(R.drawable.bg_report_callin_month_checked);
                     ((SessionViewHolder)holder).report_item_session_time_month.setTextColor(context.getResources().getColor(R.color.all_white));
 
+                    sessionTime = "一月内";
                     refreshData("imsession", "month", reportData);
 
                 }
@@ -567,16 +640,18 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 xVals.add(reportData.sessionDatas.get(i).X_axis);
             }
 
+            int manualCountSum=0, robotCountSum=0, convertCountSum=0;
             ArrayList<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
 
             ArrayList<Entry> values1 = new ArrayList<Entry>();
             for (int i = 0; i < reportData.sessionDatas.size(); i++) {
                 double val = reportData.sessionDatas.get(i).manualSessionCount;
                 values1.add(new Entry((float) val, i));
+                manualCountSum += val;
             }
             LineDataSet d1 = new LineDataSet(values1, "人工对话数");
-            d1.setLineWidth(2.5f);
-            d1.setCircleRadius(4f);
+            d1.setLineWidth(2f);
+            d1.setCircleRadius(2f);
             int color = mColors[0];
             d1.setColor(color);
             d1.setCircleColor(color);
@@ -586,10 +661,11 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             for (int i = 0; i < reportData.sessionDatas.size(); i++) {
                 double val = reportData.sessionDatas.get(i).robotSessionCount;
                 values2.add(new Entry((float) val, i));
+                robotCountSum += val;
             }
             LineDataSet d2 = new LineDataSet(values2, "机器人对话数");
-            d2.setLineWidth(2.5f);
-            d2.setCircleRadius(4f);
+            d2.setLineWidth(2f);
+            d2.setCircleRadius(2f);
             int color2 = mColors[1];
             d2.setColor(color2);
             d2.setCircleColor(color2);
@@ -599,10 +675,11 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             for (int i = 0; i < reportData.sessionDatas.size(); i++) {
                 double val = reportData.sessionDatas.get(i).convertManualCount;
                 values3.add(new Entry((float) val, i));
+                convertCountSum += val;
             }
             LineDataSet d3 = new LineDataSet(values3, "转人工");
-            d3.setLineWidth(2.5f);
-            d3.setCircleRadius(4f);
+            d3.setLineWidth(2f);
+            d3.setCircleRadius(2f);
             int color3 = mColors[2];
             d3.setColor(color3);
             d3.setCircleColor(color3);
@@ -612,6 +689,14 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             data.setValueFormatter(new MyValueFormatter());
             ((SessionViewHolder)holder).report_item_session_linechart.setData(data);
             ((SessionViewHolder)holder).report_item_session_linechart.invalidate();
+
+
+
+            //界面展示
+            ((SessionViewHolder)holder).report_item_session_table_tv_time.setText(sessionTime);
+            ((SessionViewHolder)holder).report_item_session_table_tv_manual.setText(manualCountSum+"");
+            ((SessionViewHolder)holder).report_item_session_table_tv_robot.setText(robotCountSum+"");
+            ((SessionViewHolder)holder).report_item_session_table_tv_convert.setText(convertCountSum+"");
 
         }else if(datas.get(position).type == ReportData.TYPE_CUSTOMER) {
             ((CustomerViewHolder)holder).tv.setText(reportData.name);
@@ -626,6 +711,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CustomerViewHolder)holder).report_item_cust_time_month.setBackgroundResource(R.drawable.bg_report_callout_month_normal);
                     ((CustomerViewHolder)holder).report_item_cust_time_month.setTextColor(context.getResources().getColor(R.color.report_callout_time_tv));
 
+                    custTime = "今天";
                     refreshData("customerinc", "day", reportData);
 
                 }
@@ -640,6 +726,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CustomerViewHolder)holder).report_item_cust_time_month.setBackgroundResource(R.drawable.bg_report_callout_month_normal);
                     ((CustomerViewHolder)holder).report_item_cust_time_month.setTextColor(context.getResources().getColor(R.color.report_callout_time_tv));
 
+                    custTime = "一周内";
                     refreshData("customerinc", "week", reportData);
 
                 }
@@ -654,6 +741,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     ((CustomerViewHolder)holder).report_item_cust_time_month.setBackgroundResource(R.drawable.bg_report_callout_month_checked);
                     ((CustomerViewHolder)holder).report_item_cust_time_month.setTextColor(context.getResources().getColor(R.color.all_white));
 
+                    custTime = "一月内";
                     refreshData("customerinc", "month", reportData);
 
                 }
@@ -676,8 +764,8 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         values2.add(new Entry((float) val, j));
                     }
                     LineDataSet d2 = new LineDataSet(values2, reportData.custDatas.get(0).counts.get(i).srcName);
-                    d2.setLineWidth(2.5f);
-                    d2.setCircleRadius(4f);
+                    d2.setLineWidth(2f);
+                    d2.setCircleRadius(2f);
                     int color2 = mColors[i%4];
                     d2.setColor(color2);
                     d2.setCircleColor(color2);
@@ -687,6 +775,32 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 data.setValueFormatter(new MyValueFormatter());
                 ((CustomerViewHolder)holder).report_item_cust_linechart.setData(data);
                 ((CustomerViewHolder)holder).report_item_cust_linechart.invalidate();
+
+
+                ((CustomerViewHolder)holder).report_item_cust_tablelayout.removeAllViews();
+                if(reportData.custDatas.size() > 0 && reportData.custDatas.get(0) != null) {
+                    TableRow headTableRow = (TableRow) LayoutInflater.from(context).inflate(R.layout.report_item_cust_table_head, null);
+                    ((CustomerViewHolder) holder).report_item_cust_tablelayout.addView(headTableRow);
+                    int c = reportData.custDatas.get(0).counts.size();
+                    for(int i=0; i<c; i++) {
+                        int srcCountSum = 0;
+                        String srcName = reportData.custDatas.get(0).counts.get(i).srcName;
+                        for(int j=0; j<reportData.custDatas.size(); j++) {
+                            srcCountSum += reportData.custDatas.get(j).counts.get(i).srcCount;
+                        }
+
+                        TableRow tableRow = (TableRow) LayoutInflater.from(context).inflate(R.layout.report_item_cust_table_layout, null);
+                        TextView tv_time = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_time);
+                        TextView tv_src = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_src);
+                        TextView tv_count = (TextView) tableRow.findViewById(R.id.report_item_tablerow_tv_count);
+
+                        tv_time.setText(custTime);
+                        tv_src.setText(srcName);
+                        tv_count.setText(srcCountSum+"");
+
+                        ((CustomerViewHolder) holder).report_item_cust_tablelayout.addView(tableRow);
+                    }
+                }
 
             }
 
@@ -800,11 +914,13 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         lineChart.setDescription("");
         lineChart.setDrawBorders(false);
 
-        lineChart.getAxisLeft().setEnabled(false);
+        lineChart.getAxisLeft().setEnabled(true);
         lineChart.getAxisRight().setEnabled(false);
         lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
         lineChart.getXAxis().setDrawAxisLine(true);
         lineChart.getXAxis().setDrawGridLines(false);
+        lineChart.getAxisLeft().setDrawGridLines(true);
+        lineChart.getAxisLeft().setGridColor(context.getResources().getColor(R.color.grey_erp));
 
         lineChart.setTouchEnabled(true);
         lineChart.setDragEnabled(true);
@@ -850,6 +966,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         TextView tv;
         LineChart report_item_callout_linechart;
         TextView report_item_callout_time_day,report_item_callout_time_week,report_item_callout_time_month;
+        TextView report_item_callout_table_tv_time,report_item_callout_table_tv_access,report_item_callout_table_tv_deal,report_item_callout_table_tv_progress;
 
         public CallOutViewHolder(View itemView) {
             super(itemView);
@@ -859,6 +976,10 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             report_item_callout_time_week = (TextView) itemView.findViewById(R.id.report_item_callout_time_week);
             report_item_callout_time_month = (TextView) itemView.findViewById(R.id.report_item_callout_time_month);
 
+            report_item_callout_table_tv_time = (TextView) itemView.findViewById(R.id.report_item_callout_table_tv_time);
+            report_item_callout_table_tv_access = (TextView) itemView.findViewById(R.id.report_item_callout_table_tv_access);
+            report_item_callout_table_tv_deal = (TextView) itemView.findViewById(R.id.report_item_callout_table_tv_deal);
+            report_item_callout_table_tv_progress = (TextView) itemView.findViewById(R.id.report_item_callout_table_tv_progress);
         }
 
         @Override
@@ -875,6 +996,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         TextView tv;
         BarChart report_item_queue_barchart;
         TextView report_item_queue_tv_time_day, report_item_queue_tv_time_week, report_item_queue_tv_time_month;
+        TableLayout report_item_queue_tablelayout;
 
         public QueueViewHolder(View itemView) {
             super(itemView);
@@ -884,6 +1006,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             report_item_queue_tv_time_week = (TextView) itemView.findViewById(R.id.report_item_queue_tv_time_week);
             report_item_queue_tv_time_month = (TextView) itemView.findViewById(R.id.report_item_queue_tv_time_month);
 
+            report_item_queue_tablelayout = (TableLayout) itemView.findViewById(R.id.report_item_queue_tablelayout);
         }
 
         @Override
@@ -901,6 +1024,8 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         BarChart report_item_im_barchart;
         TextView report_item_im_tv_time_day, report_item_im_tv_time_week, report_item_im_tv_time_month;
 
+        TableLayout report_item_im_tablelayout;
+
         public IMViewHolder(View itemView) {
             super(itemView);
             tv = (TextView) itemView.findViewById(R.id.report_item_tv_name);
@@ -909,6 +1034,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             report_item_im_tv_time_week = (TextView) itemView.findViewById(R.id.report_item_im_tv_time_week);
             report_item_im_tv_time_month = (TextView) itemView.findViewById(R.id.report_item_im_tv_time_month);
 
+            report_item_im_tablelayout = (TableLayout) itemView.findViewById(R.id.report_item_im_tablelayout);
         }
 
         @Override
@@ -925,6 +1051,8 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         TextView tv;
         LineChart report_item_session_linechart;
         TextView report_item_session_time_day, report_item_session_time_week, report_item_session_time_month;
+
+        TextView report_item_session_table_tv_time,report_item_session_table_tv_manual,report_item_session_table_tv_robot,report_item_session_table_tv_convert;
         public SessionViewHolder(View itemView) {
             super(itemView);
             tv = (TextView) itemView.findViewById(R.id.report_item_tv_name);
@@ -932,6 +1060,11 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             report_item_session_time_day = (TextView) itemView.findViewById(R.id.report_item_session_time_day);
             report_item_session_time_week = (TextView) itemView.findViewById(R.id.report_item_session_time_week);
             report_item_session_time_month = (TextView) itemView.findViewById(R.id.report_item_session_time_month);
+
+            report_item_session_table_tv_time = (TextView) itemView.findViewById(R.id.report_item_session_table_tv_time);
+            report_item_session_table_tv_manual = (TextView) itemView.findViewById(R.id.report_item_session_table_tv_manual);
+            report_item_session_table_tv_robot = (TextView) itemView.findViewById(R.id.report_item_session_table_tv_robot);
+            report_item_session_table_tv_convert = (TextView) itemView.findViewById(R.id.report_item_session_table_tv_convert);
         }
 
         @Override
@@ -948,6 +1081,8 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         TextView tv;
         LineChart report_item_cust_linechart;
         TextView report_item_cust_time_day, report_item_cust_time_week, report_item_cust_time_month;
+        TableLayout report_item_cust_tablelayout;
+
         public CustomerViewHolder(View itemView) {
             super(itemView);
             tv = (TextView) itemView.findViewById(R.id.report_item_tv_name);
@@ -956,6 +1091,7 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             report_item_cust_time_week = (TextView) itemView.findViewById(R.id.report_item_cust_time_week);
             report_item_cust_time_month = (TextView) itemView.findViewById(R.id.report_item_cust_time_month);
 
+            report_item_cust_tablelayout = (TableLayout) itemView.findViewById(R.id.report_item_cust_tablelayout);
         }
 
         @Override

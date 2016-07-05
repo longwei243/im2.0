@@ -91,7 +91,7 @@
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:textSize="18sp"
-                android:text="总数"/>
+                android:text="人工对话"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:textSize="18sp"
-                android:text="接听数"/>
+                android:text="机器对话"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -109,11 +109,11 @@
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:textSize="18sp"
-                android:text="接听率"/>
+                android:text="转人工"/>
         </TableRow>
         <TableRow>
             <TextView
-                android:id="@+id/report_item_callout_table_tv_time"
+                android:id="@+id/report_item_session_table_tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_report_table"
@@ -126,7 +126,7 @@
                 android:textSize="18sp"
                 android:text="20160201"/>
             <TextView
-                android:id="@+id/report_item_callout_table_tv_access"
+                android:id="@+id/report_item_session_table_tv_manual"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_report_table"
@@ -137,7 +137,7 @@
                 android:textSize="18sp"
                 android:text="0"/>
             <TextView
-                android:id="@+id/report_item_callout_table_tv_deal"
+                android:id="@+id/report_item_session_table_tv_robot"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_report_table"
@@ -148,7 +148,7 @@
                 android:textSize="18sp"
                 android:text="0"/>
             <TextView
-                android:id="@+id/report_item_callout_table_tv_progress"
+                android:id="@+id/report_item_session_table_tv_convert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_report_table"

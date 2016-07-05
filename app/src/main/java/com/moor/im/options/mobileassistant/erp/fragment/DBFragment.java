@@ -194,30 +194,35 @@ public class DBFragment extends BaseLazyFragment{
         userundeal_sp_quickquery.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 1) {
-                    myCallEditor.clear();
-                    myCallEditor.commit();
-                    HashMap<String, String> datas = new HashMap<>();
-                    HttpManager.getInstance().queryUserUnDealOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
-                    loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-                    userundeal_rl_queryitem.setVisibility(View.GONE);
-                } else if (position == 2) {
-                    HashMap<String, String> datas = new HashMap<>();
-                    HttpManager.getInstance().queryFollowedOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
-                    myCallEditor.putString(USERUNDEALQUERYTYPE, "quick");
-                    myCallEditor.putString("type", "follow");
-                    myCallEditor.commit();
-                    loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-                    userundeal_rl_queryitem.setVisibility(View.GONE);
-                }else if (position == 3) {
-                    HashMap<String, String> datas = new HashMap<>();
-                    HttpManager.getInstance().queryAssignedOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
-                    myCallEditor.putString(USERUNDEALQUERYTYPE, "quick");
-                    myCallEditor.putString("type", "assign");
-                    myCallEditor.commit();
-                    loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
-                    userundeal_rl_queryitem.setVisibility(View.GONE);
+                if(MobileAssitantCache.getInstance().getFlowMap().size() != 0) {
+                    if (position == 1) {
+                        myCallEditor.clear();
+                        myCallEditor.commit();
+                        HashMap<String, String> datas = new HashMap<>();
+                        HttpManager.getInstance().queryUserUnDealOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
+                        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+                        userundeal_rl_queryitem.setVisibility(View.GONE);
+                    } else if (position == 2) {
+                        HashMap<String, String> datas = new HashMap<>();
+                        HttpManager.getInstance().queryFollowedOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
+                        myCallEditor.putString(USERUNDEALQUERYTYPE, "quick");
+                        myCallEditor.putString("type", "follow");
+                        myCallEditor.commit();
+                        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+                        userundeal_rl_queryitem.setVisibility(View.GONE);
+                    }else if (position == 3) {
+                        HashMap<String, String> datas = new HashMap<>();
+                        HttpManager.getInstance().queryAssignedOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
+                        myCallEditor.putString(USERUNDEALQUERYTYPE, "quick");
+                        myCallEditor.putString("type", "assign");
+                        myCallEditor.commit();
+                        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+                        userundeal_rl_queryitem.setVisibility(View.GONE);
+                    }
+                }else {
+                    Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
                 }
+
 
             }
 
@@ -239,14 +244,24 @@ public class DBFragment extends BaseLazyFragment{
                 myCallEditor.clear();
                 myCallEditor.commit();
 
-                HashMap<String, String> datas = new HashMap<>();
-                HttpManager.getInstance().queryUserUnDealOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
+                if(MobileAssitantCache.getInstance().getFlowMap().size() != 0) {
+                    HashMap<String, String> datas = new HashMap<>();
+                    HttpManager.getInstance().queryUserUnDealOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
+                }else {
+                    Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
-        HashMap<String, String> datas = new HashMap<>();
-        HttpManager.getInstance().queryUserUnDealOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
-        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+        if(MobileAssitantCache.getInstance().getFlowMap().size() != 0) {
+            HashMap<String, String> datas = new HashMap<>();
+            HttpManager.getInstance().queryUserUnDealOrder(user._id, datas, new QueryUserUnDealOrderResponseHandler());
+            loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+        }else {
+            Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 
@@ -411,7 +426,7 @@ public class DBFragment extends BaseLazyFragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 0x666 && resultCode == Activity.RESULT_OK) {
-            if(data.getSerializableExtra("highQueryData") != null) {
+            if(data.getSerializableExtra("highQueryData") != null && MobileAssitantCache.getInstance().getFlowMap().size() != 0) {
                 loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
                 userundeal_sp_quickquery.setSelection(0);
                 HashMap<String, String> datas = (HashMap<String, String>) data.getSerializableExtra("highQueryData");
@@ -421,6 +436,8 @@ public class DBFragment extends BaseLazyFragment{
                 myCallEditor.putString(USERUNDEALQUERYTYPE, "high");
                 myCallEditor.commit();
                 MobileApplication.cacheUtil.put(CacheKey.CACHE_DclQueryData, datas, CacheUtils.TIME_HOUR * 2);
+            }else {
+                Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
             }
         }
     }

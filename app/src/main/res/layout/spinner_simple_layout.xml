@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/spinner_bg2"
+    android:background="@drawable/sp_drapdown_bg"
     android:padding="8dp">
     <TextView
         android:id="@+id/spinner_simple_label"
@@ -10,6 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textColor="@color/all_white"
+        android:textColor="@color/all_black"
         android:textSize="14sp" />
 </LinearLayout>

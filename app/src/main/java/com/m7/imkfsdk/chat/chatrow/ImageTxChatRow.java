@@ -1,12 +1,14 @@
 package com.m7.imkfsdk.chat.chatrow;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.m7.imkfsdk.chat.ChatActivity;
+import com.m7.imkfsdk.chat.ImageViewLookActivity;
 import com.m7.imkfsdk.chat.holder.BaseHolder;
 import com.m7.imkfsdk.chat.holder.ImageViewHolder;
 import com.moor.im.R;
@@ -28,14 +30,22 @@ public class ImageTxChatRow extends BaseChatRow {
     }
 
     @Override
-    protected void buildChattingData(Context context, BaseHolder baseHolder, FromToMessage detail, int position) {
+    protected void buildChattingData(final Context context, BaseHolder baseHolder, FromToMessage detail, int position) {
         ImageViewHolder holder = (ImageViewHolder) baseHolder;
-        FromToMessage message = detail;
+        final FromToMessage message = detail;
         if(message != null) {
             Glide.with(context).load(message.filePath)
                     .centerCrop()
                     .crossFade()
                     .into(holder.getImageView());
+            holder.getImageView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ImageViewLookActivity.class);
+                    intent.putExtra("imagePath", message.filePath);
+                    context.startActivity(intent);
+                }
+            });
             View.OnClickListener listener = ((ChatActivity)context).getChatAdapter().getOnClickListener();
             getMsgStateResId(position, holder, message, listener);
         }

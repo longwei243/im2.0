@@ -5,7 +5,6 @@ import android.widget.LinearLayout;
 
 import com.moor.im.R;
 
-
 /**
  * Created by longwei on 2016/3/9.
  */

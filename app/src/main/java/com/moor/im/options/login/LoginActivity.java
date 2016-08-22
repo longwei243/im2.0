@@ -28,6 +28,7 @@ import com.csipsimple.api.SipUri;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.M7Constant;
+import com.moor.im.common.db.dao.ContactsDao;
 import com.moor.im.common.db.dao.InfoDao;
 import com.moor.im.common.db.dao.MessageDao;
 import com.moor.im.common.db.dao.NewMessageDao;
@@ -220,6 +221,7 @@ public class LoginActivity extends AppCompatActivity {
                 getContentResolver().delete(SipProfile.ACCOUNT_URI, null, null);
                 MessageDao.getInstance().deleteAllMsgs();
                 NewMessageDao.getInstance().deleteAllMsgs();
+                ContactsDao.getInstance().clear();
                 MobileApplication.cacheUtil.clear();
             }
             // 用户信息存入数据库

@@ -2,8 +2,6 @@ package com.moor.im.common.model;
 
 /**
  * 表情对象实体
- * 
- * @author Mr.li
  */
 public class ChatEmoji {
 

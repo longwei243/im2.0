@@ -1,9 +1,8 @@
 package com.m7.imkfsdk.chat;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +35,7 @@ public class InvestigateDialog extends DialogFragment {
                              Bundle savedInstanceState) {
 
         getDialog().setTitle("提交评价");
+        getDialog().setCanceledOnTouchOutside(false);
 
         // Get the layout inflater
         View view = inflater.inflate(R.layout.kf_dialog_investigate, null);
@@ -66,12 +66,11 @@ public class InvestigateDialog extends DialogFragment {
                 });
             }
         });
-
         return view;
     }
 
     @Override
-    public void show(FragmentManager manager, String tag) {
+    public void show(android.app.FragmentManager manager, String tag) {
         if(!this.isAdded()) {
             try {
                 super.show(manager, tag);

@@ -11,6 +11,8 @@ import com.m7.imkfsdk.chat.ChatActivity;
 import com.m7.imkfsdk.chat.chatrow.BaseChatRow;
 import com.m7.imkfsdk.chat.chatrow.ChatRowType;
 import com.m7.imkfsdk.chat.chatrow.ChatRowUtils;
+import com.m7.imkfsdk.chat.chatrow.FileRxChatRow;
+import com.m7.imkfsdk.chat.chatrow.FileTxChatRow;
 import com.m7.imkfsdk.chat.chatrow.IChatRow;
 import com.m7.imkfsdk.chat.chatrow.ImageRxChatRow;
 import com.m7.imkfsdk.chat.chatrow.ImageTxChatRow;
@@ -32,7 +34,7 @@ import java.util.List;
 /**
  * Created by longwei on 2016/3/9.
  */
-public class ChatAdapter extends BaseAdapter{
+public class ChatAdapter extends BaseAdapter {
 
     private List<FromToMessage> messageList;
 
@@ -59,6 +61,8 @@ public class ChatAdapter extends BaseAdapter{
         chatRowHashMap.put(Integer.valueOf(5), new VoiceRxChatRow(5));
         chatRowHashMap.put(Integer.valueOf(6), new VoiceTxChatRow(6));
         chatRowHashMap.put(Integer.valueOf(7), new InvestigateChatRow(7));
+        chatRowHashMap.put(Integer.valueOf(8), new FileRxChatRow(8));
+        chatRowHashMap.put(Integer.valueOf(9), new FileTxChatRow(9));
     }
 
     public void setVoicePosition(int position) {

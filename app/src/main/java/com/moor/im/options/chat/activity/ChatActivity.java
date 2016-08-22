@@ -80,9 +80,9 @@ import com.moor.im.options.discussion.activity.DiscussionSettingActivity;
 import com.moor.im.options.discussion.parser.DiscussionParser;
 import com.moor.im.options.group.activity.GroupSettingActivity;
 import com.moor.im.options.group.parser.GroupParser;
-import com.qiniu.android.http.ResponseInfo;
-import com.qiniu.android.storage.UpCompletionHandler;
-import com.qiniu.android.storage.UploadManager;
+import com.moor.imkf.qiniu.http.ResponseInfo;
+import com.moor.imkf.qiniu.storage.UpCompletionHandler;
+import com.moor.imkf.qiniu.storage.UploadManager;
 
 import org.json.JSONObject;
 
@@ -1171,7 +1171,7 @@ public class ChatActivity extends BaseActivity implements View.OnClickListener,
                     mListener.onCorpusSelected(emoji);
                 SpannableString spannableString = FaceConversionUtil
                         .getInstace().addFace(this, emoji.getId(),
-                                emoji.getCharacter());
+                                emoji.getCharacter(), mChatInput);
                 mChatInput.append(spannableString);
             }
         } else if (mChatFaceContainer.getVisibility() == View.GONE

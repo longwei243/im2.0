@@ -1,7 +1,7 @@
 package com.moor.im.common.http;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.moor.imkf.gson.Gson;
+import com.moor.imkf.gson.reflect.TypeToken;
 import com.moor.im.common.model.Contacts;
 import com.moor.im.common.model.Discussion;
 import com.moor.im.common.model.FromToMessage;

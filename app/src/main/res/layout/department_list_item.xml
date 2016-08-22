@@ -9,12 +9,10 @@
 	    >
 	    
 		<ImageView android:id="@+id/department_iv_icon_group"
-		    android:layout_width="48dp"
-	        android:layout_height="48dp"
-	        android:background="@drawable/ic_addfriend_department"
-	        android:layout_centerVertical="true"
-	        android:layout_marginLeft="16dp"
-	        
+			android:layout_width="38dp"
+			android:layout_height="38dp"
+			android:layout_margin="12dp"
+	        android:src="@drawable/ic_addfriend_department"
 		    />
 		
 	    <TextView 

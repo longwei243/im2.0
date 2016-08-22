@@ -1,8 +1,6 @@
 package com.m7.imkfsdk.utils;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -82,19 +80,25 @@ public class FaceConversionUtil {
 	 * @return
 	 */
 	public SpannableString addFace(Context context, int imgId,
-			String spannableString) {
+								   String spannableString, TextView textView) {
 		if (TextUtils.isEmpty(spannableString)) {
 			return null;
 		}
-		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
-				imgId);
-		bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, true);
-		ImageSpan imageSpan = new ImageSpan(context, bitmap);
-		SpannableString spannable = new SpannableString(spannableString);
-		spannable.setSpan(imageSpan, 0, spannableString.length(),
-				Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-		return spannable;
+		if (imgId != 0) {
+
+			Drawable drawable = context.getResources().getDrawable(imgId);
+			// 将该图片替换字符串中规定的位置中
+			if(drawable != null) {
+				drawable.setBounds(0, 0, (int) (1.3D * textView.getTextSize()), (int) (1.3D * textView.getTextSize()));
+				SpannableString spannable = new SpannableString(spannableString);
+				spannable.setSpan(new ImageSpan(drawable, 0), 0, spannableString.length(),
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				return spannable;
+			}
+
+		}
+		return new SpannableString(spannableString);
 	}
 
 	/**
@@ -107,7 +111,7 @@ public class FaceConversionUtil {
 	 * @throws Exception
 	 */
 	private void dealExpression(Context context,
-			SpannableString spannableString, Pattern patten, int start, TextView textView)
+								SpannableString spannableString, Pattern patten, int start, TextView textView)
 			throws Exception {
 
 		Matcher matcher = patten.matcher(spannableString);

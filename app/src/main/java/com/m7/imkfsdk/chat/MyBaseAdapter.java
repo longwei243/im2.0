@@ -91,6 +91,6 @@ public abstract class MyBaseAdapter<T> extends BaseAdapter {
 	}
 
 	public abstract View getMyView(int position, View convertView,
-			ViewGroup parent);
+								   ViewGroup parent);
 
 }

@@ -19,7 +19,6 @@ import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.utils.log.Settings;
 import com.moor.im.options.chat.utils.FaceConversionUtil;
 import com.moor.im.options.login.KickedActivity;
-import com.squareup.leakcanary.LeakCanary;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
@@ -76,7 +75,6 @@ public class MobileApplication extends Application{
 //            crashHandler.init(instance);
         }
         CrashReport.initCrashReport(instance, "900005144", false);
-        LeakCanary.install(instance);
     }
 
     public static MobileApplication getInstance() {

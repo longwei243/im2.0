@@ -196,7 +196,9 @@ public class MessageFragment extends Fragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        _subscriptions.unsubscribe();
+        if(_subscriptions != null) {
+            _subscriptions.unsubscribe();
+        }
     }
 
     private void openDialog(final NewMessage msg) {

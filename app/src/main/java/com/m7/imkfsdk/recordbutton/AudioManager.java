@@ -56,7 +56,6 @@ public class AudioManager {
 			String fileName = generateFileName();
 			File file = new File(dir, fileName);
 			mCurrentFilePath = file.getAbsolutePath();
-			System.out.println("录音文件路径是："+mCurrentFilePath);
 
 			mp3Recorder = new MP3Recorder(file);
 			mp3Recorder.start();
@@ -96,7 +95,6 @@ public class AudioManager {
 		if(mp3Recorder != null) {
 			mp3Recorder.stop();
 			mp3Recorder = null;
-			System.out.println("录音文件存起来了");
 		}
 	}
 
@@ -106,12 +104,10 @@ public class AudioManager {
 			File file = new File(mCurrentFilePath);
 			file.delete();
 			mCurrentFilePath = null;
-			System.out.println("录音文件被删除了");
 		}
 	}
 
 	public String getCurrentFilePath() {
-		System.out.println("audiomanager中返回的mCurrentFilePath是："+mCurrentFilePath);
 		return mCurrentFilePath;
 	}
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.j256.ormlite.dao.Dao;
+import com.moor.imkf.ormlite.dao.Dao;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.db.DataBaseHelper;
 import com.moor.im.common.model.NewMessage;

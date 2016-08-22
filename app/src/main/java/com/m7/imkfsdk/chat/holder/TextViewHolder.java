@@ -6,11 +6,10 @@ import android.widget.TextView;
 
 import com.moor.im.R;
 
-
 /**
  * Created by longwei on 2016/3/9.
  */
-public class TextViewHolder extends BaseHolder{
+public class TextViewHolder extends BaseHolder {
 
     private TextView tv_content;
 

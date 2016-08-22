@@ -76,7 +76,6 @@ public class AudioRecorderButton extends Button implements AudioManager.AudioSta
         setOnLongClickListener(new OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-            	System.out.println("进行了长按事件");
             	mReady = true;
                 mAudioManager.prepareAudio();
                 return false;
@@ -149,7 +148,6 @@ public class AudioRecorderButton extends Button implements AudioManager.AudioSta
                     mDialogManager.dismissDialog();
                     
                     if(listener != null) {
-                    	System.out.println("audiorecorederbutton中返回的mAudioManager.getCurrentFilePath()是："+mAudioManager.getCurrentFilePath());
                     	listener.onRecordFinished(mTime, mAudioManager.getCurrentFilePath());
                     }
                     mAudioManager.release();

@@ -1,7 +1,7 @@
 package com.moor.im.common.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.moor.imkf.gson.Gson;
+import com.moor.imkf.gson.reflect.TypeToken;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.db.dao.ContactsDao;

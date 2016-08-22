@@ -5,8 +5,8 @@ import android.text.TextUtils;
 import java.io.Serializable;
 import java.util.List;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import com.moor.imkf.ormlite.field.DatabaseField;
+import com.moor.imkf.ormlite.table.DatabaseTable;
 
 /**
  * 联系人列表实体类

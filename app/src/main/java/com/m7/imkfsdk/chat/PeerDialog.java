@@ -30,12 +30,14 @@ public class PeerDialog extends DialogFragment {
 
     private PeerAdapter adapter;
     private String type;
+
     @NonNull
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         getDialog().setTitle("选择技能组");
+        getDialog().setCanceledOnTouchOutside(false);
 
         // Get the layout inflater
         View view = inflater.inflate(R.layout.kf_dialog_investigate, null);
@@ -70,8 +72,10 @@ public class PeerDialog extends DialogFragment {
                 }
             });
         }
+
         return view;
     }
+
     private void beginSession(String peerId) {
         IMChatManager.getInstance().beginSession(peerId, new OnSessionBeginListener() {
 
@@ -84,6 +88,8 @@ public class PeerDialog extends DialogFragment {
             }
         });
     }
+
+
     @Override
     public void show(FragmentManager manager, String tag) {
         if(!this.isAdded()) {
@@ -100,5 +106,4 @@ public class PeerDialog extends DialogFragment {
         }catch (Exception e) {}
 
     }
-
 }

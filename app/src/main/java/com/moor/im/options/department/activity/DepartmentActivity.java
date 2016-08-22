@@ -169,22 +169,24 @@ public class DepartmentActivity extends BaseActivity {
 		rootDepartments.clear();
 		departments.clear();
 //		System.out.println("本地存的部门信息是："+MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_DEPARTMENT));
-		departments = HttpParser.getDepartments(MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_DEPARTMENT));
-		DepartmentParser dp = new DepartmentParser(departments);
-		rootDepartments = dp.getRootDepartments();
-		adapter = new DepartmentAdapter(DepartmentActivity.this, rootDepartments);
-		mListView.setAdapter(adapter);
-		adapter.notifyDataSetChanged();
-		mListView.setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
-			
-			@Override
-			public void onCreateContextMenu(ContextMenu menu, View v,
-					ContextMenuInfo menuInfo) {
-				  menu.add(0, 0, 0, "添加子部门"); 
-                  menu.add(0, 1, 0, "删除该部门"); 
-                  menu.add(0, 2, 0, "修改该部门"); 
-			}
-		});
+		if(MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_DEPARTMENT) != null) {
+			departments = HttpParser.getDepartments(MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_DEPARTMENT));
+			DepartmentParser dp = new DepartmentParser(departments);
+			rootDepartments = dp.getRootDepartments();
+			adapter = new DepartmentAdapter(DepartmentActivity.this, rootDepartments);
+			mListView.setAdapter(adapter);
+			adapter.notifyDataSetChanged();
+			mListView.setOnCreateContextMenuListener(new OnCreateContextMenuListener() {
+
+				@Override
+				public void onCreateContextMenu(ContextMenu menu, View v,
+												ContextMenuInfo menuInfo) {
+					menu.add(0, 0, 0, "添加子部门");
+					menu.add(0, 1, 0, "删除该部门");
+					menu.add(0, 2, 0, "修改该部门");
+				}
+			});
+		}
 	}
 	/**
 	 * 获取部门信息返回处理器

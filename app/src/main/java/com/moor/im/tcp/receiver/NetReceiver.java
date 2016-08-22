@@ -125,7 +125,9 @@ public class NetReceiver extends BroadcastReceiver{
         } catch (IOException e) {
         }finally {
             try {
-                fr.close();
+                if(fr != null) {
+                    fr.close();
+                }
             } catch (IOException e) {
             }
         }

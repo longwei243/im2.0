@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableRow xmlns:android="http://schemas.android.com/apk/res/android">
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+          android:layout_marginTop="1dp"
+          android:layout_marginRight="1dp"
+          android:layout_marginLeft="1dp">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_report_table"
+        android:background="@color/report_table_header_bg"
         android:gravity="center"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
-        android:textSize="18sp"
-        android:text="时间"/>
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textSize="14sp"
+        android:text="  时间  "/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_report_table"
+        android:background="@color/report_table_header_bg"
         android:gravity="center"
+        android:layout_marginLeft="1dp"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:text="来源"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_report_table"
+        android:background="@color/report_table_header_bg"
         android:gravity="center"
+        android:layout_marginLeft="1dp"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:text="总数"/>
 
 </TableRow>

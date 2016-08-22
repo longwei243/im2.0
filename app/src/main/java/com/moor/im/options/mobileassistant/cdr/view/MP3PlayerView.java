@@ -105,7 +105,7 @@ public class MP3PlayerView extends FrameLayout implements MediaPlayer.OnBufferin
         public void run() {
             if (mediaPlayer == null)
                 return;
-            if (mediaPlayer.isPlaying() && mp3player_seekbar.isPressed() == false) {
+            if (mediaPlayer.isPlaying() && !mp3player_seekbar.isPressed()) {
                 handler.sendEmptyMessage(0); // 发送消息
             }
         }

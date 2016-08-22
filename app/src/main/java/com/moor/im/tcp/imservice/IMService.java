@@ -459,7 +459,9 @@ public class IMService extends Service{
 
                             }else {
                                 mSocketManager.logger.debug("应用在后台");
-                                notificationManager.notify(1, notification);
+                                if(notificationManager != null && notification != null) {
+                                    notificationManager.notify(1, notification);
+                                }
                                 mSocketManager.logger.debug("显示了通知栏");
                             }
 

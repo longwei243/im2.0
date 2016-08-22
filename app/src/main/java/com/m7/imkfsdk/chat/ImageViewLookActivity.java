@@ -13,7 +13,7 @@ import com.moor.im.R;
 /**
  * Created by long on 2015/7/3.
  */
-public class ImageViewLookActivity extends Activity{
+public class ImageViewLookActivity extends Activity {
 
     private TouchImageView touchImageView;
 

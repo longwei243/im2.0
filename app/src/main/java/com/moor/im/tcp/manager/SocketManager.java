@@ -10,7 +10,7 @@ import com.moor.im.tcp.logger.LoggerFactory;
 import com.moor.im.tcp.logger.appender.FileAppender;
 import com.moor.im.tcp.logger.config.PropertyConfigurator;
 
-import org.jboss.netty.channel.Channel;
+import com.moor.imkf.netty.channel.Channel;
 
 /**
  * Created by longwei on 2016/3/23.

@@ -1651,8 +1651,8 @@ public class SipService extends Service {
 			WifiInfo winfo = wman.getConnectionInfo();
 			if (winfo != null) {
 				DetailedState dstate = WifiInfo.getDetailedStateOf(winfo.getSupplicantState());
-				// We assume that if obtaining ip addr, we are almost connected
-				// so can keep wifi lock
+				// We assume that if obtaining ip addlockr, we are almost connected
+				// so can keep wifi
 				if (dstate == DetailedState.OBTAINING_IPADDR || dstate == DetailedState.CONNECTED) {
 					if (!wifiLock.isHeld()) {
 						wifiLock.acquire();

@@ -141,10 +141,10 @@ public class AllCdrFragment extends BaseLazyFragment{
                 label.setText(quickDatas[position]);
                 if (allcall_sp_quickquery.getSelectedItemPosition() == position) {
                     view.setBackgroundColor(getResources().getColor(
-                            R.color.maincolor));
+                            R.color.grey_erp));
                 } else {
                     view.setBackgroundColor(getResources().getColor(
-                            R.color.maincolordark));
+                            R.color.all_white));
                 }
                 return view;
             }

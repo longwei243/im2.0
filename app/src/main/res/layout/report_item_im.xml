@@ -16,7 +16,8 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
-            android:textSize="20sp"
+            android:textSize="16sp"
+            android:textColor="@color/all_black"
             android:text="客服"/>
 
         <LinearLayout
@@ -32,7 +33,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="日"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:gravity="center"
                 android:background="@drawable/bg_report_callout_day_checked"
                 android:textColor="@color/all_white"
@@ -42,7 +43,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="周"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:gravity="center"
                 android:background="@drawable/bg_report_callout_week_normal"
                 android:textColor="@color/report_callout_time_tv"
@@ -52,7 +53,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="月"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:gravity="center"
                 android:background="@drawable/bg_report_callout_month_normal"
                 android:textColor="@color/report_callout_time_tv"
@@ -63,7 +64,7 @@
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/report_item_im_barchart"
         android:layout_width="match_parent"
-        android:layout_height="240dp">
+        android:layout_height="300dp">
 
     </com.github.mikephil.charting.charts.BarChart>
 
@@ -73,6 +74,7 @@
         android:layout_height="wrap_content"
         android:stretchColumns="1,2,3,4"
         android:layout_margin="16dp"
+        android:background="@color/lightgrey"
         >
 
     </TableLayout>

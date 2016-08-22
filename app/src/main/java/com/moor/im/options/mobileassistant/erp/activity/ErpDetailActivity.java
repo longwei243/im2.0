@@ -789,8 +789,10 @@ public class ErpDetailActivity extends BaseActivity{
             List<FieldData> fdList = initFieldData(jsonObject);
             detail.fieldDatas = fdList;
 
-            List<MAAction> actionsList = step.actions;
-            detail.actions = actionsList;
+            if(step != null) {
+                List<MAAction> actionsList = step.actions;
+                detail.actions = actionsList;
+            }
 
             //填充历史
             List<MAErpHistory> historyList = new ArrayList<>();

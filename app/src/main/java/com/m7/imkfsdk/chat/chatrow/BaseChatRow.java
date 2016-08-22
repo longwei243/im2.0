@@ -1,7 +1,6 @@
 package com.m7.imkfsdk.chat.chatrow;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.View;
 
@@ -14,7 +13,7 @@ import com.moor.imkf.model.entity.FromToMessage;
  * Created by longwei on 2016/3/9.
  * 处理基本的姓名和头像显示，消息发送状态，这些都是相同的
  */
-public abstract class BaseChatRow implements IChatRow {
+public abstract class BaseChatRow implements IChatRow{
 
     int mRowType;
 
@@ -63,20 +62,6 @@ public abstract class BaseChatRow implements IChatRow {
         }
     }
 
-
-    public static void setDisplayName(BaseHolder baseHolder , String displayName) {
-        if(baseHolder == null || baseHolder.getChattingUser() == null) {
-            return ;
-        }
-
-        if(TextUtils.isEmpty(displayName)) {
-            baseHolder.getChattingUser().setVisibility(View.GONE);
-            return ;
-        }
-        baseHolder.getChattingUser().setText(displayName);
-        baseHolder.getChattingUser().setVisibility(View.VISIBLE);
-    }
-
     /**
      *
      * @param contextMenu
@@ -100,8 +85,18 @@ public abstract class BaseChatRow implements IChatRow {
 
         // 处理其他逻辑
         buildChattingData(context, baseHolder, detail, position);
-        //设置姓名和头像
-//        setDisplayName(baseHolder, "");
+
+        //设置用户头像
+//        String imgPath = "";
+//        if(baseHolder.getChattingAvatar() != null) {
+//            if ("0".equals(detail.userType)) {
+//                if (!"".equals(imgPath)) {
+//                    Glide.with(context).load(imgPath)
+//                            .placeholder(R.drawable.kf_head_default_local)
+//                            .into(baseHolder.getChattingAvatar());
+//                }
+//            }
+//        }
     }
 
 

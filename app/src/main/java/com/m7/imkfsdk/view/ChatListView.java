@@ -148,7 +148,7 @@ public class ChatListView extends ListView implements OnScrollListener {
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
+						 int visibleItemCount, int totalItemCount) {
 		// 记录滚动时列表第一个完整可见项的position
 		firstItemIndex = firstVisibleItem;
 

@@ -50,4 +50,13 @@
     <color name="report_table_content">#9b9c9d</color>
     <color name="report_callin_time_tv">#fb6c3f</color>
     <color name="report_callout_time_tv">#1fabe7</color>
+    <color name="report_table_header_bg">#e7f4f1</color>
+
+    <color name="tv_ma_bg">#999999</color>
+    <color name="btn_ma_bg">#969d9a</color>
+    <color name="btn_ma_bg_dark">#919191</color>
+
+
+
+
 </resources>

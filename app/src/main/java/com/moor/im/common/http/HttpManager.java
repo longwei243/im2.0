@@ -13,13 +13,13 @@ import com.moor.im.common.model.Group;
 import com.moor.im.common.utils.JSONWriter;
 import com.moor.im.common.utils.Utils;
 import com.moor.im.common.utils.log.LogUtil;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.moor.imkf.okhttp.Call;
+import com.moor.imkf.okhttp.Callback;
+import com.moor.imkf.okhttp.FormEncodingBuilder;
+import com.moor.imkf.okhttp.OkHttpClient;
+import com.moor.imkf.okhttp.Request;
+import com.moor.imkf.okhttp.RequestBody;
+import com.moor.imkf.okhttp.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -1902,6 +1902,54 @@ public class HttpManager {
                     json.put("report_type", type);
                     json.put("time_type", time);
                     String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSucceed(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+
+    public Observable<String> refreshAgentWorkReport(final String sessionId, final String time, final List<String> agentIds) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    HashMap<String, Object> map = new HashMap<String, Object>();
+                    map.put("sessionId", Utils.replaceBlank(sessionId));
+                    map.put("agents", agentIds);
+                    map.put("action", "mobileAssistant.doReport");
+                    map.put("report_type", "agentwork");
+                    map.put("time_type", time);
+                    JSONWriter jw = new JSONWriter();
+
+                    String content = jw.write(map);
                     RequestBody formBody = new FormEncodingBuilder()
                             .add("data", content)
                             .build();

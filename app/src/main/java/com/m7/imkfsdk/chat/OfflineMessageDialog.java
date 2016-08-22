@@ -1,8 +1,7 @@
 package com.m7.imkfsdk.chat;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +29,7 @@ public class OfflineMessageDialog extends DialogFragment {
                              Bundle savedInstanceState) {
         // Get the layout inflater
         getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getDialog().setCanceledOnTouchOutside(false);
         View view = inflater.inflate(R.layout.kf_dialog_offline, null);
         id_et_content = (EditText) view.findViewById(R.id.id_et_content);
         id_et_phone = (EditText) view.findViewById(R.id.id_et_phone);
@@ -104,7 +104,7 @@ public class OfflineMessageDialog extends DialogFragment {
     }
 
     @Override
-    public void show(FragmentManager manager, String tag) {
+    public void show(android.app.FragmentManager manager, String tag) {
         if(!this.isAdded()) {
             try {
                 super.show(manager, tag);

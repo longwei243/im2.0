@@ -1,8 +1,8 @@
 package com.moor.im.options.mobileassistant;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+import com.moor.imkf.gson.Gson;
+import com.moor.imkf.gson.GsonBuilder;
+import com.moor.imkf.gson.reflect.TypeToken;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.utils.NullUtil;

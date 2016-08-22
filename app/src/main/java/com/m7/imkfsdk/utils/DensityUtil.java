@@ -18,6 +18,7 @@ import android.view.WindowManager;
 
 import com.moor.im.app.MobileApplication;
 
+
 public class DensityUtil {
 
     // 根据屏幕密度转换

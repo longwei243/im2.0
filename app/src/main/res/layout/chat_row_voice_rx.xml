@@ -35,12 +35,24 @@
                 android:layout_alignParentLeft="true"
                 android:src="@drawable/head_default_local"
                 android:scaleType="fitXY" />
+            <TextView
+                android:visibility="visible"
+                android:id="@+id/chatfrom_tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="姓名"
+                android:textColor="@color/all_black"
+                android:layout_toRightOf="@id/chatting_avatar_iv"
+                android:layout_marginLeft="8dp"
+                android:textSize="10sp"
+                />
 
             <FrameLayout
                 android:id="@+id/chatfrom_content_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/chatting_avatar_iv"
+                android:layout_below="@id/chatfrom_tv_name"
                 >
 
                 <TextView

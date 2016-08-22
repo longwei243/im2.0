@@ -2,10 +2,10 @@ package com.moor.im.common.model;
 
 import java.util.List;
 
-import com.j256.ormlite.dao.ForeignCollection;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
-import com.j256.ormlite.table.DatabaseTable;
+import com.moor.imkf.ormlite.dao.ForeignCollection;
+import com.moor.imkf.ormlite.field.DatabaseField;
+import com.moor.imkf.ormlite.field.ForeignCollectionField;
+import com.moor.imkf.ormlite.table.DatabaseTable;
 
 /**
  * 用户实体类

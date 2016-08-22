@@ -16,7 +16,8 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
-            android:textSize="20sp"
+            android:textSize="16sp"
+            android:textColor="@color/all_black"
             android:text="呼入"/>
 
         <LinearLayout
@@ -32,7 +33,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="日"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:gravity="center"
                 android:background="@drawable/bg_report_callin_day_checked"
                 android:textColor="@color/all_white"
@@ -42,7 +43,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="周"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:gravity="center"
                 android:background="@drawable/bg_report_callin_week_normal"
                 android:textColor="@color/report_callin_time_tv"
@@ -52,7 +53,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:text="月"
-                android:textSize="20sp"
+                android:textSize="14sp"
                 android:gravity="center"
                 android:background="@drawable/bg_report_callin_month_normal"
                 android:textColor="@color/report_callin_time_tv"
@@ -63,7 +64,7 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/report_item_callin_linechart"
         android:layout_width="match_parent"
-        android:layout_height="240dp">
+        android:layout_height="300dp">
 
     </com.github.mikephil.charting.charts.LineChart>
 
@@ -72,91 +73,107 @@
         android:layout_height="wrap_content"
         android:stretchColumns="1,2,3,4"
         android:layout_margin="16dp"
+        android:background="@color/lightgrey"
         >
-        <TableRow>
+        <TableRow
+            android:layout_marginTop="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/report_table_header_bg"
                 android:gravity="center"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:textSize="18sp"
-                android:text="时间"/>
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:textSize="14sp"
+                android:text="  时间  "/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/report_table_header_bg"
                 android:gravity="center"
+                android:layout_marginLeft="1dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:text="总数"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/report_table_header_bg"
                 android:gravity="center"
+                android:layout_marginLeft="1dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:text="接听数"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/report_table_header_bg"
                 android:gravity="center"
+                android:layout_marginLeft="1dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:text="接听率"/>
         </TableRow>
-        <TableRow>
+        <TableRow
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp">
             <TextView
                 android:id="@+id/report_item_callin_table_tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/all_white"
                 android:gravity="center"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
                 android:textColor="@color/report_table_content"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:text="20160201"/>
             <TextView
                 android:id="@+id/report_item_callin_table_tv_access"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/all_white"
                 android:gravity="center"
+                android:layout_marginLeft="1dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:textColor="@color/report_table_content"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:text="0"/>
             <TextView
                 android:id="@+id/report_item_callin_table_tv_deal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/all_white"
                 android:gravity="center"
+                android:layout_marginLeft="1dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:textColor="@color/report_table_content"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:text="0"/>
             <TextView
                 android:id="@+id/report_item_callin_table_tv_progress"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_report_table"
+                android:background="@color/all_white"
                 android:gravity="center"
+                android:layout_marginLeft="1dp"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 android:textColor="@color/report_table_content"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:text="0%"/>
         </TableRow>
     </TableLayout>

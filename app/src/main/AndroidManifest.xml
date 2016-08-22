@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.USE_SIP" />
@@ -119,6 +120,7 @@
             />
         <activity android:name=".options.mobileassistant.report.ReportActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.report.PlanActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.report.AgentChooiseActivity" android:screenOrientation="portrait"/>
 
         <receiver android:name=".common.receiver.SocketReceiver">
             <intent-filter>

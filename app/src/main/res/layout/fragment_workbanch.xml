@@ -35,7 +35,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_centerVertical="true"
                     android:textColor="@color/all_black"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:text="联系计划"/>
 
                 <TextView
@@ -45,7 +45,7 @@
                     android:layout_marginRight="16dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentRight="true"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:text="更多"/>
             </RelativeLayout>
 
@@ -85,8 +85,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_centerVertical="true"
                     android:textColor="@color/all_black"
-                    android:textSize="20sp"
-                    android:text="客户通话情况"/>
+                    android:textSize="16sp"
+                    android:text="今日通话情况"/>
             </RelativeLayout>
 
             <LinearLayout
@@ -111,7 +111,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
                             android:layout_alignParentLeft="true"
-                            android:textSize="18sp"
+                            android:textSize="14sp"
                             android:text="呼入情况"/>
                         <TextView
                             android:id="@+id/workbanch_callin_tv_timelength"
@@ -119,7 +119,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="16dp"
                             android:layout_alignParentRight="true"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:text="通话时长"/>
                     </RelativeLayout>
                 </LinearLayout>
@@ -142,7 +142,7 @@
                             app:roundProgressColor="@color/maincolor"
                             app:textColor="#ED7543"
                             app:roundWidth="6dp"
-                            app:textSize="20sp"
+                            app:textSize="16sp"
                             android:layout_centerInParent="true"
                             />
                     </RelativeLayout>
@@ -167,7 +167,7 @@
                                 android:layout_marginLeft="8dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="呼入接听数量"/>
 
                             <TextView
@@ -176,7 +176,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/all_black"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0"/>
                         </LinearLayout>
                         <LinearLayout
@@ -194,7 +194,7 @@
                                 android:layout_marginLeft="8dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="呼入总数"/>
 
                             <TextView
@@ -203,7 +203,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/all_black"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0"/>
                         </LinearLayout>
 
@@ -223,7 +223,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="16dp"
                             android:layout_alignParentLeft="true"
-                            android:textSize="18sp"
+                            android:textSize="14sp"
                             android:text="外呼情况"/>
                         <TextView
                             android:id="@+id/workbanch_callout_tv_timelength"
@@ -231,7 +231,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="16dp"
                             android:layout_alignParentRight="true"
-                            android:textSize="16sp"
+                            android:textSize="14sp"
                             android:text="通话时长"/>
                     </RelativeLayout>
                 </LinearLayout>
@@ -254,7 +254,7 @@
                             app:roundProgressColor="@color/lite_blue"
                             app:textColor="#ED7543"
                             app:roundWidth="6dp"
-                            app:textSize="20sp"
+                            app:textSize="16sp"
                             android:layout_centerInParent="true"
                             />
                     </RelativeLayout>
@@ -279,7 +279,7 @@
                                 android:layout_marginLeft="8dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="外呼接听数量"/>
 
                             <TextView
@@ -288,7 +288,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/all_black"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0"/>
                         </LinearLayout>
                         <LinearLayout
@@ -306,7 +306,7 @@
                                 android:layout_marginLeft="8dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="外呼总数"/>
 
                             <TextView
@@ -315,7 +315,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/all_black"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0"/>
                         </LinearLayout>
 
@@ -347,14 +347,13 @@
                     android:layout_marginLeft="8dp"
                     android:layout_centerVertical="true"
                     android:textColor="@color/all_black"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:text="客户统计"/>
             </RelativeLayout>
 
             <LinearLayout
                 android:padding="8dp"
                 android:layout_margin="8dp"
-                android:background="@drawable/workbanch_item_bg"
                 android:layout_below="@id/rl_count"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -395,7 +394,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_centerVertical="true"
                     android:textColor="@color/all_black"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:text="工单处理"/>
             </RelativeLayout>
 
@@ -425,14 +424,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="待处理工单"
-                            android:textSize="18sp"/>
+                            android:textSize="14sp"/>
                         <TextView
                             android:id="@+id/workbanch_erp_tv_dcl"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#78B13E"
                             android:text="30"
-                            android:textSize="18sp"/>
+                            android:textSize="14sp"/>
                     </LinearLayout>
                     <ImageView
                         android:layout_toRightOf="@id/ll_erp_dcl"
@@ -456,14 +455,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="待领取工单"
-                            android:textSize="18sp"/>
+                            android:textSize="14sp"/>
                         <TextView
                             android:id="@+id/workbanch_erp_tv_dlq"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="#4DA7E3"
                             android:text="30"
-                            android:textSize="18sp"/>
+                            android:textSize="14sp"/>
                     </LinearLayout>
                     <ImageView
                         android:layout_toRightOf="@id/ll_erp_dlq"
@@ -499,7 +498,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_centerVertical="true"
                     android:textColor="@color/all_black"
-                    android:textSize="20sp"
+                    android:textSize="16sp"
                     android:text="多渠道咨询"/>
             </RelativeLayout>
 
@@ -539,7 +538,7 @@
                                 android:layout_alignParentLeft="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="微信"
                                 />
                             <TextView
@@ -547,7 +546,7 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0条/占比0%"
                                 />
 
@@ -588,7 +587,7 @@
                                 android:layout_alignParentLeft="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="网页"
                                 />
                             <TextView
@@ -596,7 +595,7 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0条/占比0%"
                                 />
 
@@ -637,7 +636,7 @@
                                 android:layout_alignParentLeft="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="APP"
                                 />
                             <TextView
@@ -645,7 +644,7 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0条/占比0%"
                                 />
 
@@ -687,7 +686,7 @@
                                 android:layout_alignParentLeft="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="邮件"
                                 />
                             <TextView
@@ -695,7 +694,7 @@
                                 android:layout_alignParentRight="true"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="18sp"
+                                android:textSize="14sp"
                                 android:text="0条/占比0%"
                                 />
 

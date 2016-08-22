@@ -9,6 +9,11 @@
     <style name="AppTheme" parent="@style/AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="android:listDivider">@drawable/divider_bg</item>
+        <item name="android:dropDownListViewStyle">@style/mySpinnerStyle</item>
+    </style>
+    <style name="mySpinnerStyle" parent="android:style/Widget.ListView.DropDown">
+        <item name="android:divider">@color/lightgrey</item>
+        <item name="android:dividerHeight">0.5dp</item>
     </style>
 
     <style name="Theme.Welcome" parent="android:Theme">
@@ -110,5 +115,8 @@
         <item name="android:progressDrawable">@drawable/workbanch_email_progress</item>
         <item name="android:minHeight">6dip</item>
         <item name="android:maxHeight">6dip</item>
+    </style>
+    <style name="CustomCheckboxTheme" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/check_selector</item>
     </style>
 </resources>

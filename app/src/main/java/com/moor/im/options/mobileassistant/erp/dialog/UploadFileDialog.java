@@ -18,11 +18,11 @@ import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
 import com.moor.im.options.mobileassistant.erp.activity.ErpActionProcessActivity;
-import com.qiniu.android.http.ResponseInfo;
-import com.qiniu.android.storage.UpCompletionHandler;
-import com.qiniu.android.storage.UpProgressHandler;
-import com.qiniu.android.storage.UploadManager;
-import com.qiniu.android.storage.UploadOptions;
+import com.moor.imkf.qiniu.http.ResponseInfo;
+import com.moor.imkf.qiniu.storage.UpCompletionHandler;
+import com.moor.imkf.qiniu.storage.UpProgressHandler;
+import com.moor.imkf.qiniu.storage.UploadManager;
+import com.moor.imkf.qiniu.storage.UploadOptions;
 
 import org.json.JSONObject;
 

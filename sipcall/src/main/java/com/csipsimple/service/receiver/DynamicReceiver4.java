@@ -69,9 +69,9 @@ public class DynamicReceiver4 extends BroadcastReceiver {
 
     private Timer pollingTimer;
 
-    
+
     /**
-     * Check if the intent received is a sticky broadcast one 
+     * Check if the intent received is a sticky broadcast one
      * A compat way
      * @param it intent received
      * @return true if it's an initial sticky broadcast
@@ -85,7 +85,7 @@ public class DynamicReceiver4 extends BroadcastReceiver {
         }
         return false;
     }
-    
+
     public DynamicReceiver4(SipService aService) {
         service = aService;
     }

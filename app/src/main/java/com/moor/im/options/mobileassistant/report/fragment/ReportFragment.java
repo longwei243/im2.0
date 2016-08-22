@@ -2,7 +2,6 @@ package com.moor.im.options.mobileassistant.report.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -10,10 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.moor.im.options.mobileassistant.MobileAssitantCache;
+import com.moor.im.options.mobileassistant.MobileAssitantParser;
+import com.moor.im.options.mobileassistant.model.MAAgent;
+import com.moor.im.options.mobileassistant.report.model.WorkLoadData;
+import com.moor.imkf.gson.Gson;
+import com.moor.imkf.gson.reflect.TypeToken;
 import com.moor.im.R;
 import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.dialog.LoadingDialog;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.options.base.BaseLazyFragment;
@@ -28,6 +32,7 @@ import com.moor.im.options.mobileassistant.report.model.QueueData;
 import com.moor.im.options.mobileassistant.report.model.ReportData;
 import com.moor.im.options.mobileassistant.report.model.SessionData;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,6 +49,7 @@ import rx.schedulers.Schedulers;
 public class ReportFragment extends BaseLazyFragment{
 
     private RecyclerView report_rv;
+    private LoadingDialog loadingDialog;
 
     @Nullable
     @Override
@@ -51,6 +57,8 @@ public class ReportFragment extends BaseLazyFragment{
         View view = inflater.inflate(R.layout.fragment_report, null);
 
         report_rv = (RecyclerView) view.findViewById(R.id.report_rv);
+        loadingDialog = new LoadingDialog();
+        loadingDialog.show(getFragmentManager(), "");
         HttpManager.getInstance().doReport(UserDao.getInstance().getUser()._id, "queryall", "day")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -62,12 +70,14 @@ public class ReportFragment extends BaseLazyFragment{
 
                     @Override
                     public void onError(Throwable e) {
+                        loadingDialog.dismiss();
                         LogUtil.d("获取报表数据失败");
                     }
 
                     @Override
                     public void onNext(String s) {
                         LogUtil.d("报表返回数据:"+s);
+                        loadingDialog.dismiss();
                         processReportData(s);
                     }
                 });
@@ -80,6 +90,27 @@ public class ReportFragment extends BaseLazyFragment{
         try {
             JSONObject jsonObject = new JSONObject(s);
             if(jsonObject.getBoolean("Succeed")) {
+
+                //座席工作量
+                JSONObject agentwork = jsonObject.getJSONObject("agentwork");
+                if(agentwork.getBoolean("success")) {
+
+                    JSONArray agentArray = agentwork.getJSONObject("data").getJSONArray("agents");
+                    List<MAAgent> agents = gson.fromJson(agentArray.toString(),
+                            new TypeToken<List<MAAgent>>() {
+                            }.getType());
+                    MobileAssitantCache.getInstance().setAgentMap(MobileAssitantParser.transformAgentData(agents));
+
+                    JSONArray workloadArray = agentwork.getJSONObject("data").getJSONArray("workload");
+                    ReportData agentRd = new ReportData();
+                    agentRd.type = ReportData.TYPE_AGENT;
+                    agentRd.name = "座席工作量";
+                    agentRd.workLoadDatas = gson.fromJson(workloadArray.toString(),
+                            new TypeToken<List<WorkLoadData>>() {
+                            }.getType());
+                    reportDataList.add(agentRd);
+                }
+
                 //呼入
                 JSONObject callin = jsonObject.getJSONObject("callin");
                 if(callin.getBoolean("success")) {
@@ -97,7 +128,7 @@ public class ReportFragment extends BaseLazyFragment{
                     ReportData calloutRd = new ReportData();
                     calloutRd.type = ReportData.TYPE_CALL_OUT;
                     calloutRd.name = "呼出";
-                    calloutRd.callOutDatas = gson.fromJson(callin.getJSONArray("data").toString(),
+                    calloutRd.callOutDatas = gson.fromJson(callout.getJSONArray("data").toString(),
                             new TypeToken<List<CallOutData>>() {
                             }.getType());
                     reportDataList.add(calloutRd);
@@ -149,6 +180,8 @@ public class ReportFragment extends BaseLazyFragment{
                     reportDataList.add(customerincRd);
                 }
 
+
+
                 initData(reportDataList);
 
             }
@@ -166,7 +199,7 @@ public class ReportFragment extends BaseLazyFragment{
             @Override
             public boolean isLongPressDragEnabled() {
                 // 长按拖拽打开
-                return true;
+                return false;
             }
         };
         ItemTouchHelper helper = new ItemTouchHelper(callback);

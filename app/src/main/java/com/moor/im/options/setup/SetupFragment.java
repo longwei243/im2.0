@@ -300,7 +300,9 @@ public class SetupFragment extends BaseLazyFragment{
                 //发送tcp断开
                 Message msg = Message.obtain(null, M7Constant.HANDLER_LOGINOFF);
                 try {
-                    messenger.send(msg);
+                    if(messenger != null) {
+                        messenger.send(msg);
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -325,6 +327,7 @@ public class SetupFragment extends BaseLazyFragment{
         NewMessageDao.getInstance().deleteAllMsgs();
         UserDao.getInstance().deleteUser();
         UserRoleDao.getInstance().deleteUserRole();
+        ContactsDao.getInstance().clear();
         MobileApplication.cacheUtil.clear();
     }
 

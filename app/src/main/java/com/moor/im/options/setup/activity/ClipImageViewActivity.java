@@ -36,9 +36,9 @@ import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.setup.view.ClipImageLayout;
-import com.qiniu.android.http.ResponseInfo;
-import com.qiniu.android.storage.UpCompletionHandler;
-import com.qiniu.android.storage.UploadManager;
+import com.moor.imkf.qiniu.http.ResponseInfo;
+import com.moor.imkf.qiniu.storage.UpCompletionHandler;
+import com.moor.imkf.qiniu.storage.UploadManager;
 
 import org.json.JSONObject;
 

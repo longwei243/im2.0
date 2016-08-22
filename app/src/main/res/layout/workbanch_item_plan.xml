@@ -15,7 +15,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="8dp"
-            android:textSize="20sp"
+            android:maxLines="1"
+            android:maxEms="8"
+            android:ellipsize="end"
+            android:textSize="16sp"
             android:textColor="@color/maincolor"
             android:text="王经理"/>
         <TextView
@@ -24,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="8dp"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="2016-06-13"/>
     </RelativeLayout>
     <TextView
@@ -33,7 +36,7 @@
         android:layout_marginTop="6dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:text="联系大家的拉开放大发啊"/>
 
     <View

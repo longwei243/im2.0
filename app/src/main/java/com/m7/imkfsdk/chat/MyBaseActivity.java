@@ -1,6 +1,5 @@
 package com.m7.imkfsdk.chat;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;

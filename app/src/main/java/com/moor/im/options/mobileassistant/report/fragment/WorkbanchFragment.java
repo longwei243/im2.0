@@ -13,21 +13,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.moor.imkf.gson.Gson;
+import com.moor.imkf.gson.reflect.TypeToken;
 import com.moor.im.R;
-import com.moor.im.common.db.dao.InfoDao;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.dialog.LoadingDialog;
 import com.moor.im.common.http.HttpManager;
-import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.utils.TimeUtil;
-import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.GridViewInScrollView;
 import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.mobileassistant.model.Cust;
 import com.moor.im.options.mobileassistant.report.PlanActivity;
-import com.moor.im.options.mobileassistant.report.model.CallInData;
 import com.moor.im.options.mobileassistant.report.model.Plan;
 import com.moor.im.options.mobileassistant.report.view.RoundProgressBar;
 
@@ -76,7 +72,7 @@ public class WorkbanchFragment extends BaseLazyFragment{
 
                     @Override
                     public void onError(Throwable e) {
-                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(getActivity(), "获取数据失败", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -224,7 +220,7 @@ public class WorkbanchFragment extends BaseLazyFragment{
             totalCount = pcCount + webchatCount + appCount + emailCount;
 
             if(totalCount != 0) {
-                int pcProgress = pcCount * 100 / totalCount;
+                float pcProgress = pcCount * 100 / totalCount;
                 int webchatProgress = webchatCount * 100 / totalCount;
                 int appProgress = appCount * 100 / totalCount;
                 int emailProgress = emailCount * 100 / totalCount;
@@ -235,7 +231,7 @@ public class WorkbanchFragment extends BaseLazyFragment{
                 workbanch_email_tv_count.setText(emailCount+"条/占比"+emailProgress+"%");
 
                 workbanch_webchat_pb.setProgress(webchatProgress);
-                workbanch_pc_pb.setProgress(pcProgress);
+                workbanch_pc_pb.setProgress((int)pcProgress);
                 workbanch_app_pb.setProgress(appProgress);
                 workbanch_email_pb.setProgress(emailProgress);
             }

@@ -22,7 +22,6 @@ public class BaseHolder {
     protected ProgressBar progressBar;
     protected ImageView chattingAvatar;
     protected TextView chattingTime;
-    protected TextView chattingUser;
     protected CheckBox checkBox;
 
     protected ImageView uploadState;
@@ -45,7 +44,7 @@ public class BaseHolder {
     public void initBaseHolder(View baseView) {
         this.baseView = baseView;
         chattingTime = (TextView) baseView.findViewById(R.id.chatting_time_tv);
-//        chattingAvatar = (ImageView) baseView.findViewById(R.id.chatting_avatar_iv);
+        chattingAvatar = (ImageView) baseView.findViewById(R.id.chatting_avatar_iv);
 //        clickAreaView = baseView.findViewById(R.id.chatting_click_area);
         uploadState  = (ImageView) baseView.findViewById(R.id.chatting_state_iv);
     }
@@ -55,7 +54,7 @@ public class BaseHolder {
      * @param edit
      */
     public void setEditMode(boolean edit) {
-        int visibility = edit? View.VISIBLE:View.GONE;
+        int visibility = edit? View.VISIBLE: View.GONE;
         if(checkBox != null && checkBox.getVisibility() != visibility) {
             checkBox.setVisibility(visibility);
         }
@@ -106,13 +105,6 @@ public class BaseHolder {
      */
     public void setChattingTime(TextView chattingTime) {
         this.chattingTime = chattingTime;
-    }
-
-    /**
-     * @return the chattingUser
-     */
-    public TextView getChattingUser() {
-        return chattingUser;
     }
 
     /**

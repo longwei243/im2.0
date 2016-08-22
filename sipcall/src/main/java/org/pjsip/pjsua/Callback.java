@@ -102,8 +102,8 @@ public class Callback {
   public void on_call_replaced(int old_call_id, int new_call_id) {
     if (getClass() == Callback.class) pjsuaJNI.Callback_on_call_replaced(swigCPtr, this, old_call_id, new_call_id); else pjsuaJNI.Callback_on_call_replacedSwigExplicitCallback(swigCPtr, this, old_call_id, new_call_id);
   }
-
-  public void on_reg_state(int acc_id) {
+  public void on_reg_state(int acc_id
+) {
     if (getClass() == Callback.class) pjsuaJNI.Callback_on_reg_state(swigCPtr, this, acc_id); else pjsuaJNI.Callback_on_reg_stateSwigExplicitCallback(swigCPtr, this, acc_id);
     
   }

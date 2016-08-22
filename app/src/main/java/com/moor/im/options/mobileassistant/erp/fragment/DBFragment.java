@@ -182,10 +182,10 @@ public class DBFragment extends BaseLazyFragment{
                 label.setText(quickDatas[position]);
                 if (userundeal_sp_quickquery.getSelectedItemPosition() == position) {
                     view.setBackgroundColor(getResources().getColor(
-                            R.color.maincolor));
+                            R.color.grey_erp));
                 } else {
                     view.setBackgroundColor(getResources().getColor(
-                            R.color.maincolordark));
+                            R.color.all_white));
                 }
                 return view;
             }

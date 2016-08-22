@@ -99,10 +99,15 @@ public class TimeUtil {
 			time = "0";
 		}else if(seconds < 60) {
 			time = seconds + "";
-		}else if(seconds >= 60) {
+		}else if(seconds >= 60 && seconds < 3600) {
 			int min = (int)(seconds / 60);
 			int sec = (int)(seconds % 60);
 			time = min +"分"+sec;
+		}else if(seconds >= 3600) {
+			int hour = (int)(seconds / 3600);
+			int min = (int)((seconds % 3600) / 60);
+			int sec = (int)((seconds % 3600) % 60);
+			time = hour + "小时" + min + "分" + sec;
 		}
 		return time;
 	}
@@ -119,5 +124,61 @@ public class TimeUtil {
 		}else {
 			return _d;
 		}
+	}
+
+	public static String getREportTime(long seconds) {
+		String time = "";
+		if(seconds <= 0) {
+			time = "00:00:00";
+		}else if(seconds < 60 && seconds > 0) {
+			if(seconds < 10) {
+				time = "00:00:0"+seconds + "";
+			}else {
+				time = "00:00:"+seconds + "";
+			}
+
+		}else if(seconds >= 60 && seconds < 3600) {
+			int min = (int)(seconds / 60);
+			String minStr = "";
+			if(min < 10) {
+				minStr = "0"+min;
+			}else {
+				minStr = min+"";
+			}
+			int sec = (int)(seconds % 60);
+			String secStr = "";
+			if(sec < 10) {
+				secStr = "0"+sec;
+			}else {
+				secStr = sec+"";
+			}
+
+			time = "00:"+minStr +":"+secStr;
+		}else if(seconds >= 3600) {
+			int hour = (int)(seconds / 3600);
+			String hourStr = "";
+			if(hour < 10) {
+				hourStr = "0"+hour;
+			}else {
+				hourStr = hour+"";
+			}
+
+			int min = (int)((seconds % 3600) / 60);
+			String minStr = "";
+			if(min < 10) {
+				minStr = "0"+min;
+			}else {
+				minStr = min+"";
+			}
+			int sec = (int)((seconds % 3600) % 60);
+			String secStr = "";
+			if(sec < 10) {
+				secStr = "0"+sec;
+			}else {
+				secStr = sec+"";
+			}
+			time = hourStr + ":" + minStr + ":" + secStr;
+		}
+		return time;
 	}
 }

@@ -36,7 +36,7 @@ public class SystemContactAdapter extends EasyRecyclerViewAdapter
      * @return 布局Id数组
      */
     @Override public int[] getItemLayouts() {
-        return new int[] { R.layout.item_image_section };
+        return new int[] { R.layout.item_system_contact };
     }
 
 
@@ -54,11 +54,17 @@ public class SystemContactAdapter extends EasyRecyclerViewAdapter
         if (contacts == null) return;
         TextView headerTv = viewHolder.findViewById(R.id.section_header_tv);
         TextView nameTv = viewHolder.findViewById(R.id.section_name_tv);
+        TextView numTv = viewHolder.findViewById(R.id.section_num_tv);
 
         if (!TextUtils.isEmpty(contacts.getDesplayName())) {
             nameTv.setText(contacts.getDesplayName());
         } else {
             nameTv.setText("");
+        }
+        if (!TextUtils.isEmpty(contacts.getPhoneNum())) {
+            numTv.setText(contacts.getPhoneNum());
+        } else {
+            numTv.setText("");
         }
         this.setHeaderLogic(contacts, headerTv, viewHolder, position);
 

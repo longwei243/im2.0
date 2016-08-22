@@ -41,7 +41,6 @@ public class InvestigateChatRow extends BaseChatRow {
         this.context = context;
         InvestigateViewHolder holder = (InvestigateViewHolder) baseHolder;
         final FromToMessage message = detail;
-        System.out.println("msg is:"+message.investigates.size());
         LinearLayout linearLayout = holder.getChat_investigate_ll();
         linearLayout.removeAllViews();
         if(message != null) {

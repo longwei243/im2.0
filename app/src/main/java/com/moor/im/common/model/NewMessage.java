@@ -1,7 +1,7 @@
 package com.moor.im.common.model;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
+import com.moor.imkf.ormlite.field.DatabaseField;
+import com.moor.imkf.ormlite.table.DatabaseTable;
 
 /**
  * 每个人最新消息的实体类

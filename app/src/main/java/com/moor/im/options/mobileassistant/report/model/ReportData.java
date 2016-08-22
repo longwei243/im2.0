@@ -13,6 +13,7 @@ public class ReportData {
     public static final int TYPE_IM = 3;
     public static final int TYPE_SESSION = 4;
     public static final int TYPE_CUSTOMER = 5;
+    public static final int TYPE_AGENT = 6;
 
     public int type;
     public String name;
@@ -22,4 +23,5 @@ public class ReportData {
     public List<IMData> imDatas;
     public List<SessionData> sessionDatas;
     public List<CustData> custDatas;
+    public List<WorkLoadData> workLoadDatas;
 }

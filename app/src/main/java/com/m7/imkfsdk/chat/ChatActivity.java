@@ -2,6 +2,7 @@ package com.m7.imkfsdk.chat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -53,6 +54,7 @@ import android.widget.Toast;
 import com.m7.imkfsdk.chat.adapter.ChatAdapter;
 import com.m7.imkfsdk.recordbutton.AudioRecorderButton;
 import com.m7.imkfsdk.utils.FaceConversionUtil;
+import com.m7.imkfsdk.utils.FileUtils;
 import com.m7.imkfsdk.view.ChatListView;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
@@ -68,7 +70,6 @@ import com.moor.imkf.model.entity.ChatMore;
 import com.moor.imkf.model.entity.FromToMessage;
 import com.moor.imkf.model.entity.Investigate;
 import com.moor.imkf.model.entity.Peer;
-import com.moor.imkf.tcpservice.service.IMService;
 
 import java.io.File;
 import java.io.Serializable;
@@ -87,7 +88,6 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 	ImageView chat_btn_back;
 	private EditText mChatInput;
 	private ChatAdapter chatAdapter;
-	private List list;
 	private RelativeLayout mChatEdittextLayout,
 			mChatMoreContainer;
 	private LinearLayout mMore;
@@ -110,10 +110,8 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 	// 表情分页的结果集合
 	public List<List<ChatMore>> moreLists = new ArrayList<List<ChatMore>>();
 	private List<FromToMessage> fromToMessage;
-	private Boolean flag = false;
 	private Boolean JZflag = true;
-	private String otherName = "";
-	private View header;// 加载更多头
+	private View header;
 	private int i = 2;
 	private int height;
 	private List<FromToMessage> descFromToMessage = new ArrayList<FromToMessage>();
@@ -121,6 +119,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 	private static final String tag = "ChatActivity";
 	private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
 	private static final int PICK_IMAGE_ACTIVITY_REQUEST_CODE = 200;
+	private static final int PICK_FILE_ACTIVITY_REQUEST_CODE = 300;
 	private String picFileFullName;
 
 	MsgReceiver msgReceiver;
@@ -156,7 +155,6 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 			}
 
 			if(msg.what == 0x333) {
-				//当前是客服
 				Toast.makeText(ChatActivity.this, "当前客服不在线", Toast.LENGTH_SHORT).show();
 				chat_btn_convert.setVisibility(View.GONE);
 				showOffineDialog();
@@ -179,51 +177,62 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 			if(msg.what == 0x777) {
 				showSessionFinishDialog();
 			}
-
+			
 			if(msg.what == 0x88) {
 				updateMessage();
 			}
 			if ("拍照".equals(msg.obj)) {
 				if(Build.VERSION.SDK_INT < 23) {
-					System.out.println("sdk < 23");
 					takePicture();
 				}else {
 					//6.0
-					System.out.println("sdk 6.0");
 					if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
 						//该权限已经有了
 						takePicture();
 					}else {
 						//申请该权限
-						System.out.println("申请该权限");
 						ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.CAMERA}, 0x3333);
 					}
 				}
 			} else if ("图库".equals(msg.obj)) {
 
 				if(Build.VERSION.SDK_INT < 23) {
-					System.out.println("sdk < 23");
 					openAlbum();
 				}else {
 					//6.0
-					System.out.println("sdk 6.0");
 					if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 						//该权限已经有了
 						System.out.println("权限已经有了");
 						openAlbum();
 					}else {
 						//申请该权限
-						System.out.println("申请该权限");
 						ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0x2222);
 					}
 				}
 			}else if("评价".equals(msg.obj)) {
 				//评价
 				openInvestigateDialog();
+			}else if("文件".equals(msg.obj)) {
+				openFile();
 			}
 
 		}
 	};
+
+	/**
+	 * 打开文件选择
+	 */
+	private void openFile() {
+		Intent intent = null;
+		if (Build.VERSION.SDK_INT < 19) {
+			intent = new Intent(Intent.ACTION_GET_CONTENT);
+			intent.setType("*/*");//设置类型
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+		}else {
+			intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		}
+		startActivityForResult(intent, PICK_FILE_ACTIVITY_REQUEST_CODE);
+	}
 
 	private void showSessionFinishDialog() {
 		new AlertDialog.Builder(this).setTitle("温馨提示")
@@ -353,16 +362,8 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		}
 		chatAdapter = new ChatAdapter(ChatActivity.this, descFromToMessage);
 		mChatList.setAdapter(chatAdapter);
-		if (flag == false) {
-			//没有收到消息时
-			chatAdapter.notifyDataSetChanged();
-			mChatList.setSelection(fromToMessage.size() + 1);
-		} else if (flag == true) {
-			//收到消息时
-
-			chatAdapter.notifyDataSetChanged();
-			mChatList.setSelection(fromToMessage.size() + 1);
-		}
+		chatAdapter.notifyDataSetChanged();
+		mChatList.setSelection(fromToMessage.size() + 1);
 
 	}
 
@@ -437,7 +438,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		chat_btn_convert = (Button) this.findViewById(R.id.chat_btn_convert);
 
 		mOtherName = (TextView) this.findViewById(R.id.other_name);
-		mOtherName.setText("联系客服");
+		mOtherName.setText("客服");
 
 		mChatInput.setOnFocusChangeListener(new OnFocusChangeListener() {
 
@@ -526,11 +527,14 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 				"拍照");
 		ChatMore chatMore2 = new ChatMore(2, R.drawable.kf_icon_chat_pic + "",
 				"图库");
-		ChatMore chatMore3 = new ChatMore(3, R.drawable.kf_icon_chat_location + "",
+		ChatMore chatMore3 = new ChatMore(3, R.drawable.kf_icon_chat_file + "",
+				"文件");
+		ChatMore chatMore4 = new ChatMore(4, R.drawable.kf_icon_chat_investigate + "",
 				"评价");
 		moreList.add(chatMore1);
 		moreList.add(chatMore2);
 		moreList.add(chatMore3);
+		moreList.add(chatMore4);
 
 		int pageCount = (int) Math.ceil(moreList.size() / 8 + 0.1);
 		for (int i = 0; i < pageCount; i++) {
@@ -593,131 +597,131 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
-			case R.id.chat_btn_back:
-				finish();
-				break;
-			case R.id.chat_btn_convert:
-				//转人工服务
-				IMChatManager.getInstance().convertManual(new OnConvertManualListener() {
-					@Override
-					public void onLine() {
-						//有客服在线,隐藏转人工按钮
-						chat_btn_convert.setVisibility(View.GONE);
-						Toast.makeText(ChatActivity.this, "转人工服务成功", Toast.LENGTH_SHORT).show();
-					}
+		case R.id.chat_btn_back:
+			finish();
+			break;
+		case R.id.chat_btn_convert:
+			//转人工服务
+			IMChatManager.getInstance().convertManual(new OnConvertManualListener() {
+				@Override
+				public void onLine() {
+					//有客服在线,隐藏转人工按钮
+					chat_btn_convert.setVisibility(View.GONE);
+					Toast.makeText(ChatActivity.this, "转人工服务成功", Toast.LENGTH_SHORT).show();
+				}
 
-					@Override
-					public void offLine() {
-						//当前没有客服在线
-						showOffineDialog();
-					}
-				});
-				break;
-			case R.id.chat_send:
-				String txt = mChatInput.getText().toString();
+				@Override
+				public void offLine() {
+					//当前没有客服在线
+					showOffineDialog();
+				}
+			});
+			break;
+		case R.id.chat_send:
+			String txt = mChatInput.getText().toString();
 
-				FromToMessage fromToMessage = IMMessage.createTxtMessage(txt);
+			FromToMessage fromToMessage = IMMessage.createTxtMessage(txt);
 
-				//界面显示
-				descFromToMessage.add(fromToMessage);
-				chatAdapter.notifyDataSetChanged();
-				mChatList.setSelection(descFromToMessage.size());
-				mChatInput.setText("");
+			//界面显示
+			descFromToMessage.add(fromToMessage);
+			chatAdapter.notifyDataSetChanged();
+			mChatList.setSelection(descFromToMessage.size());
+			mChatInput.setText("");
 
-				//发送消息
-				IMChat.getInstance().sendMessage(fromToMessage, new ChatListener() {
-					@Override
-					public void onSuccess() {
-						//消息发送成功
-						Log.d("ChatActivity", "文本消息发送成功");
-						updateMessage();
-					}
+			//发送消息
+			IMChat.getInstance().sendMessage(fromToMessage, new ChatListener() {
+				@Override
+				public void onSuccess() {
+					//消息发送成功
+					Log.d("ChatActivity", "文本消息发送成功");
+					updateMessage();
+				}
 
-					@Override
-					public void onFailed() {
-						//消息发送失败
-						Log.d("ChatActivity", "文本消息发送失败");
-						updateMessage();
-					}
+				@Override
+				public void onFailed() {
+					//消息发送失败
+					Log.d("ChatActivity", "文本消息发送失败");
+					updateMessage();
+				}
 
-					@Override
-					public void onProcess() {
+				@Override
+				public void onProgress() {
 
-					}
-				});
+				}
+			});
 
-				break;
+			break;
 
-			case R.id.chat_set_mode_voice:
-				if(Build.VERSION.SDK_INT < 23) {
+		case R.id.chat_set_mode_voice:
+			if(Build.VERSION.SDK_INT < 23) {
+				showVoice();
+			}else {
+				//6.0
+				if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+					//该权限已经有了
 					showVoice();
 				}else {
-					//6.0
-					if(ContextCompat.checkSelfPermission(ChatActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-						//该权限已经有了
-						showVoice();
-					}else {
-						//申请该权限
-						ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0x4444);
-					}
+					//申请该权限
+					ActivityCompat.requestPermissions(ChatActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 0x4444);
 				}
+			}
 
-				break;
+			break;
 
-			case R.id.chat_set_mode_keyboard:
-				mChatEdittextLayout.setVisibility(View.VISIBLE);
-				mChatSetModeKeyboard.setVisibility(View.GONE);
-				mChatSetModeVoice.setVisibility(View.VISIBLE);
-				mChatInput.requestFocus();
-				mRecorderButton.setVisibility(View.GONE);
-				mChatFaceContainer.setVisibility(View.GONE);
+		case R.id.chat_set_mode_keyboard:
+			mChatEdittextLayout.setVisibility(View.VISIBLE);
+			mChatSetModeKeyboard.setVisibility(View.GONE);
+			mChatSetModeVoice.setVisibility(View.VISIBLE);
+			mChatInput.requestFocus();
+			mRecorderButton.setVisibility(View.GONE);
+			mChatFaceContainer.setVisibility(View.GONE);
 
-				if (TextUtils.isEmpty(mChatInput.getText())) {
-					mChatMore.setVisibility(View.VISIBLE);
-					mChatSend.setVisibility(View.GONE);
-				} else {
-					mChatMore.setVisibility(View.GONE);
-					mChatSend.setVisibility(View.VISIBLE);
-				}
+			if (TextUtils.isEmpty(mChatInput.getText())) {
+				mChatMore.setVisibility(View.VISIBLE);
+				mChatSend.setVisibility(View.GONE);
+			} else {
+				mChatMore.setVisibility(View.GONE);
+				mChatSend.setVisibility(View.VISIBLE);
+			}
 
-				break;
-			case R.id.chat_emoji_normal:
-				hideKeyboard();
-				mMore.setVisibility(View.VISIBLE);
-				mChatEmojiNormal.setVisibility(View.GONE);
-				mChatEmojiChecked.setVisibility(View.VISIBLE);
-				mChatMoreContainer.setVisibility(View.GONE);
-				mChatFaceContainer.setVisibility(View.VISIBLE);
+			break;
+		case R.id.chat_emoji_normal:
+			hideKeyboard();
+			mMore.setVisibility(View.VISIBLE);
+			mChatEmojiNormal.setVisibility(View.GONE);
+			mChatEmojiChecked.setVisibility(View.VISIBLE);
+			mChatMoreContainer.setVisibility(View.GONE);
+			mChatFaceContainer.setVisibility(View.VISIBLE);
+			mChatMoreVPager.setVisibility(View.GONE);
+			mChatEmojiVPager.setVisibility(View.VISIBLE);
+			break;
+		case R.id.chat_emoji_checked:
+			mChatEmojiNormal.setVisibility(View.VISIBLE);
+			mChatEmojiChecked.setVisibility(View.GONE);
+			mChatMoreContainer.setVisibility(View.GONE);
+			mChatFaceContainer.setVisibility(View.GONE);
+			mMore.setVisibility(View.GONE);
+			break;
+
+		case R.id.chat_more:
+			if (mChatMoreVPager.getVisibility() == View.VISIBLE) {
 				mChatMoreVPager.setVisibility(View.GONE);
-				mChatEmojiVPager.setVisibility(View.VISIBLE);
-				break;
-			case R.id.chat_emoji_checked:
+				mMore.setVisibility(View.GONE);
+			} else {
+				mChatMoreVPager.setVisibility(View.VISIBLE);
+				mMore.setVisibility(View.VISIBLE);
 				mChatEmojiNormal.setVisibility(View.VISIBLE);
 				mChatEmojiChecked.setVisibility(View.GONE);
-				mChatMoreContainer.setVisibility(View.GONE);
 				mChatFaceContainer.setVisibility(View.GONE);
-				mMore.setVisibility(View.GONE);
-				break;
+				mChatMoreContainer.setVisibility(View.VISIBLE);
+				mChatEmojiVPager.setVisibility(View.GONE);
 
-			case R.id.chat_more:
-				if (mChatMoreVPager.getVisibility() == View.VISIBLE) {
-					mChatMoreVPager.setVisibility(View.GONE);
-					mMore.setVisibility(View.GONE);
-				} else {
-					mChatMoreVPager.setVisibility(View.VISIBLE);
-					mMore.setVisibility(View.VISIBLE);
-					mChatEmojiNormal.setVisibility(View.VISIBLE);
-					mChatEmojiChecked.setVisibility(View.GONE);
-					mChatFaceContainer.setVisibility(View.GONE);
-					mChatMoreContainer.setVisibility(View.VISIBLE);
-					mChatEmojiVPager.setVisibility(View.GONE);
+				hideKeyboard();
+			}
 
-					hideKeyboard();
-				}
-
-				break;
-			default:
-				break;
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -795,7 +799,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 
 		pointViewsMore = new ArrayList<ImageView>();
 		ImageView imageView;
-
+		mChatIvImageMore.removeAllViews();
 		for (int i = 0; i < morePageViews.size(); i++) {
 			imageView = new ImageView(this);
 			imageView.setBackgroundResource(R.drawable.kf_d1);
@@ -835,7 +839,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 				if (arg0 == pointViewsMore.size() - 1 || arg0 == 0) {
 					if (arg0 == 0) {
 						mChatMoreVPager.setCurrentItem(arg0 + 1);// 第二屏
-						// 会再次实现该回调方法实现跳转.
+																	// 会再次实现该回调方法实现跳转.
 						pointViewsMore.get(1).setBackgroundResource(
 								R.drawable.kf_d2);
 					} else {
@@ -880,7 +884,6 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		facePageViews.add(nullView1);
 
 		// 中间添加表情页
-
 		faceAdapters = new ArrayList<FaceAdapter>();
 
 		for (int i = 0; i < emojis.size(); i++) {
@@ -956,7 +959,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 				if (arg0 == pointViewsFace.size() - 1 || arg0 == 0) {
 					if (arg0 == 0) {
 						mChatEmojiVPager.setCurrentItem(arg0 + 1);// 第二屏
-						// 会再次实现该回调方法实现跳转.
+																	// 会再次实现该回调方法实现跳转.
 						pointViewsFace.get(1).setBackgroundResource(
 								R.drawable.kf_d2);
 					} else {
@@ -1019,7 +1022,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 					mListener.onCorpusSelected(emoji);
 				SpannableString spannableString = FaceConversionUtil
 						.getInstace().addFace(this, emoji.getId(),
-								emoji.getCharacter());
+								emoji.getCharacter(), mChatInput);
 				mChatInput.append(spannableString);
 			}
 		}
@@ -1062,7 +1065,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 	 */
 	private void openInvestigateDialog() {
 		InvestigateDialog dialog = new InvestigateDialog();
-		dialog.show(getSupportFragmentManager(), "InvestigateDialog");
+		dialog.show(getFragmentManager(), "InvestigateDialog");
 	}
 
 	// 拍照回调
@@ -1077,7 +1080,6 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 				ArrayList fromTomsgs = new ArrayList<FromToMessage>();
 				fromTomsgs.add(fromToMessage);
 				descFromToMessage.addAll(fromTomsgs);
-//				mChatList.setAdapter(chatAdapter);
 				chatAdapter.notifyDataSetChanged();
 				mChatList.setSelection(descFromToMessage.size());
 				IMChat.getInstance().sendMessage(fromToMessage, new ChatListener() {
@@ -1092,7 +1094,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 					}
 
 					@Override
-					public void onProcess() {
+					public void onProgress() {
 
 					}
 				});
@@ -1115,7 +1117,6 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 					ArrayList fromTomsgs = new ArrayList<FromToMessage>();
 					fromTomsgs.add(fromToMessage);
 					descFromToMessage.addAll(fromTomsgs);
-//					mChatList.setAdapter(chatAdapter);
 					chatAdapter.notifyDataSetChanged();
 					mChatList.setSelection(descFromToMessage.size());
 					IMChat.getInstance().sendMessage(fromToMessage, new ChatListener() {
@@ -1130,12 +1131,66 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 						}
 
 						@Override
-						public void onProcess() {
+						public void onProgress() {
 
 						}
 					});
 				} else {
 					Log.e(tag, "从相册获取图片失败");
+				}
+			}
+		}else if(requestCode == PICK_FILE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+			Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
+			String path = "";
+			if ("content".equalsIgnoreCase(uri.getScheme())) {
+				String[] projection = { "_data" };
+				Cursor cursor = null;
+				try {
+					cursor = getContentResolver().query(uri, projection,null, null, null);
+					int column_index = cursor.getColumnIndexOrThrow("_data");
+					if (cursor.moveToFirst()) {
+						path =  cursor.getString(column_index);
+					}
+				} catch (Exception e) {
+
+				}
+			}else if ("file".equalsIgnoreCase(uri.getScheme())) {
+				path =  uri.getPath();
+			}
+			File file = new File(path);
+			String fileSizeStr = "";
+			if(file.exists()) {
+				long fileSize = file.length();
+
+				if((fileSize / 1024 / 1024) > 20.0) {
+					//大于20M不能上传
+					Toast.makeText(ChatActivity.this, "上传文件不能大于20MB", Toast.LENGTH_SHORT).show();
+				}else {
+					fileSizeStr = FileUtils.formatFileLength(fileSize);
+					String fileName = path.substring(path.lastIndexOf("/") + 1);
+					//发送文件
+					FromToMessage fromToMessage = IMMessage.createFileMessage(path, fileName, fileSizeStr);
+					ArrayList fromTomsgs = new ArrayList<FromToMessage>();
+					fromTomsgs.add(fromToMessage);
+					descFromToMessage.addAll(fromTomsgs);
+					chatAdapter.notifyDataSetChanged();
+					mChatList.setSelection(descFromToMessage.size());
+					IMChat.getInstance().sendMessage(fromToMessage, new ChatListener() {
+						@Override
+						public void onSuccess() {
+							updateMessage();
+						}
+
+						@Override
+						public void onFailed() {
+							updateMessage();
+						}
+
+						@Override
+						public void onProgress() {
+							updateMessage();
+						}
+					});
 				}
 			}
 		}
@@ -1187,7 +1242,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		// TODO Auto-generated method stub
 		super.onResume();
 	}
-
+	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -1225,10 +1280,8 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		//界面显示
 		ArrayList fromTomsgs = new ArrayList<FromToMessage>();
 
-
 		fromTomsgs.add(fromToMessage);
 		descFromToMessage.addAll(fromTomsgs);
-//		mChatList.setAdapter(chatAdapter);
 		chatAdapter.notifyDataSetChanged();
 		mChatList.setSelection(descFromToMessage.size());
 
@@ -1244,7 +1297,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 			}
 
 			@Override
-			public void onProcess() {
+			public void onProgress() {
 
 			}
 		});
@@ -1309,6 +1362,52 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 			@Override
 			public void onSuccess() {
 
+				if(IMChatManager.getInstance().isInvestigateOn()) {
+					//显示评价按钮
+					moreList.clear();
+					ChatMore chatMore1 = new ChatMore(1, R.drawable.kf_icon_chat_photo + "",
+							"拍照");
+					ChatMore chatMore2 = new ChatMore(2, R.drawable.kf_icon_chat_pic + "",
+							"图库");
+					ChatMore chatMore3 = new ChatMore(3, R.drawable.kf_icon_chat_file + "",
+							"文件");
+					ChatMore chatMore4 = new ChatMore(4, R.drawable.kf_icon_chat_investigate + "",
+							"评价");
+					moreList.add(chatMore1);
+					moreList.add(chatMore2);
+					moreList.add(chatMore3);
+					moreList.add(chatMore4);
+
+					moreLists.clear();
+					int pageCount = (int) Math.ceil(moreList.size() / 8 + 0.1);
+					for (int i = 0; i < pageCount; i++) {
+						moreLists.add(getData(i));
+					}
+					initMoreViewPager();
+					initMorePoint();
+					initMoreData();
+				}else {
+					//隐藏评价按钮
+					moreList.clear();
+					ChatMore chatMore1 = new ChatMore(1, R.drawable.kf_icon_chat_photo + "",
+							"拍照");
+					ChatMore chatMore2 = new ChatMore(2, R.drawable.kf_icon_chat_pic + "",
+							"图库");
+					ChatMore chatMore3 = new ChatMore(3, R.drawable.kf_icon_chat_file + "",
+							"文件");
+					moreList.add(chatMore1);
+					moreList.add(chatMore2);
+					moreList.add(chatMore3);
+
+					moreLists.clear();
+					int pageCount = (int) Math.ceil(moreList.size() / 8 + 0.1);
+					for (int i = 0; i < pageCount; i++) {
+						moreLists.add(getData(i));
+					}
+					initMoreViewPager();
+					initMorePoint();
+					initMoreData();
+				}
 			}
 
 			@Override
@@ -1324,7 +1423,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 		Bundle b = new Bundle();
 		b.putString("PeerId", peerId);
 		dialog.setArguments(b);
-		dialog.show(ChatActivity.this.getSupportFragmentManager(), "OfflineMessageDialog");
+		dialog.show(ChatActivity.this.getFragmentManager(), "OfflineMessageDialog");
 	}
 
 
@@ -1345,8 +1444,8 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 			}
 
 			@Override
-			public void onProcess() {
-
+			public void onProgress() {
+				updateMessage();
 			}
 		});
 	}

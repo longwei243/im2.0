@@ -97,7 +97,6 @@ public class MYCallHighQueryActivity extends BaseActivity implements View.OnClic
 
         //隐藏坐席选择
         findViewById(R.id.mycall_ll_agent).setVisibility(View.GONE);
-        findViewById(R.id.mycall_view_agent).setVisibility(View.GONE);
 //        mycall_high_query_sp_DISPOSAL_AGENT = (Spinner) findViewById(R.id.mycall_high_query_sp_DISPOSAL_AGENT);
 //        List<QueryData> agentDatas = new ArrayList<>();
 //        QueryData qd_anull = new QueryData();

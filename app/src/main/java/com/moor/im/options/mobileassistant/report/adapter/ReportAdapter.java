@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1145,10 +1146,22 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 }
             }
 
-            for(int i=0; i<xVals.size(); i++) {
+            if(xVals.size() > 0) {
+                for(int i=0; i<xVals.size(); i++) {
+                    TextView textView = new TextView(context);
+                    textView.setPadding(WindowUtils.dip2px(8), 0, 0, 0);
+                    textView.setText(xVals.get(i));
+                    textView.setTextSize(12);
+                    textView.setMaxLines(1);
+                    textView.setMaxEms(6);
+                    textView.setEllipsize(TextUtils.TruncateAt.END);
+                    ((AgentViewHolder)holder).report_item_agent_ll_show.addView(textView);
+                }
+            }else {
                 TextView textView = new TextView(context);
-                textView.setPadding(WindowUtils.dip2px(16), 0, 0, 0);
-                textView.setText(xVals.get(i));
+                textView.setPadding(WindowUtils.dip2px(8), 0, 0, 0);
+                textView.setText("点击加号选择座席");
+                textView.setTextSize(12);
                 ((AgentViewHolder)holder).report_item_agent_ll_show.addView(textView);
             }
 
@@ -1171,13 +1184,13 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             BarDataSet set1, set2, set3, set4;
 
-            set1 = new BarDataSet(yVals1, "呼入通话总时长");
+            set1 = new BarDataSet(yVals1, "呼入总时长");
             set1.setColor(mColors[0]);
-            set2 = new BarDataSet(yVals2, "呼入通话平均时长");
+            set2 = new BarDataSet(yVals2, "呼入平均时长");
             set2.setColor(mColors[1]);
-            set3 = new BarDataSet(yVals3, "外呼通话总时长");
+            set3 = new BarDataSet(yVals3, "外呼总时长");
             set3.setColor(mColors[2]);
-            set4 = new BarDataSet(yVals4, "外呼通话平均时长");
+            set4 = new BarDataSet(yVals4, "外呼平均时长");
             set4.setColor(mColors[3]);
 
             ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
@@ -1458,7 +1471,6 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private void refreshAgentWork(String time, final ReportData reportData, List<MAAgent> agentsList) {
 
-        System.out.println("刷新了坐席工作量报表");
         if(agentsList.size() > 0) {
             List<String> agentIds = new ArrayList<>();
             for (int i=0; i<agentsList.size(); i++) {
@@ -1484,7 +1496,6 @@ public class ReportAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             try {
                                 jsonObject = new JSONObject(s);
                                 if (jsonObject.getBoolean("Succeed")) {
-                                    System.out.println("工作量报表刷新数据返回结果:"+s);
                                     JSONObject agentwork = jsonObject.getJSONObject("agentwork");
                                     if(agentwork.getBoolean("success")) {
                                         JSONArray workloadArray = agentwork.getJSONObject("data").getJSONArray("workload");

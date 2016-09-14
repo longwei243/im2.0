@@ -193,7 +193,7 @@ public class HttpManager {
         JSONObject json = new JSONObject();
         try {
             json.put("ConnectionId", Utils.replaceBlank(connectionId));
-            json.put("Action", "getUserInfo");
+            json.put("Action", "getUserInfoWithAuthority");
         } catch (JSONException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -1750,6 +1750,20 @@ public class HttpManager {
         sendPostForMobileAssistant(content, listener);
     }
 
+    public void setErpPushMy(String sessionId, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.alterBMRefuseStatus");
+            json.put("refuse", "MINE");
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
     public Observable<String> getCdrCache(final String sessionId) {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
@@ -1981,5 +1995,143 @@ public class HttpManager {
                 }
             }
         });
+    }
+
+    public Observable<String> getCustomerCache(final String sessionId) {
+        return Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> subscriber) {
+                try {
+                    LogUtil.d("获取customer缓存数据开始");
+                    JSONObject json = new JSONObject();
+                    json.put("sessionId", Utils.replaceBlank(sessionId));
+                    json.put("action", "common.getDicCache");
+                    json.put("type", "custTmpls");
+                    String content = json.toString();
+                    RequestBody formBody = new FormEncodingBuilder()
+                            .add("data", content)
+                            .build();
+                    Request request = new Request.Builder()
+                            .url(RequestUrl.baseHttpMobile)
+                            .post(formBody)
+                            .build();
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Request request, IOException e) {
+                            subscriber.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Response response) throws IOException {
+                            String st = response.body().string();
+                            LogUtil.d("获取customer缓存数据:"+st);
+                            if(!subscriber.isUnsubscribed()) {
+                                if(HttpParser.getSuccess(st)) {
+                                    subscriber.onNext(st);
+                                    subscriber.onCompleted();
+                                }else {
+                                    throw new IOException("get data failed");
+                                }
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    public void queryCustomerList(String sessionId, HashMap<String, Object> map, final ResponseListener listener) {
+
+        map.put("sessionId", Utils.replaceBlank(sessionId));
+        map.put("action", "mobileAssistant.doCustomer");
+        map.put("real_action", "customer.queryCustPage2In");
+        JSONWriter jw = new JSONWriter();
+
+        String content = jw.write(map);
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    public void queryCustomerInfo(String sessionId, String customerId, final ResponseListener listener) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("sessionId", Utils.replaceBlank(sessionId));
+        map.put("action", "mobileAssistant.doCustomer");
+        map.put("real_action", "customer.queryCustInfo");
+        map.put("_id", customerId);
+        JSONWriter jw = new JSONWriter();
+
+        String content = jw.write(map);
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    public void customer_addNote(String sessionId, HashMap<String, Object> map, final ResponseListener listener) {
+
+        map.put("sessionId", Utils.replaceBlank(sessionId));
+        map.put("action", "mobileAssistant.doCustomer");
+        map.put("real_action", "customer.addNote");
+        JSONWriter jw = new JSONWriter();
+
+        String content = jw.write(map);
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    public void customer_dealNote(String sessionId, HashMap<String, Object> map, final ResponseListener listener) {
+
+        map.put("sessionId", Utils.replaceBlank(sessionId));
+        map.put("action", "mobileAssistant.doCustomer");
+        map.put("real_action", "customer.dealNote");
+        JSONWriter jw = new JSONWriter();
+
+        String content = jw.write(map);
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    /**
+     * 新建工单
+     * @param listener
+     */
+    public void addBusiness(String sessionId, HashMap<String, String> datas, HashMap<String, JSONArray> jadata, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doBusiness");
+            json.put("real_action", "addBusinessTask");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+            for (String key : jadata.keySet()) {
+                json.put(key, jadata.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    public void customer_queryCommonHistory(String sessionId, String customerId, final ResponseListener listener) {
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("sessionId", Utils.replaceBlank(sessionId));
+        map.put("action", "mobileAssistant.doCustomer");
+        map.put("real_action", "customer.queryCustCommonHistory");
+        map.put("customer", customerId);
+        JSONWriter jw = new JSONWriter();
+
+        String content = jw.write(map);
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    public void updateCustomerStatusOrSource(String sessionId, HashMap<String, Object> map, final ResponseListener listener) {
+
+        map.put("sessionId", Utils.replaceBlank(sessionId));
+        map.put("action", "mobileAssistant.doCustomer");
+        map.put("real_action", "customer.updateCustomerStatusOrSource");
+        JSONWriter jw = new JSONWriter();
+
+        String content = jw.write(map);
+        sendPostForMobileAssistant(content, listener);
     }
 }

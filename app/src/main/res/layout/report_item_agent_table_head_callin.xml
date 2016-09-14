@@ -12,7 +12,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="坐席"/>
+        android:text="坐席(呼入)"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="呼入振铃数"/>
+        android:text="振铃数"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="呼入接通数"/>
+        android:text="接通数"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="呼入接通率"/>
+        android:text="接通率"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,5 +52,5 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="呼入总时长"/>
+        android:text="总时长"/>
 </TableRow>

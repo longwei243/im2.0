@@ -14,6 +14,9 @@
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:textColor="@color/report_table_content"
+        android:maxLines="1"
+        android:maxEms="6"
+        android:ellipsize="end"
         android:textSize="14sp"
         android:text=""/>
     <TextView

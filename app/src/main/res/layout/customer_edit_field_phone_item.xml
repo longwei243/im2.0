@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+
+    <EditText
+        android:layout_alignParentLeft="true"
+        android:id="@+id/ecustomer_edit_field_phone_item_et_number"
+        android:singleLine="true"
+        android:background="@drawable/erp_field_et_bg"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:paddingLeft="4dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:gravity="center_vertical"
+        android:textSize="16sp"
+        android:hint="电话号"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageView
+        android:layout_centerVertical="true"
+        android:padding="2dp"
+        android:id="@+id/ecustomer_edit_field_phone_item_iv_add"
+        android:layout_alignParentRight="true"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/customer_field_add"
+        />
+    <EditText
+        android:layout_toRightOf="@id/ecustomer_edit_field_phone_item_et_number"
+        android:layout_toLeftOf="@id/ecustomer_edit_field_phone_item_iv_add"
+        android:id="@+id/ecustomer_edit_field_phone_item_et_memo"
+        android:singleLine="true"
+        android:background="@drawable/erp_field_et_bg"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:paddingLeft="4dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:gravity="center_vertical"
+        android:textSize="16sp"
+        android:hint="备注"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

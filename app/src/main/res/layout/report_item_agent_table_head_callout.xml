@@ -11,7 +11,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="坐席"/>
+        android:text="坐席(外呼)"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="外呼总数　"/>
+        android:text="总数　"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="外呼成功数"/>
+        android:text="成功数"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="员工利用率"/>
+        android:text="利用率"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,5 +51,5 @@
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:textSize="14sp"
-        android:text="外呼总时长"/>
+        android:text="总时长"/>
 </TableRow>

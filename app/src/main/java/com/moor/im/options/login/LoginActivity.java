@@ -43,11 +43,17 @@ import com.moor.im.common.model.NewMessage;
 import com.moor.im.common.model.User;
 import com.moor.im.common.model.UserRole;
 import com.moor.im.common.rxbus.RxBus;
+import com.moor.im.common.utils.CacheUtils;
 import com.moor.im.common.utils.Utils;
 import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.progress.ProgressWheel;
 import com.moor.im.options.main.MainActivity;
+import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.tcp.imservice.IMService;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.UUID;
@@ -133,6 +139,8 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailed() {
                                     LogUtil.d("获取用户信息失败");
+                                    login_btn_submit.setVisibility(View.VISIBLE);
+                                    login_pw.setVisibility(View.GONE);
                                 }
 
                                 @Override
@@ -216,6 +224,7 @@ public class LoginActivity extends AppCompatActivity {
         boolean succeed = HttpParser.getSucceed(responseStr);
         if(succeed) {
             User user = HttpParser.getUserInfo(responseStr);
+
             if(mSp.getBoolean("versionChanged", false)) {
                 //版本号发生过变化,清除原来数据
                 getContentResolver().delete(SipProfile.ACCOUNT_URI, null, null);
@@ -240,6 +249,17 @@ public class LoginActivity extends AppCompatActivity {
             //保存登陆成功到sp文件
             mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,true);
             mEditor.commit();
+
+            try {
+                JSONObject o = new JSONObject(responseStr);
+                JSONObject o1 = o.getJSONObject("Authority");
+                JSONArray array = o1.getJSONArray("limit_in");
+                if(array != null && array.length() > 0) {
+                    MobileApplication.cacheUtil.put("userLimit", array.toString(), 99 * CacheUtils.TIME_DAY);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             onFirstLoginInit(user);
 

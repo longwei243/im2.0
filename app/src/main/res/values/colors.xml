@@ -56,6 +56,19 @@
     <color name="btn_ma_bg">#969d9a</color>
     <color name="btn_ma_bg_dark">#919191</color>
 
+    <color name="customer_history_item">#D9D9D9</color>
+
+    <color name="customer_status0">#dc6372</color>
+    <color name="customer_status1">#9d73b4</color>
+    <color name="customer_status2">#a270c0</color>
+    <color name="customer_status3">#59bea4</color>
+    <color name="customer_status4">#e69159</color>
+    <color name="customer_status5">#e69159</color>
+    <color name="customer_status6">#8dbda4</color>
+    <color name="customer_status7">#e69159</color>
+    <color name="customer_status8">#df7b64</color>
+    <color name="customer_status9">#7bbbc5</color>
+
 
 
 

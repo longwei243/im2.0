@@ -437,8 +437,6 @@ public class MyCdrFragment extends BaseLazyFragment{
             datas.put("page", page + "");
             HttpManager.getInstance().queryCdr(user._id, datas, new GetCdrMoreResponseHandler());
         }
-
-
     }
     class GetCdrMoreResponseHandler implements ResponseListener {
         @Override

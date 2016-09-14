@@ -1,5 +1,7 @@
 package com.moor.im.common.http;
 
+import com.moor.im.options.mobileassistant.customer.model.CustomerHistoryData;
+import com.moor.im.options.mobileassistant.model.MACustomer;
 import com.moor.imkf.gson.Gson;
 import com.moor.imkf.gson.reflect.TypeToken;
 import com.moor.im.common.model.Contacts;
@@ -129,6 +131,26 @@ public class HttpParser {
             e.printStackTrace();
         }
         return user;
+    }
+
+    /**
+     * 用户权限列表
+     *
+     * @param responseString
+     * @return
+     */
+    public static List<String> getLimitInList(String responseString) {
+        List<String> list = new ArrayList<>();
+        try {
+            JSONObject o = new JSONObject(responseString);
+            JSONObject o1 = o.getJSONObject("Authority");
+            JSONArray array = o1.getJSONArray("limit_in");
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return list;
     }
 
     /**
@@ -343,5 +365,46 @@ public class HttpParser {
         }
 
         return departments;
+    }
+
+    public static List<MACustomer> getCustomers(String responseString) {
+        List<MACustomer> customers = new ArrayList<MACustomer>();
+        try {
+            JSONObject o = new JSONObject(responseString);
+            JSONArray o1 = o.getJSONArray("list");
+
+            Gson gson = new Gson();
+            // TypeToken<Json>--他的参数是根节点【】或{}-集合或对象
+            customers = gson.fromJson(o1.toString(),
+                    new TypeToken<List<MACustomer>>() {
+                    }.getType());
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return customers;
+    }
+
+    public static List<CustomerHistoryData> getCustomerHistoryData(String responseString) {
+        List<CustomerHistoryData> chd = new ArrayList<CustomerHistoryData>();
+        try {
+            JSONObject o = new JSONObject(responseString);
+            JSONObject jb = o.getJSONObject("data");
+            JSONArray o1 = jb.getJSONArray("list");
+
+            Gson gson = new Gson();
+            // TypeToken<Json>--他的参数是根节点【】或{}-集合或对象
+            chd = gson.fromJson(o1.toString(),
+                    new TypeToken<List<CustomerHistoryData>>() {
+                    }.getType());
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return chd;
     }
 }

@@ -268,6 +268,7 @@ public class MainActivity extends AppCompatActivity{
             }
         };
         mViewPager.setAdapter(mAdapter);
+        mViewPager.setOffscreenPageLimit(3);
 
         final String[] colors = getResources().getStringArray(R.array.default_preview);
 

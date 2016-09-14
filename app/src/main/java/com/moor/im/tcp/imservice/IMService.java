@@ -189,7 +189,10 @@ public class IMService extends Service{
             //收到重连事件,判断状态，是否需要重连
             mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到重连的事件");
             //有网,状态是tcp断了，登录状态不能是被踢和注销
-            if(Utils.isNetWorkConnected(MobileApplication.getInstance()) && SocketStatus.BREAK.equals(mSocketManager.getStatus()) && !mSocketManager.isLoginKicked() && !mSocketManager.isLoginOff()) {
+            if(Utils.isNetWorkConnected(MobileApplication.getInstance())
+                    && SocketStatus.BREAK.equals(mSocketManager.getStatus())
+                    && !mSocketManager.isLoginKicked()
+                    && !mSocketManager.isLoginOff()) {
                 reLogin();
             }
         }

@@ -121,6 +121,10 @@
         <activity android:name=".options.mobileassistant.report.ReportActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.report.PlanActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.report.AgentChooiseActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.customer.activity.CustomerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.customer.activity.CustomerDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.customer.activity.CustomerInfoActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.customer.activity.CustomerEditActivity" android:screenOrientation="portrait"/>
 
         <receiver android:name=".common.receiver.SocketReceiver">
             <intent-filter>

@@ -35,4 +35,7 @@ public class M7Constant {
     public static final String ACTION_GROUP_UPDATE = "com.m7.action.update.group";
     public static final String ACTION_DISCUSSION_UPDATE = "com.m7.action.update.discussion";
 
+
+    public static final String USER_LIMIT = "user_limit";
+
 }

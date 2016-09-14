@@ -36,7 +36,7 @@
         android:layout_marginTop="6dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:text="联系大家的拉开放大发啊"/>
 
     <View

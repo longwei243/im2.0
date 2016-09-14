@@ -7,8 +7,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp">
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp">
 
         <TextView
             android:id="@+id/erp_customer_field_tv_name"
@@ -17,8 +17,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:textSize="18sp"
-            android:textColor="@color/all_black"
+            android:textSize="16sp"
+            android:textColor="@color/grey"
+
+            android:text="sfada"
             />
         <ImageView
             android:id="@+id/erp_customer_field_iv_call"
@@ -35,8 +37,9 @@
             android:layout_marginRight="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/grey"
+            android:textSize="14sp"
+            android:textColor="@color/all_black"
+            android:text="qreqwr"
             />
     </RelativeLayout>
     <View

@@ -37,7 +37,7 @@ public class CacheKey {
 //	/**
 //	 * cust缓存
 //	 */
-//	public static final String CACHE_MACust = "cache_cust";
+	public static final String CACHE_MACust = "cache_cust";
 //	/**
 //	 * 工单流程缓存
 //	 */
@@ -66,4 +66,9 @@ public class CacheKey {
 	 * 待办工单查询条件缓存
 	 */
 	public static final String CACHE_DclQueryData = "cache_dclQueryData";
+
+	/**
+	 * 待办工单查询条件缓存
+	 */
+	public static final String CACHE_MyCustomerueryData = "cache_myCustomerQueryData";
 }

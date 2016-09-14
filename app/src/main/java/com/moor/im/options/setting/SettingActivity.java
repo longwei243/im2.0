@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.moor.im.R;
@@ -34,8 +35,9 @@ public class SettingActivity extends BaseActivity{
 
     private SharedPreferences mSp;
     private SharedPreferences.Editor mEditor;
-    private CheckBox setting_cb_ma, setting_cb_erp_push;
+    private CheckBox setting_cb_ma, setting_cb_erp_push, setting_cb_erp_push_my;
     private LinearLayout setting_ll_aboutme;
+    private RelativeLayout setting_rl_erp_push_my;
     private User user = UserDao.getInstance().getUser();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,9 @@ public class SettingActivity extends BaseActivity{
         });
         mSp = getSharedPreferences(M7Constant.MAIN_SP, 0);
         mEditor = mSp.edit();
+
+        setting_rl_erp_push_my = (RelativeLayout) findViewById(R.id.setting_rl_erp_push_my);
+        setting_cb_erp_push_my = (CheckBox) findViewById(R.id.setting_cb_erp_push_my);
 
         setting_ll_aboutme = (LinearLayout) findViewById(R.id.setting_ll_aboutme);
         setting_ll_aboutme.setOnClickListener(new View.OnClickListener() {
@@ -94,10 +99,18 @@ public class SettingActivity extends BaseActivity{
             setting_cb_erp_push.setChecked(false);
         }
 
+        boolean isErpPushMy = mSp.getBoolean("iserppushmy", false);
+        if(isErpPushMy) {
+            setting_cb_erp_push_my.setChecked(true);
+        }else {
+            setting_cb_erp_push_my.setChecked(false);
+        }
+
         setting_cb_erp_push.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
+                    setting_rl_erp_push_my.setVisibility(View.VISIBLE);
                     HttpManager.getInstance().setErpPush(user._id, false, new ResponseListener() {
                         @Override
                         public void onFailed() {
@@ -113,6 +126,7 @@ public class SettingActivity extends BaseActivity{
                         }
                     });
                 }else {
+                    setting_rl_erp_push_my.setVisibility(View.GONE);
                     HttpManager.getInstance().setErpPush(user._id, true, new ResponseListener() {
                         @Override
                         public void onFailed() {
@@ -123,6 +137,44 @@ public class SettingActivity extends BaseActivity{
                         public void onSuccess(String responseStr) {
                             if(HttpParser.getSuccess(responseStr)) {
                                 mEditor.putBoolean("iserppush", false);
+                                mEditor.putBoolean("iserppushmy", false);
+                                mEditor.commit();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        setting_cb_erp_push_my.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    HttpManager.getInstance().setErpPushMy(user._id, new ResponseListener() {
+                        @Override
+                        public void onFailed() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(String responseStr) {
+                            if(HttpParser.getSuccess(responseStr)) {
+                                mEditor.putBoolean("iserppushmy", true);
+                                mEditor.commit();
+                            }
+                        }
+                    });
+                }else {
+                    HttpManager.getInstance().setErpPush(user._id, false, new ResponseListener() {
+                        @Override
+                        public void onFailed() {
+
+                        }
+
+                        @Override
+                        public void onSuccess(String responseStr) {
+                            if(HttpParser.getSuccess(responseStr)) {
+                                mEditor.putBoolean("iserppushmy", false);
                                 mEditor.commit();
                             }
                         }

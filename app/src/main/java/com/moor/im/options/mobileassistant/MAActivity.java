@@ -9,10 +9,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.moor.im.R;
+import com.moor.im.app.MobileApplication;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.mobileassistant.cdr.activity.CdrActivity;
+import com.moor.im.options.mobileassistant.customer.activity.CustomerActivity;
+import com.moor.im.options.mobileassistant.customer.activity.CustomerDetailActivity;
 import com.moor.im.options.mobileassistant.erp.activity.ErpActivity;
 import com.moor.im.options.mobileassistant.report.ReportActivity;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 
 /**
@@ -20,7 +26,10 @@ import com.moor.im.options.mobileassistant.report.ReportActivity;
  */
 public class MAActivity extends BaseActivity{
 
-    LinearLayout ma_cdr, ma_erp, ma_report;
+    LinearLayout ma_cdr, ma_erp, ma_report, ma_customer;
+    View ma_cdr_sp, ma_erp_sp, ma_report_sp, ma_customer_sp;
+    private JSONArray userLimitArray;
+    private boolean showCall, showErp, showReport, showCustomer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +48,53 @@ public class MAActivity extends BaseActivity{
         ma_cdr = (LinearLayout) findViewById(R.id.ma_cdr);
         ma_erp = (LinearLayout) findViewById(R.id.ma_erp);
         ma_report = (LinearLayout) findViewById(R.id.ma_report);
+        ma_customer = (LinearLayout) findViewById(R.id.ma_customer);
+
+        ma_cdr_sp = findViewById(R.id.ma_cdr_sp);
+        ma_erp_sp = findViewById(R.id.ma_erp_sp);
+        ma_report_sp = findViewById(R.id.ma_report_sp);
+        ma_customer_sp = findViewById(R.id.ma_customer_sp);
+
+        userLimitArray = MobileApplication.cacheUtil.getAsJSONArray("userLimit");
+        if(userLimitArray != null && userLimitArray.length() > 0) {
+            try {
+                for (int i = 0; i < userLimitArray.length(); i++) {
+
+                    if ("nav_call".equals(userLimitArray.getString(i))) {
+                        showCall = true;
+                    }
+                    if ("nav_business".equals(userLimitArray.getString(i))) {
+                        showErp = true;
+                    }
+                    if ("nav_report".equals(userLimitArray.getString(i))) {
+                        showReport = true;
+                    }
+                    if ("nav_customer".equals(userLimitArray.getString(i))) {
+                        showCustomer = true;
+                    }
+                }
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(!showCall) {
+            ma_cdr.setVisibility(View.GONE);
+            ma_cdr_sp.setVisibility(View.GONE);
+        }
+        if(!showErp) {
+            ma_erp.setVisibility(View.GONE);
+            ma_erp_sp.setVisibility(View.GONE);
+        }
+        if(!showReport) {
+            ma_report.setVisibility(View.GONE);
+            ma_report_sp.setVisibility(View.GONE);
+        }
+        if(!showCustomer) {
+            ma_customer.setVisibility(View.GONE);
+            ma_customer_sp.setVisibility(View.GONE);
+        }
+
 
         ma_cdr.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +115,13 @@ public class MAActivity extends BaseActivity{
             public void onClick(View v) {
                 Intent reportIntent = new Intent(MAActivity.this, ReportActivity.class);
 				startActivity(reportIntent);
+            }
+        });
+        ma_customer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent reportIntent = new Intent(MAActivity.this, CustomerActivity.class);
+                startActivity(reportIntent);
             }
         });
     }

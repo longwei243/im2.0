@@ -171,6 +171,7 @@ public class ChatActivity extends MyBaseActivity implements OnClickListener,
 
 			if(msg.what == 0x666) {
 				chat_queue_ll.setVisibility(View.GONE);
+				chat_btn_convert.setVisibility(View.GONE);
 				Toast.makeText(ChatActivity.this, "当前是客服为你服务", Toast.LENGTH_SHORT).show();
 			}
 

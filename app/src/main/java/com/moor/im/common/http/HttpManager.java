@@ -2134,4 +2134,24 @@ public class HttpManager {
         String content = jw.write(map);
         sendPostForMobileAssistant(content, listener);
     }
+
+    public void customer_update(String sessionId, HashMap<String, String> datas, HashMap<String, JSONArray> jadata, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doCustomer");
+            json.put("real_action", "customer.updateCustomer");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+            for (String key : jadata.keySet()) {
+                json.put(key, jadata.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
 }

@@ -370,6 +370,7 @@ public class ErpActionProcessActivity extends BaseActivity{
                             return;
                         }
 
+
                     }
                     JSONArray ja = new JSONArray();
                     for(int f=0; f<fileCount; f++) {
@@ -409,6 +410,7 @@ public class ErpActionProcessActivity extends BaseActivity{
         showLoadingDialog();
         HttpManager.getInstance().excuteBusinessStepAction(user._id, datas, jadatas, new ExcuteBusHandler());
     }
+
 
     class ExcuteBusHandler implements ResponseListener{
 

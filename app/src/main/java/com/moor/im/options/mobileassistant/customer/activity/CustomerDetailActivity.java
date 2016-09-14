@@ -27,6 +27,7 @@ import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.Contacts;
 import com.moor.im.common.model.User;
+import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.GlideUtils;
 import com.moor.im.common.utils.NullUtil;
 import com.moor.im.common.views.roundimage.RoundImageView;
@@ -52,6 +53,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import rx.functions.Action1;
 
 /**
  * Created by longwei on 16/8/23.
@@ -153,7 +156,6 @@ public class CustomerDetailActivity extends BaseActivity{
                         JSONObject jsonObject = new JSONObject(responseStr);
                         JSONObject cust = jsonObject.getJSONObject("data");
                         Gson gson = new Gson();
-
                         mCustomer = gson.fromJson(cust.toString(),
                                 new TypeToken<MACustomer>() {
                                 }.getType());
@@ -165,6 +167,17 @@ public class CustomerDetailActivity extends BaseActivity{
                 }
             }
         });
+
+        mCompositeSubscription.add(RxBus.getInstance().toObserverable()
+                .subscribe(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        if(o instanceof MACustomer) {
+                            mCustomer = (MACustomer) o;
+                            initDetailData();
+                        }
+                    }
+                }));
     }
 
     private void initViewPager() {
@@ -215,7 +228,7 @@ public class CustomerDetailActivity extends BaseActivity{
 
         String custName = mCustomer.name;
         String title = mCustomer.title;
-        String createTime = mCustomer.createTime;
+        String time = mCustomer.lastUpdateTime;
 
 
         String name = "无归属";
@@ -232,7 +245,7 @@ public class CustomerDetailActivity extends BaseActivity{
 
         customer_detail_tv_cust_name.setText(custName);
         customer_detail_tv_user_name.setText(name);
-        customer_detail_tv_time.setText(createTime);
+        customer_detail_tv_time.setText(time);
 
         if(title != null && !"".equals(title)) {
             customer_detail_tv_cust_title.setText(title);

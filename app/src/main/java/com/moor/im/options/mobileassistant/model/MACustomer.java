@@ -18,5 +18,6 @@ public class MACustomer implements Serializable {
     public String actionId;
     public String action;
     public String notifyTime;
+    public String lastUpdateTime;
 
 }

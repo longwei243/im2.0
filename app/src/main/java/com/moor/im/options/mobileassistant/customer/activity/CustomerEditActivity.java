@@ -29,8 +29,10 @@ import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
+import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.views.GridViewInScrollView;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.mobileassistant.MobileAssitantCache;
@@ -43,9 +45,12 @@ import com.moor.im.options.mobileassistant.erp.adapter.ErpSpAdapter;
 import com.moor.im.options.mobileassistant.erp.dialog.UploadFileDialog;
 import com.moor.im.options.mobileassistant.model.MAAgent;
 import com.moor.im.options.mobileassistant.model.MABusinessField;
+import com.moor.im.options.mobileassistant.model.MACustomer;
 import com.moor.im.options.mobileassistant.model.MAOption;
 import com.moor.im.options.mobileassistant.model.Option;
 import com.moor.im.options.mobileassistant.model.QueryData;
+import com.moor.imkf.gson.Gson;
+import com.moor.imkf.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,6 +73,7 @@ public class CustomerEditActivity extends BaseActivity{
     private LinearLayout customer_edit_ll_stable_field, customer_edit_ll_custom_field, customer_edit_ll_file;
     private ImageButton titlebar_done;
     private String customerId;
+    private String dbType;
 
     private String custCacheStr;
     private User user = UserDao.getInstance().getUser();
@@ -116,6 +122,7 @@ public class CustomerEditActivity extends BaseActivity{
                 JSONObject jsonObject1 = new JSONObject(responseStr);
                 if ("true".equals(jsonObject1.getString("Succeed"))) {
                     JSONObject cust = jsonObject1.getJSONObject("data");
+                    dbType = cust.getString("dbType");
 
                     JSONObject custCache = new JSONObject(custCacheStr);
 
@@ -140,6 +147,7 @@ public class CustomerEditActivity extends BaseActivity{
         HashMap<String, String> datas = new HashMap<>();
         HashMap<String, JSONArray> jadatas = new HashMap<>();
 
+        //固定字段
         int stable_child_count = customer_edit_ll_stable_field.getChildCount();
         for(int i=0; i<stable_child_count; i++) {
             LinearLayout childView = (LinearLayout) customer_edit_ll_stable_field.getChildAt(i);
@@ -276,8 +284,29 @@ public class CustomerEditActivity extends BaseActivity{
 
                     break;
                 case "phone":
+                    JSONArray jsonArray = new JSONArray();
+                    LinearLayout phonell = (LinearLayout) childView.getChildAt(1);
+                    int phoneItemCount = phonell.getChildCount();
+                    for(int p=0; p<phoneItemCount; p++) {
+                        RelativeLayout phoneItem = (RelativeLayout) phonell.getChildAt(p);
+                        EditText et_num = (EditText) phoneItem.getChildAt(0);
+                        String phone_num = et_num.getText().toString().trim();
+                        EditText et_memo = (EditText) phoneItem.getChildAt(2);
+                        String phone_memo = et_memo.getText().toString().trim();
+                        System.out.println("phone num is:"+phone_num+",memo is:"+phone_memo);
 
 
+                        JSONObject ja = new JSONObject();
+                        try {
+                            ja.put("tel", phone_num);
+                            ja.put("memo", phone_memo);
+                            jsonArray.put(ja);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    jadatas.put("phone", jsonArray);
                     break;
                 case "weixin":
 
@@ -290,6 +319,144 @@ public class CustomerEditActivity extends BaseActivity{
                 default:
                     break;
             }
+        }
+
+        //附件
+        RelativeLayout ll_file = (RelativeLayout) customer_edit_ll_file.getChildAt(0);
+        LinearLayout filell = (LinearLayout) ll_file.getChildAt(1);
+        int fileCount = filell.getChildCount();
+        JSONArray ja = new JSONArray();
+        for(int f=0; f<fileCount; f++) {
+            JSONObject jb = new JSONObject();
+            RelativeLayout rl = (RelativeLayout) filell.getChildAt(f);
+            String filetype = (String) rl.getTag();
+            TextView fileNameTv = (TextView) rl.getChildAt(1);
+            String fileName = fileNameTv.getText().toString().trim();
+            String fileKey = (String) fileNameTv.getTag();
+            try {
+                jb.put("id", fileKey);
+                jb.put("name", fileName);
+                jb.put("type", filetype);
+
+                ja.put(jb);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            System.out.println("文件type is:"+filetype+",name is:"+fileName+",key is:"+fileKey);
+        }
+        jadatas.put("attachs", ja);
+
+        //自定义字段
+        final int custom_child_count = customer_edit_ll_custom_field.getChildCount();
+        for(int c=0; c<custom_child_count; c++) {
+            LinearLayout childView = (LinearLayout) customer_edit_ll_custom_field.getChildAt(c);
+            String type = (String) childView.getTag();
+            switch (type) {
+                case "single":
+                    EditText et_single = (EditText) childView.getChildAt(1);
+                    String id_single = (String) et_single.getTag();
+                    String value_single = et_single.getText().toString().trim();
+                    TextView tv_single_required_single = (TextView) childView.getChildAt(0);
+                    String fieldName_single = tv_single_required_single.getText().toString();
+                    String required_single = (String) tv_single_required_single.getTag();
+                    if("required".equals(required_single)) {
+                        if("".equals(value_single)) {
+                            Toast.makeText(CustomerEditActivity.this, fieldName_single + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                    datas.put(id_single, value_single);
+                    System.out.println("custom single id is:" + id_single + "," + "value is:" + value_single);
+
+                    break;
+                case "dropdown":
+                    Spinner sp_status = (Spinner) childView.getChildAt(1);
+                    String id_status = (String) sp_status.getTag();
+                    String value_status = ((QueryData)sp_status.getSelectedItem()).getValue();
+                    datas.put(id_status, value_status);
+                    System.out.println("custom dropdown id is:" + id_status + "," + "value is:" + value_status);
+                    break;
+                case "checkbox":
+                    JSONArray jsonArray = new JSONArray();
+                    GridViewInScrollView gv = (GridViewInScrollView) childView.getChildAt(1);
+                    String cbFieldId = (String) gv.getTag();
+                    List<QueryData> options = ((CustomerCBAdapter)gv.getAdapter()).getOptions();
+                    HashMap<Integer, Boolean> selected = ((CustomerCBAdapter)gv.getAdapter()).getIsSelected();
+                    TextView tv_checkbox_required = (TextView) childView.getChildAt(0);
+                    String fieldName_checkbox = tv_checkbox_required.getText().toString();
+                    String required_checkbox = (String) tv_checkbox_required.getTag();
+                    for (int o = 0; o < selected.size(); o++) {
+                        if(selected.get(o)) {
+                            QueryData option = options.get(o);
+                            jsonArray.put(option.getValue());
+                            System.out.println("checkbox name is:"+option.getName());
+                        }
+                    }
+                    if("required".equals(required_checkbox)) {
+                        if(jsonArray.length() == 0) {
+                            Toast.makeText(CustomerEditActivity.this, fieldName_checkbox + "是必选项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                    }
+                    jadatas.put(cbFieldId, jsonArray);
+
+                    break;
+                case "radio":
+                    RadioGroup radioGroup = (RadioGroup) childView.getChildAt(1);
+                    String id_sex = (String) radioGroup.getTag();
+                    int selectId = radioGroup.getCheckedRadioButtonId();
+
+                    TextView tv_required_sex = (TextView) childView.getChildAt(0);
+                    String fieldName_sex = tv_required_sex.getText().toString();
+                    String required_sex = (String) tv_required_sex.getTag();
+                    if("required".equals(required_sex)) {
+                        if(selectId == -1) {
+                            Toast.makeText(CustomerEditActivity.this, fieldName_sex + "是必填项", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                    if(selectId != -1) {
+                        RadioButton rb = (RadioButton) radioGroup.findViewById(selectId);
+                        String value_sex = (String) rb.getTag();
+                        datas.put(id_sex, value_sex);
+                        System.out.println("custom radio id is:" + id_sex + "," + "value is:" + value_sex);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        if(!"".equals(customerId) && !"".equals(dbType)) {
+            datas.put("_id", customerId);
+            datas.put("dbType", dbType);
+
+            HttpManager.getInstance().customer_update(user._id, datas, jadatas, new ResponseListener() {
+                @Override
+                public void onFailed() {
+                    System.out.println("更新客户失败");
+                }
+
+                @Override
+                public void onSuccess(String responseStr) {
+                    System.out.println("更新客户返回结果:"+responseStr);
+                    if(HttpParser.getSucceed(responseStr)) {
+                        try{
+                            JSONObject jsonObject = new JSONObject(responseStr);
+                            JSONObject cust = jsonObject.getJSONObject("data");
+                            Gson gson = new Gson();
+                            MACustomer customer = gson.fromJson(cust.toString(),
+                                    new TypeToken<MACustomer>() {
+                                    }.getType());
+                            RxBus.getInstance().send(customer);
+                            finish();
+                        }catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
         }
 
     }
@@ -431,16 +598,16 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setText(cf.getString("name"));
                     erp_field_single_tv_name.setTag(cf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
-                    erp_field_single_et_value.setTag(cf.getString("name"));
+                    erp_field_single_et_value.setTag(cf.getString("_id"));
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("multi".equals(cf.getString("type"))) {
                     LinearLayout singleView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_mutli, null);
-                    singleView.setTag("mutli");
+                    singleView.setTag("single");
                     TextView erp_field_single_tv_name = (TextView) singleView.findViewById(R.id.ecustomer_edit_field_tv_name);
                     erp_field_single_tv_name.setText(cf.getString("name"));
                     erp_field_single_tv_name.setTag(cf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
-                    erp_field_single_et_value.setTag(cf.getString("name"));
+                    erp_field_single_et_value.setTag(cf.getString("_id"));
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("number".equals(cf.getString("type"))) {
                     LinearLayout singleView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_single, null);
@@ -449,16 +616,16 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setText(cf.getString("name"));
                     erp_field_single_tv_name.setTag(cf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
-                    erp_field_single_et_value.setTag(cf.getString("name"));
+                    erp_field_single_et_value.setTag(cf.getString("_id"));
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("date".equals(cf.getString("type"))) {
                     LinearLayout birthView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_birth, null);
-                    birthView.setTag("birth");
+                    birthView.setTag("single");
                     TextView erp_field_single_tv_name = (TextView) birthView.findViewById(R.id.ecustomer_edit_field_tv_name);
                     erp_field_single_tv_name.setText(cf.getString("name"));
                     erp_field_single_tv_name.setTag(cf.getString("required"));
                     final EditText erp_field_single_et_value = (EditText) birthView.findViewById(R.id.ecustomer_edit_field_et_value);
-                    erp_field_single_et_value.setTag(cf.getString("name"));
+                    erp_field_single_et_value.setTag(cf.getString("_id"));
                     erp_field_single_et_value.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -469,6 +636,7 @@ public class CustomerEditActivity extends BaseActivity{
                     customer_edit_ll_custom_field.addView(birthView);
                 }else if("dropdown".equals(cf.getString("type"))) {
                     LinearLayout firstItemRL = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_dropdown, null);
+                    firstItemRL.setTag("dropdown");
                     TextView erp_field_dropdown_item_tv_name = (TextView) firstItemRL.findViewById(R.id.ecustomer_edit_field_tv_name);
                     erp_field_dropdown_item_tv_name.setText(cf.getString("name"));
                     List<QueryData> datas = new ArrayList<>();
@@ -482,7 +650,7 @@ public class CustomerEditActivity extends BaseActivity{
                         datas.add(queryData);
                     }
                     Spinner erp_field_dropdown_item_sp_value = (Spinner) firstItemRL.findViewById(R.id.customer_edit_field_sp);
-                    erp_field_dropdown_item_sp_value.setTag(cf.getString("name"));
+                    erp_field_dropdown_item_sp_value.setTag(cf.getString("_id"));
                     SPAdapter adapter = new SPAdapter(CustomerEditActivity.this, datas);
                     erp_field_dropdown_item_sp_value.setAdapter(adapter);
                     customer_edit_ll_custom_field.addView(firstItemRL);
@@ -768,12 +936,12 @@ public class CustomerEditActivity extends BaseActivity{
 
     private void initCheckBoxView(JSONObject cf, JSONObject cust) {
         try{
-            RelativeLayout checkboxView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.erp_field_checkbox, null);
+            LinearLayout checkboxView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_field_checkbox, null);
             checkboxView.setTag("checkbox");
-            TextView erp_field_checkbox_tv_name = (TextView) checkboxView.findViewById(R.id.erp_field_checkbox_tv_name);
+            TextView erp_field_checkbox_tv_name = (TextView) checkboxView.findViewById(R.id.customer_field_checkbox_tv_name);
             erp_field_checkbox_tv_name.setText(cf.getString("name"));
             erp_field_checkbox_tv_name.setTag(cf.getString("required"));
-            GridViewInScrollView checkbox_gv = (GridViewInScrollView) checkboxView.findViewById(R.id.erp_field_checkbox_gv_value);
+            GridViewInScrollView checkbox_gv = (GridViewInScrollView) checkboxView.findViewById(R.id.customer_field_checkbox_gv_value);
             checkbox_gv.setTag(cf.getString("_id"));
 
 
@@ -811,12 +979,12 @@ public class CustomerEditActivity extends BaseActivity{
 
     private void initRadioView(JSONObject cf, JSONObject cust) {
         try{
-            RelativeLayout radioView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.erp_field_radio, null);
+            LinearLayout radioView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_field_radio, null);
             radioView.setTag("radio");
-            TextView erp_field_radio_tv_name = (TextView) radioView.findViewById(R.id.erp_field_radio_tv_name);
+            TextView erp_field_radio_tv_name = (TextView) radioView.findViewById(R.id.customer_field_radio_tv_name);
             erp_field_radio_tv_name.setText(cf.getString("name"));
             erp_field_radio_tv_name.setTag(cf.getString("required"));
-            RadioGroup radioGroup = (RadioGroup) radioView.findViewById(R.id.erp_field_radio_rg_value);
+            RadioGroup radioGroup = (RadioGroup) radioView.findViewById(R.id.customer_field_radio_rg_value);
             radioGroup.setTag(cf.getString("_id"));
 
             List<QueryData> datas = new ArrayList<>();

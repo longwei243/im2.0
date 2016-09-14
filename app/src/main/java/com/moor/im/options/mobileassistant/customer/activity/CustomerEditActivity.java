@@ -435,7 +435,7 @@ public class CustomerEditActivity extends BaseActivity{
             HttpManager.getInstance().customer_update(user._id, datas, jadatas, new ResponseListener() {
                 @Override
                 public void onFailed() {
-                    System.out.println("更新客户失败");
+                    Toast.makeText(CustomerEditActivity.this, "更新客户失败", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -450,6 +450,7 @@ public class CustomerEditActivity extends BaseActivity{
                                     new TypeToken<MACustomer>() {
                                     }.getType());
                             RxBus.getInstance().send(customer);
+                            Toast.makeText(CustomerEditActivity.this, "客户更新成功", Toast.LENGTH_SHORT).show();
                             finish();
                         }catch (JSONException e) {
                             e.printStackTrace();
@@ -599,6 +600,10 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setTag(cf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(cf.getString("_id"));
+
+                    try{
+                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
+                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("multi".equals(cf.getString("type"))) {
                     LinearLayout singleView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_mutli, null);
@@ -608,6 +613,10 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setTag(cf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(cf.getString("_id"));
+
+                    try{
+                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
+                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("number".equals(cf.getString("type"))) {
                     LinearLayout singleView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_single, null);
@@ -617,6 +626,10 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setTag(cf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(cf.getString("_id"));
+
+                    try{
+                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
+                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("date".equals(cf.getString("type"))) {
                     LinearLayout birthView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_birth, null);
@@ -633,6 +646,9 @@ public class CustomerEditActivity extends BaseActivity{
                         }
                     });
 
+                    try{
+                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
+                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(birthView);
                 }else if("dropdown".equals(cf.getString("type"))) {
                     LinearLayout firstItemRL = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_dropdown, null);
@@ -653,6 +669,14 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_dropdown_item_sp_value.setTag(cf.getString("_id"));
                     SPAdapter adapter = new SPAdapter(CustomerEditActivity.this, datas);
                     erp_field_dropdown_item_sp_value.setAdapter(adapter);
+
+                    try{
+                        for(int s=0; s<datas.size(); s++) {
+                            if(cust.getString(cf.getString("_id")).equals(datas.get(s).getValue())) {
+                                erp_field_dropdown_item_sp_value.setSelection(s);
+                            }
+                        }
+                    }catch (JSONException e) {}
                     customer_edit_ll_custom_field.addView(firstItemRL);
 
                 }else if("checkbox".equals(cf.getString("type"))) {
@@ -681,6 +705,14 @@ public class CustomerEditActivity extends BaseActivity{
             Spinner erp_field_dropdown_item_sp_value = (Spinner) firstItemRL.findViewById(R.id.customer_edit_field_sp);
             erp_field_dropdown_item_sp_value.setTag("owner");
             erp_field_dropdown_item_sp_value.setAdapter(new ErpAgentSpAdapter(CustomerEditActivity.this, agents));
+
+            try{
+                for(int s=0; s<agents.size(); s++) {
+                    if(cust.getString("owner").equals(agents.get(s)._id)) {
+                        erp_field_dropdown_item_sp_value.setSelection(s);
+                    }
+                }
+            }catch (JSONException e) {}
             customer_edit_ll_stable_field.addView(firstItemRL);
         }
     }
@@ -704,13 +736,21 @@ public class CustomerEditActivity extends BaseActivity{
             erp_field_dropdown_item_sp_value.setTag("custsource1");
             SPAdapter adapter = new SPAdapter(CustomerEditActivity.this, sourceDatas);
             erp_field_dropdown_item_sp_value.setAdapter(adapter);
+
+            try{
+                for(int s=0; s<sourceDatas.size(); s++) {
+                    if(cust.getString("custsource1").equals(sourceDatas.get(s).getValue())) {
+                        erp_field_dropdown_item_sp_value.setSelection(s);
+                    }
+                }
+            }catch (JSONException e) {}
             customer_edit_ll_stable_field.addView(firstItemRL);
         }catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void createStableFieldView(JSONObject custCache, JSONObject cust) {
+    private void createStableFieldView(JSONObject custCache, final JSONObject cust) {
         try {
             JSONArray stable_fields = custCache.getJSONArray("stable_fields");
             for(int i=0; i<stable_fields.length(); i++) {
@@ -724,6 +764,8 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setTag(sf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(sf.getString("name"));
+
+                    erp_field_single_et_value.setText(cust.getString("name"));
                     customer_edit_ll_stable_field.addView(singleView);
 
                     //客户状态
@@ -745,6 +787,14 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_dropdown_item_sp_value.setTag("status");
                     SPAdapter adapter = new SPAdapter(CustomerEditActivity.this, statusList);
                     erp_field_dropdown_item_sp_value.setAdapter(adapter);
+
+                    try{
+                        for(int s=0; s<statusList.size(); s++) {
+                            if(cust.getString("status").equals(statusList.get(s).getValue())) {
+                                erp_field_dropdown_item_sp_value.setSelection(s);
+                            }
+                        }
+                    }catch (JSONException e) {}
                     customer_edit_ll_stable_field.addView(firstItemRL);
                 }else if("phone".equals(sf.getString("name"))) {
                     //客户电话
@@ -798,6 +848,16 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_dropdown_item_sp_value.setTag("province");
                     final ErpSpAdapter adapter = new ErpSpAdapter(CustomerEditActivity.this, firstOption);
                     erp_field_dropdown_item_sp_value.setAdapter(adapter);
+
+                    try{
+                        for(int p=0; p<firstOption.size(); p++) {
+                            if(cust.getString("province").equals(firstOption.get(p).key)) {
+                                erp_field_dropdown_item_sp_value.setSelection(p);
+                            }
+                        }
+                    }catch (JSONException e){}
+
+
                     erp_field_dropdown_ll.addView(firstItemRL);
                     String fieldName2 = maoption.headers.get(1);
                     RelativeLayout secondItemRL = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.erp_field_dropdown_item2, null);
@@ -815,6 +875,14 @@ public class CustomerEditActivity extends BaseActivity{
                             List<Option> secondOptions = getOptionsByKey(firstOption, o.key);
                             ErpSpAdapter adapter = new ErpSpAdapter(CustomerEditActivity.this, secondOptions);
                             erp_field_dropdown_item_sp_value2.setAdapter(adapter);
+
+                            try{
+                                for(int p=0; p<secondOptions.size(); p++) {
+                                    if(cust.getString("city").equals(secondOptions.get(p).key)) {
+                                        erp_field_dropdown_item_sp_value2.setSelection(p);
+                                    }
+                                }
+                            }catch (Exception e){}
                         }
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
@@ -833,6 +901,10 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setTag(sf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(sf.getString("name"));
+
+                    try{
+                        erp_field_single_et_value.setText(cust.getString(sf.getString("name")));
+                    }catch (JSONException e){}
                     customer_edit_ll_stable_field.addView(singleView);
 
                 }else if("sex".equals(sf.getString("name"))) {
@@ -849,6 +921,13 @@ public class CustomerEditActivity extends BaseActivity{
                     RadioButton customer_edit_field_rb_nv = (RadioButton) sexView.findViewById(R.id.customer_edit_field_rb_nv);
                     customer_edit_field_rb_nv.setTag("1");
 
+                    try{
+                        if("0".equals(cust.getString("sex"))) {
+                            customer_edit_field_rb_nan.setChecked(true);
+                        }else if("1".equals(cust.getString("sex"))) {
+                            customer_edit_field_rb_nv.setChecked(true);
+                        }
+                    }catch (JSONException e) {}
                     customer_edit_ll_stable_field.addView(sexView);
 
 
@@ -868,6 +947,9 @@ public class CustomerEditActivity extends BaseActivity{
                         }
                     });
 
+                    try{
+                        erp_field_single_et_value.setText(cust.getString(sf.getString("name")));
+                    }catch (JSONException e){}
                     customer_edit_ll_stable_field.addView(birthView);
                 }else {
 
@@ -878,6 +960,15 @@ public class CustomerEditActivity extends BaseActivity{
                     erp_field_single_tv_name.setTag(sf.getString("required"));
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(sf.getString("name"));
+
+                    try{
+                        String value = cust.getString(sf.getString("name"));
+                        if(value != null && !"".equals(value)) {
+                            erp_field_single_et_value.setText(value);
+                        }
+                    }catch (JSONException e){
+
+                    }
                     customer_edit_ll_stable_field.addView(singleView);
 
                 }
@@ -956,6 +1047,17 @@ public class CustomerEditActivity extends BaseActivity{
                 datas.add(queryData);
             }
             final CustomerCBAdapter adapter = new CustomerCBAdapter(CustomerEditActivity.this, datas);
+
+            try{
+                JSONArray cbs = cust.getJSONArray(cf.getString("_id"));
+                for (int i=0; i<datas.size(); i++) {
+                    for(int j=0; j<cbs.length(); j++){
+                        if(datas.get(i).getValue().equals(cbs.getString(j))) {
+                            adapter.getIsSelected().put(i, true);
+                        }
+                    }
+                }
+            }catch (JSONException e) {}
             checkbox_gv.setAdapter(adapter);
             checkbox_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -1007,6 +1109,13 @@ public class CustomerEditActivity extends BaseActivity{
                 rb.setLayoutParams(lp);
                 rb.setText(qd.getName());
                 rb.setTag(qd.getValue());
+                rb.setId(View.generateViewId());
+
+                try{
+                    if(cust.getString(cf.getString("_id")).equals(qd.getValue())) {
+                        rb.setChecked(true);
+                    }
+                } catch (JSONException e) {}
                 radioGroup.addView(rb);
             }
             customer_edit_ll_custom_field.addView(radioView);

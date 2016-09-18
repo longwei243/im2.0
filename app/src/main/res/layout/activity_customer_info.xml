@@ -11,14 +11,15 @@
         android:layout_alignParentTop="true"
         android:background="@color/maincolor"
         >
-        <ImageView
-            android:id="@+id/btn_back"
+        <ImageButton
+            android:id="@+id/titlebar_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_left"
-            android:layout_marginLeft="8dp"
+            android:background="@drawable/btn_back"
+            android:layout_marginLeft="16dp"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+
             />
 
         <TextView

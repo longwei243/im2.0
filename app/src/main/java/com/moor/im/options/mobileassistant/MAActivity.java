@@ -29,7 +29,7 @@ public class MAActivity extends BaseActivity{
     LinearLayout ma_cdr, ma_erp, ma_report, ma_customer;
     View ma_cdr_sp, ma_erp_sp, ma_report_sp, ma_customer_sp;
     private JSONArray userLimitArray;
-    private boolean showCall, showErp, showReport, showCustomer;
+    private boolean showCall = true, showErp = true, showReport = true, showCustomer = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,28 +55,28 @@ public class MAActivity extends BaseActivity{
         ma_report_sp = findViewById(R.id.ma_report_sp);
         ma_customer_sp = findViewById(R.id.ma_customer_sp);
 
-        userLimitArray = MobileApplication.cacheUtil.getAsJSONArray("userLimit");
-        if(userLimitArray != null && userLimitArray.length() > 0) {
-            try {
-                for (int i = 0; i < userLimitArray.length(); i++) {
-
-                    if ("nav_call".equals(userLimitArray.getString(i))) {
-                        showCall = true;
-                    }
-                    if ("nav_business".equals(userLimitArray.getString(i))) {
-                        showErp = true;
-                    }
-                    if ("nav_report".equals(userLimitArray.getString(i))) {
-                        showReport = true;
-                    }
-                    if ("nav_customer".equals(userLimitArray.getString(i))) {
-                        showCustomer = true;
-                    }
-                }
-            }catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+//        userLimitArray = MobileApplication.cacheUtil.getAsJSONArray("userLimit");
+//        if(userLimitArray != null && userLimitArray.length() > 0) {
+//            try {
+//                for (int i = 0; i < userLimitArray.length(); i++) {
+//
+//                    if ("nav_call".equals(userLimitArray.getString(i))) {
+//                        showCall = true;
+//                    }
+//                    if ("nav_business".equals(userLimitArray.getString(i))) {
+//                        showErp = true;
+//                    }
+//                    if ("nav_report".equals(userLimitArray.getString(i))) {
+//                        showReport = true;
+//                    }
+//                    if ("nav_customer".equals(userLimitArray.getString(i))) {
+//                        showCustomer = true;
+//                    }
+//                }
+//            }catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         if(!showCall) {
             ma_cdr.setVisibility(View.GONE);

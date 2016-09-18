@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -58,6 +59,14 @@ public class CustomerInfoActivity extends BaseActivity{
 
         erp_customer_ll_fields = (LinearLayout) findViewById(R.id.erp_customer_ll_fields);
         erp_customer_sv = (ScrollView) findViewById(R.id.erp_customer_sv);
+
+        ImageButton titlebar_back = (ImageButton) findViewById(R.id.titlebar_back);
+        titlebar_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         HttpManager.getInstance().queryCustomerInfo(user._id, customerId, new ResponseListener() {
             @Override

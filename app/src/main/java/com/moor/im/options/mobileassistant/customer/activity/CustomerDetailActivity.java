@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -136,7 +137,13 @@ public class CustomerDetailActivity extends BaseActivity{
             }
         });
 
-
+        ImageButton titlebar_back = (ImageButton) findViewById(R.id.titlebar_back);
+        titlebar_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
 
 
@@ -174,6 +181,10 @@ public class CustomerDetailActivity extends BaseActivity{
                     public void call(Object o) {
                         if(o instanceof MACustomer) {
                             mCustomer = (MACustomer) o;
+
+                            isStatusFirst = true;
+                            isSourceFirst = true;
+
                             initDetailData();
                         }
                     }

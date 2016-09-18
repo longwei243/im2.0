@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,6 +96,14 @@ public class CustomerEditActivity extends BaseActivity{
             @Override
             public void onClick(View v) {
                 saveCustomerInfo();
+            }
+        });
+
+        ImageButton titlebar_back = (ImageButton) findViewById(R.id.titlebar_back);
+        titlebar_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
@@ -310,10 +319,53 @@ public class CustomerEditActivity extends BaseActivity{
                     break;
                 case "weixin":
 
+                    JSONArray jsonArray_wx = new JSONArray();
+                    LinearLayout phonell_wx = (LinearLayout) childView.getChildAt(1);
+                    int phoneItemCount_wx = phonell_wx.getChildCount();
+                    for(int p=0; p<phoneItemCount_wx; p++) {
+                        RelativeLayout phoneItem = (RelativeLayout) phonell_wx.getChildAt(p);
+                        EditText et_num = (EditText) phoneItem.getChildAt(0);
+                        String phone_num = et_num.getText().toString().trim();
+                        EditText et_memo = (EditText) phoneItem.getChildAt(2);
+                        String phone_memo = et_memo.getText().toString().trim();
+                        System.out.println("_wx num is:"+phone_num+",memo is:"+phone_memo);
 
+
+                        JSONObject ja = new JSONObject();
+                        try {
+                            ja.put("num", phone_num);
+                            ja.put("memo", phone_memo);
+                            jsonArray_wx.put(ja);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    jadatas.put("weixin", jsonArray_wx);
                     break;
                 case "email":
+                    JSONArray jsonArray_email = new JSONArray();
+                    LinearLayout phonell_email = (LinearLayout) childView.getChildAt(1);
+                    int phoneItemCount_email = phonell_email.getChildCount();
+                    for(int p=0; p<phoneItemCount_email; p++) {
+                        RelativeLayout phoneItem = (RelativeLayout) phonell_email.getChildAt(p);
+                        EditText et_num = (EditText) phoneItem.getChildAt(0);
+                        String phone_num = et_num.getText().toString().trim();
+                        EditText et_memo = (EditText) phoneItem.getChildAt(2);
+                        String phone_memo = et_memo.getText().toString().trim();
+                        System.out.println("_email num is:"+phone_num+",memo is:"+phone_memo);
 
+                        JSONObject ja = new JSONObject();
+                        try {
+                            ja.put("email", phone_num);
+                            ja.put("memo", phone_memo);
+                            jsonArray_email.put(ja);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    jadatas.put("email", jsonArray_email);
 
                     break;
                 default:
@@ -488,6 +540,29 @@ public class CustomerEditActivity extends BaseActivity{
                 startActivityForResult(intent, 0x1111);
             }
         });
+
+
+        try{
+            JSONArray files = cust.getJSONArray("attachs");
+            for(int i=0; i<files.length(); i++) {
+                JSONObject file = files.getJSONObject(i);
+                final RelativeLayout rl = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.erp_field_file_already, null);
+                rl.setTag(file.getString("type"));
+                TextView erp_field_file_upload_already_tv_filename = (TextView) rl.findViewById(R.id.erp_field_file_upload_already_tv_filename);
+                erp_field_file_upload_already_tv_filename.setText(file.getString("name"));
+                erp_field_file_upload_already_tv_filename.setTag(file.getString("id"));
+
+                ImageView erp_field_file_upload_already_btn_delete = (ImageView) rl.findViewById(R.id.erp_field_file_upload_already_btn_delete);
+                erp_field_file_upload_already_btn_delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //删除附件
+                        erp_field_file_ll_already.removeView(rl);
+                    }
+                });
+                erp_field_file_ll_already.addView(rl);
+            }
+        }catch (JSONException e){}
 
         customer_edit_ll_file.addView(fileView);
 
@@ -803,36 +878,362 @@ public class CustomerEditActivity extends BaseActivity{
                     TextView erp_field_phone_item_tv_name = (TextView) phone_field.findViewById(R.id.ecustomer_edit_field_tv_name);
                     erp_field_phone_item_tv_name.setText(sf.getString("value"));
 
-                    final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                    RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                    EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                    try{
+                        JSONArray phones = cust.getJSONArray("phone");
+                        if(phones.length() == 0) {
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            final RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number.setHint("电话号");
+                            ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
 
-                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                            ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
                             ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    phone_ll.removeView(phone_item_reduce);
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number.setHint("电话号");
+                                    ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
                                 }
                             });
-                            phone_ll.addView(phone_item_reduce);
+                            phone_ll.addView(phone_item);
+                        }else if(phones.length() ==1) {
+
+                            JSONObject phone = phones.getJSONObject(0);
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            final RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+
+                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("tel"));
+                            ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
+                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
+
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number.setHint("电话号");
+                                    ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+                        }else{
+
+                            JSONObject phone = phones.getJSONObject(0);
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            final RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+
+                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("tel"));
+                            ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
+                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number.setHint("电话号");
+                                    ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+
+                            for(int p=1; p<phones.length(); p++) {
+
+                                JSONObject phone_reduce = phones.getJSONObject(p);
+
+                                final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                ecustomer_edit_field_phone_item_et_number_reduce.setHint("电话号");
+                                ecustomer_edit_field_phone_item_et_number_reduce.setInputType(InputType.TYPE_CLASS_PHONE);
+                                EditText ecustomer_edit_field_phone_item_et_memo_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                                ImageView ecustomer_edit_field_phone_item_iv_add_reduce = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                ecustomer_edit_field_phone_item_iv_add_reduce.setImageResource(R.drawable.customer_field_reduce);
+                                ecustomer_edit_field_phone_item_iv_add_reduce.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        phone_ll.removeView(phone_item_reduce);
+                                    }
+                                });
+
+                                ecustomer_edit_field_phone_item_et_number_reduce.setText(phone_reduce.getString("tel"));
+                                ecustomer_edit_field_phone_item_et_memo_reduce.setText(phone_reduce.getString("memo"));
+                                phone_ll.addView(phone_item_reduce);
+                            }
                         }
-                    });
-                    phone_ll.addView(phone_item);
+                    }catch (JSONException e) {}
 
                     customer_edit_ll_stable_field.addView(phone_field);
                 }else if("email".equals(sf.getString("name"))) {
+                    LinearLayout phone_field = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone, null);
+                    phone_field.setTag("email");
+                    TextView erp_field_phone_item_tv_name = (TextView) phone_field.findViewById(R.id.ecustomer_edit_field_tv_name);
+                    erp_field_phone_item_tv_name.setText(sf.getString("value"));
 
+                    try{
+                        JSONArray phones = cust.getJSONArray("email");
+                        if(phones.length() == 0) {
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+                        }else if(phones.length() ==1) {
+
+                            JSONObject phone = phones.getJSONObject(0);
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
+                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+
+                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("email"));
+                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
+
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+                        }else{
+
+                            JSONObject phone = phones.getJSONObject(0);
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
+                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+
+                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("email"));
+                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+
+                            for(int p=1; p<phones.length(); p++) {
+
+                                JSONObject phone_reduce = phones.getJSONObject(p);
+
+                                final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                ecustomer_edit_field_phone_item_et_number_reduce.setHint("邮箱号");
+                                EditText ecustomer_edit_field_phone_item_et_memo_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                                ImageView ecustomer_edit_field_phone_item_iv_add_reduce = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                ecustomer_edit_field_phone_item_iv_add_reduce.setImageResource(R.drawable.customer_field_reduce);
+                                ecustomer_edit_field_phone_item_iv_add_reduce.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        phone_ll.removeView(phone_item_reduce);
+                                    }
+                                });
+
+                                ecustomer_edit_field_phone_item_et_number_reduce.setText(phone_reduce.getString("email"));
+                                ecustomer_edit_field_phone_item_et_memo_reduce.setText(phone_reduce.getString("memo"));
+                                phone_ll.addView(phone_item_reduce);
+                            }
+                        }
+                    }catch (JSONException e) {}
+
+                    customer_edit_ll_stable_field.addView(phone_field);
                 }else if("weixin".equals(sf.getString("name"))) {
+                    LinearLayout phone_field = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone, null);
+                    phone_field.setTag("weixin");
+                    TextView erp_field_phone_item_tv_name = (TextView) phone_field.findViewById(R.id.ecustomer_edit_field_tv_name);
+                    erp_field_phone_item_tv_name.setText(sf.getString("value"));
 
+                    try{
+                        JSONArray phones = cust.getJSONArray("weixin");
+                        if(phones.length() == 0) {
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number.setHint("微信号");
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+                        }else if(phones.length() ==1) {
+
+                            JSONObject phone = phones.getJSONObject(0);
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number.setHint("微信号");
+                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+
+                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("num"));
+                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
+
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+                        }else{
+
+                            JSONObject phone = phones.getJSONObject(0);
+                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number.setHint("微信号");
+                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+
+                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("num"));
+                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
+                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                    EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                    ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
+                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
+                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            phone_ll.removeView(phone_item_reduce);
+                                        }
+                                    });
+                                    phone_ll.addView(phone_item_reduce);
+                                }
+                            });
+                            phone_ll.addView(phone_item);
+
+                            for(int p=1; p<phones.length(); p++) {
+
+                                JSONObject phone_reduce = phones.getJSONObject(p);
+
+                                final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                                EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                                ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
+                                EditText ecustomer_edit_field_phone_item_et_memo_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
+                                ImageView ecustomer_edit_field_phone_item_iv_add_reduce = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                                ecustomer_edit_field_phone_item_iv_add_reduce.setImageResource(R.drawable.customer_field_reduce);
+                                ecustomer_edit_field_phone_item_iv_add_reduce.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        phone_ll.removeView(phone_item_reduce);
+                                    }
+                                });
+
+                                ecustomer_edit_field_phone_item_et_number_reduce.setText(phone_reduce.getString("num"));
+                                ecustomer_edit_field_phone_item_et_memo_reduce.setText(phone_reduce.getString("memo"));
+                                phone_ll.addView(phone_item_reduce);
+                            }
+                        }
+                    }catch (JSONException e) {}
+
+                    customer_edit_ll_stable_field.addView(phone_field);
                 }else if("province".equals(sf.getString("name"))) {
                     LinearLayout dropDownView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_filed_province, null);
                     dropDownView.setTag("province");
@@ -978,6 +1379,7 @@ public class CustomerEditActivity extends BaseActivity{
             e.printStackTrace();
         }
     }
+
     private List<Option> getOptionsByKey(List<Option> o, String key) {
         for(int i=0; i<o.size(); i++) {
             if(key.equals(o.get(i).key)) {
@@ -1023,7 +1425,6 @@ public class CustomerEditActivity extends BaseActivity{
         };
         dpd.show();
     }
-
 
     private void initCheckBoxView(JSONObject cf, JSONObject cust) {
         try{

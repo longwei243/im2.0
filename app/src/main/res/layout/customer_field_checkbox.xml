@@ -30,6 +30,7 @@
         android:scrollbars="none"
         android:verticalSpacing="3dp"
         android:numColumns="3"
+        android:layout_marginLeft="12dp"
         >
 
     </com.moor.im.common.views.GridViewInScrollView>

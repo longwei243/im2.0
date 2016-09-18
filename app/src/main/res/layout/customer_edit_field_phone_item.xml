@@ -30,6 +30,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:src="@drawable/customer_field_add"
+        android:layout_marginRight="4dp"
         />
     <EditText
         android:layout_toRightOf="@id/ecustomer_edit_field_phone_item_et_number"

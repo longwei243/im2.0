@@ -6,7 +6,7 @@
     android:ellipsize="end"
           android:clickable="false"
           android:focusable="false"
-          android:enabled="false"
+          android:enabled="true"
           android:focusableInTouchMode="false"
     android:layout_width="match_parent"
     android:layout_height="match_parent">

@@ -56,12 +56,13 @@ public class NetReceiver extends BroadcastReceiver{
 
         if (connected) {
             scheduleHeartbeatInterval(info);
-            EventBus.getDefault().post(NetStatusEvent.NET_RECONNECT);
+            EventBus.getDefault().post(NetStatusEvent.NET_OK);
             SocketManager.getInstance(MobileApplication.getInstance()).logger.debug(TimeUtil.getCurrentTime()+"NetReceiver 网络重新连接上，发送了重连的事件");
             //给主进程发送广播
 
         }else {
             mConnected = false;
+            EventBus.getDefault().post(NetStatusEvent.NET_BREAK);
             SocketManager.getInstance(MobileApplication.getInstance()).logger.debug(TimeUtil.getCurrentTime()+"NetReceiver 网络断了");
 
         }

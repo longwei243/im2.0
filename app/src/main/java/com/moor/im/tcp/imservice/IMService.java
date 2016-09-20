@@ -46,6 +46,8 @@ import com.moor.im.tcp.event.NewOrderEvent;
 import com.moor.im.tcp.eventbus.EventBus;
 import com.moor.im.tcp.manager.SocketManager;
 import com.moor.im.tcp.manager.SocketStatus;
+import com.moor.imkf.tcpservice.tcp.SocketManagerStatus;
+import com.moor.imkf.utils.LogUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,6 +142,11 @@ public class IMService extends Service{
      * 重连登录
      */
     private void reLogin() {
+        mSocketManager.logger.error(TimeUtil.getCurrentTime()+"IMService:执行了重连登录的方法,isRelogin的状态是:"+isRelogin);
+
+        if(isRelogin) {
+            return;
+        }
         Info info = InfoDao.getInstance().getInfo();
         if(info != null) {
             String isSuccess = info.isSucceed;
@@ -153,11 +160,13 @@ public class IMService extends Service{
 
     //=====================事件总线==========================
     public void onEventMainThread(LoginSuccessEvent loginSuccessEvent) {
-        mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到登录成功的事件");
+        mSocketManager.logger.error(TimeUtil.getCurrentTime()+"IMService:接收到登录成功的事件");
         //可以启动心跳了
         mSocketManager.startHeartBeat();
         mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED, true);
         mEditor.commit();
+
+        isRelogin = false;
         //登录成功,发送广播通知主进程
         Intent loginSuccessIntent = new Intent();
         loginSuccessIntent.putExtra(M7Constant.CONNECTION_ID, loginSuccessEvent.connectionId);
@@ -169,6 +178,7 @@ public class IMService extends Service{
         //登录失败,发送广播通知主进程
         mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED, false);
         mEditor.commit();
+        isRelogin = false;
         mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到登录失败的事件");
         Intent loginFailedIntent = new Intent();
         loginFailedIntent.setAction(M7Constant.ACTION_LOGIN_FAILED);
@@ -178,23 +188,47 @@ public class IMService extends Service{
         //被踢了,发送广播通知主进程
         mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED, false);
         mEditor.commit();
+        isRelogin = false;
         mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到被踢的事件");
         Intent loginKickedIntent = new Intent();
         loginKickedIntent.setAction(M7Constant.ACTION_LOGIN_KICKED);
         sendBroadcast(loginKickedIntent);
     }
 
+    boolean isRelogin = false;
     public void onEventMainThread(NetStatusEvent netStatusEvent) {
         if(NetStatusEvent.NET_RECONNECT.equals(netStatusEvent)) {
             //收到重连事件,判断状态，是否需要重连
-            mSocketManager.logger.debug(TimeUtil.getCurrentTime()+"IMService:接收到重连的事件");
+            mSocketManager.logger.error(TimeUtil.getCurrentTime()+"IMService:接收到重连的事件");
+
             //有网,状态是tcp断了，登录状态不能是被踢和注销
-            if(Utils.isNetWorkConnected(MobileApplication.getInstance())
-                    && SocketStatus.BREAK.equals(mSocketManager.getStatus())
+            if(SocketStatus.BREAK.equals(mSocketManager.getStatus())
                     && !mSocketManager.isLoginKicked()
                     && !mSocketManager.isLoginOff()) {
-                reLogin();
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                mSocketManager.logger.error("网络状态是:"+Utils.isNetWorkConnected(MobileApplication.getInstance()));
+                if (Utils.isNetWorkConnected(MobileApplication.getInstance())) {
+                    reLogin();
+                    isRelogin = true;
+                }
+
             }
+        }else if(NetStatusEvent.NET_OK.equals(netStatusEvent)) {
+
+            if (mSocketManager.getStatus().equals(SocketStatus.LOGINED)) {
+                LogUtil.d("SocketManager","网络恢复了， 登录状态是成功，不用进行重连");
+                return;
+            }
+            reLogin();
+            isRelogin = true;
+
+        }else if(NetStatusEvent.NET_BREAK.equals(netStatusEvent)) {
+
+            isRelogin = false;
         }
     }
 

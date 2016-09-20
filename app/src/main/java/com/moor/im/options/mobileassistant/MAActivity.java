@@ -10,6 +10,10 @@ import android.widget.TextView;
 
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
+import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.http.HttpManager;
+import com.moor.im.common.http.ResponseListener;
+import com.moor.im.common.model.User;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.mobileassistant.cdr.activity.CdrActivity;
 import com.moor.im.options.mobileassistant.customer.activity.CustomerActivity;
@@ -19,6 +23,10 @@ import com.moor.im.options.mobileassistant.report.ReportActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import rx.Observer;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 /**
@@ -30,6 +38,8 @@ public class MAActivity extends BaseActivity{
     View ma_cdr_sp, ma_erp_sp, ma_report_sp, ma_customer_sp;
     private JSONArray userLimitArray;
     private boolean showCall = true, showErp = true, showReport = true, showCustomer = true;
+
+    private User user = UserDao.getInstance().getUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +134,7 @@ public class MAActivity extends BaseActivity{
                 startActivity(reportIntent);
             }
         });
+
     }
 
 

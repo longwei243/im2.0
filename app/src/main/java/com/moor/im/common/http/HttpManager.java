@@ -1188,7 +1188,6 @@ public class HttpManager {
                         @Override
                         public void onResponse(Response response) throws IOException {
                             String st = response.body().string();
-                            LogUtil.d("获取坐席缓存数据:"+st);
                             if(!subscriber.isUnsubscribed()) {
                                 if(HttpParser.getSuccess(st)) {
                                     subscriber.onNext(st);
@@ -2042,15 +2041,19 @@ public class HttpManager {
         });
     }
 
-    public void queryCustomerList(String sessionId, HashMap<String, Object> map, final ResponseListener listener) {
+    public void queryCustomerList(String sessionId, JSONObject jsonObject, final ResponseListener listener) {
 
-        map.put("sessionId", Utils.replaceBlank(sessionId));
-        map.put("action", "mobileAssistant.doCustomer");
-        map.put("real_action", "customer.queryCustPage2In");
-        JSONWriter jw = new JSONWriter();
+        try {
+            jsonObject.put("sessionId", Utils.replaceBlank(sessionId));
+            jsonObject.put("action", "mobileAssistant.doCustomer");
+            jsonObject.put("real_action", "customer.queryCustPage2In");
 
-        String content = jw.write(map);
-        sendPostForMobileAssistant(content, listener);
+            String content = jsonObject.toString();
+            sendPostForMobileAssistant(content, listener);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void queryCustomerInfo(String sessionId, String customerId, final ResponseListener listener) {
@@ -2154,4 +2157,5 @@ public class HttpManager {
         String content = json.toString();
         sendPostForMobileAssistant(content, listener);
     }
+
 }

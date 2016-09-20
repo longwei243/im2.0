@@ -88,4 +88,8 @@
         <item>我参与的</item>
         <item>我创建的</item>
     </string-array>
+
+    <string name="button.finish">FINISH</string>
+    <string name="button.next">NEXT</string>
+    <string name="button.skip">SKIP</string>
 </resources>

@@ -114,6 +114,9 @@ public class SocketThread extends Thread{
     public void doConnect() {
         socketManager.logger.debug(TimeUtil.getCurrentTime()+"SocketThread:进入doConnect方法");
         socketManager.logger.debug(TimeUtil.getCurrentTime()+"SocketThread:循环了一次:"+connTryTimes);
+        if(!Utils.isNetWorkConnected(MobileApplication.getInstance())) {
+            return;
+        }
         connTryTimes++;
         try {
             if(channel != null){
@@ -208,10 +211,9 @@ public class SocketThread extends Thread{
             }
 
             String str = "1" + jb.toString() + "\n";
-//			MobileApplication.logger.debug(TimeUtil.getCurrentTime() + "发送登陆请求" + name + "  " + password);
+            socketManager.logger.error(TimeUtil.getCurrentTime()+"SocketThread:tcp登录发送的数据:"+str);
             socketManager.sendData(str);
             socketManager.setStatus(SocketStatus.WAIT_LOGIN);
-            socketManager.logger.debug(TimeUtil.getCurrentTime()+"SocketThread:tcp登录:"+str);
         }else {
         }
     }

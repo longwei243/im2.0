@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.moor.im.R;
 import com.moor.im.common.constant.M7Constant;
 import com.moor.im.options.intro.IntroActivity;
+import com.moor.im.options.intro2.Intro2Activity;
 import com.moor.im.options.login.LoginActivity;
 import com.moor.im.options.main.MainActivity;
 
@@ -67,7 +68,7 @@ public class WelcomeActivity extends Activity{
                             mEditor.putBoolean(M7Constant.SP_FIRST_RUN_APP, false);
                             mEditor.commit();
 
-                            Intent introIntent = new Intent(WelcomeActivity.this, IntroActivity.class);
+                            Intent introIntent = new Intent(WelcomeActivity.this, Intro2Activity.class);
                             startActivity(introIntent);
                             finish();
 

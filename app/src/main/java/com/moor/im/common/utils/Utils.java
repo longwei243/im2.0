@@ -40,7 +40,7 @@ public class Utils {
 			NetworkInfo mNetworkInfo = mConnectivityManager
 					.getActiveNetworkInfo();
 			if (mNetworkInfo != null) {
-				return mNetworkInfo.isAvailable();
+				return mNetworkInfo.isConnected();
 			}
 		}
 

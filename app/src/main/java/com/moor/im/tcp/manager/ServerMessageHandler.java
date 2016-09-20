@@ -45,7 +45,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
 		super.channelConnected(ctx, e);
-		SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:tcp连接成功");
+		SocketManager.getInstance(context).logger.error(TimeUtil.getCurrentTime()+"ServerMessageHandler:tcp连接成功");
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
          *
          **/
   		super.channelDisconnected(ctx, e);
-		SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:tcp连接断开");
+		SocketManager.getInstance(context).logger.error(TimeUtil.getCurrentTime()+"ServerMessageHandler:tcp连接断开");
 		SocketManager.getInstance(context).setStatus(SocketStatus.BREAK);
 		EventBus.getDefault().post(NetStatusEvent.NET_RECONNECT);
 	}
@@ -73,7 +73,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 		}
 		ChannelBuffer buffer = (ChannelBuffer) e.getMessage();
         String result = buffer.toString(Charset.defaultCharset());
-		SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:服务器返回的数据是：" + result);
+		SocketManager.getInstance(context).logger.error(TimeUtil.getCurrentTime()+"ServerMessageHandler:服务器返回的数据是：" + result);
 
         if ("3".equals(result)) {
         	//心跳管理器负责
@@ -99,7 +99,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 			InfoDao.getInstance().saveConnectionId(connectionId);
 			InfoDao.getInstance().setLoginStateToSuccess();
 			InfoDao.getInstance().saveIsChangePW("false");
-			SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:connectionId被保存了" + connectionId);
+			SocketManager.getInstance(context).logger.error(TimeUtil.getCurrentTime()+"ServerMessageHandler:connectionId被保存了" + connectionId);
 			EventBus.getDefault().post(new LoginSuccessEvent(connectionId));
 		}else if("800".equals(result)) {
 			//有新的工单
@@ -115,11 +115,20 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         super.exceptionCaught(ctx, e);
-		Channel ch = e.getChannel();
-		ch.close();
-		SocketManager.getInstance(context).setStatus(SocketStatus.BREAK);
-		EventBus.getDefault().post(NetStatusEvent.NET_RECONNECT);
-		SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:exceptionCaught被调用了");
+
+		if(ctx.getChannel().getId().equals(SocketManager.getInstance(context).getChannelId())){
+//				MobileApplication.logger.debug(TimeUtil.getCurrentTime() + "tcp1 开始连：");
+			//发送tcp服务器连接断开的事件
+			Channel ch = e.getChannel();
+			ch.close();
+			SocketManager.getInstance(context).setStatus(SocketStatus.BREAK);
+			EventBus.getDefault().post(NetStatusEvent.NET_RECONNECT);
+			SocketManager.getInstance(context).logger.error(TimeUtil.getCurrentTime()+"ServerMessageHandler:exceptionCaught被调用了");
+
+		}else{
+			SocketManager.getInstance(context).logger.error("发现了 old tcp channel 断开");
+//			EventBus.getDefault().post(NetStatusEvent.NET_RECONNECT);
+		}
 	}
 
 
@@ -129,7 +138,7 @@ public class ServerMessageHandler extends IdleStateAwareChannelHandler {
 
 		switch (e.getState()) {
 			case READER_IDLE:
-				SocketManager.getInstance(context).logger.debug(TimeUtil.getCurrentTime()+"ServerMessageHandler:读取通道空闲了");
+				SocketManager.getInstance(context).logger.error(TimeUtil.getCurrentTime()+"ServerMessageHandler:读取通道空闲了");
 				Channel ch = e.getChannel();
 				ch.close();
 				SocketManager.getInstance(context).setStatus(SocketStatus.BREAK);

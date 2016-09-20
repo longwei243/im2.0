@@ -200,4 +200,10 @@
         </attr>
         <attr name="SpinKit_Color" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="gradient">
+
+        <attr name="transition_drawable" format="enum"/>
+        <attr name="transition_duration" format="integer"/>
+    </declare-styleable>
 </resources>

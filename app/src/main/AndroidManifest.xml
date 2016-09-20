@@ -49,6 +49,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".options.intro.IntroActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.intro2.Intro2Activity" android:screenOrientation="portrait"/>
         <activity android:name=".options.login.LoginActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.main.MainActivity"
             android:screenOrientation="portrait"
@@ -125,6 +126,7 @@
         <activity android:name=".options.mobileassistant.customer.activity.CustomerDetailActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.customer.activity.CustomerInfoActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.customer.activity.CustomerEditActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.customer.activity.CustomerHighQueryActivity" android:screenOrientation="portrait"/>
 
         <receiver android:name=".common.receiver.SocketReceiver">
             <intent-filter>

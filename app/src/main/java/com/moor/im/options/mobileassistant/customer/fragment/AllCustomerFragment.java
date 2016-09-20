@@ -1,5 +1,7 @@
 package com.moor.im.options.mobileassistant.customer.fragment;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,9 +27,12 @@ import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
+import com.moor.im.common.utils.ObservableUtils;
 import com.moor.im.common.views.pulltorefresh.PullToRefreshBase;
 import com.moor.im.common.views.pulltorefresh.PullToRefreshListView;
 import com.moor.im.options.base.BaseLazyFragment;
+import com.moor.im.options.mobileassistant.customer.activity.CustomerDetailActivity;
+import com.moor.im.options.mobileassistant.customer.activity.CustomerHighQueryActivity;
 import com.moor.im.options.mobileassistant.customer.adapter.CustomerSpAdapter;
 import com.moor.im.options.mobileassistant.customer.adapter.MyCustomerAdapter;
 import com.moor.im.options.mobileassistant.model.MACustomer;
@@ -42,8 +47,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -102,8 +109,10 @@ public class AllCustomerFragment extends BaseLazyFragment{
         mycustomer_tv_hignquery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), MYCallHighQueryActivity.class);
-//                startActivityForResult(intent, 0x999);
+                Intent intent = new Intent(getActivity(), CustomerHighQueryActivity.class);
+                intent.putExtra("menu", "customer_all");
+                intent.putExtra("dbType", dbType);
+                startActivityForResult(intent, 0x999);
             }
         });
 
@@ -115,14 +124,18 @@ public class AllCustomerFragment extends BaseLazyFragment{
             public void onClick(View v) {
                 String num = mycustomer_et_numquery.getText().toString().trim();
                 if (!"".equals(num)) {
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("menu", "customer_all");
-                    map.put("dbType", dbType);
-                    map.put("page", 1);
-                    map.put("limit", 10);
-                    map.put("combox", num);
-                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, map);
-                    queryCustomerListData(map);
+                    try{
+                        JSONObject map = new JSONObject();
+                        map.put("menu", "customer_all");
+                        map.put("dbType", dbType);
+                        map.put("page", 1);
+                        map.put("limit", 10);
+                        map.put("combox", num);
+                        MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, map);
+                        queryCustomerListData(map);
+                    }catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -174,16 +187,21 @@ public class AllCustomerFragment extends BaseLazyFragment{
                 QueryData queryData = (QueryData) parent.getAdapter().getItem(position);
                 String value = queryData.getValue();
 
-                HashMap<String, Object> map = new HashMap<String, Object>();
-                map.put("menu", "customer_all");
-                map.put("dbType", dbType);
-                map.put("page", 1);
-                map.put("limit", 10);
-                if(!"".equals(value)) {
-                    map.put("status", value);
+                try{
+                    JSONObject map = new JSONObject();
+                    map.put("menu", "customer_all");
+                    map.put("dbType", dbType);
+                    map.put("page", 1);
+                    map.put("limit", 10);
+                    if(!"".equals(value)) {
+                        map.put("status", value);
+                    }
+                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, map);
+                    queryCustomerListData(map);
+                }catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, map);
-                queryCustomerListData(map);
+
 
             }
 
@@ -195,8 +213,15 @@ public class AllCustomerFragment extends BaseLazyFragment{
     }
 
     private void initData() {
+        loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
 
-        mCompositeSubscription.add(HttpManager.getInstance().getCustomerCache(user._id)
+        mCompositeSubscription.add(ObservableUtils.getErpCache(user._id)
+                .flatMap(new Func1<String, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(String s) {
+                        return HttpManager.getInstance().getCustomerCache(user._id);
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<String>() {
@@ -240,7 +265,7 @@ public class AllCustomerFragment extends BaseLazyFragment{
     }
 
 
-    private void queryCustomerListData(HashMap<String, Object> map) {
+    private void queryCustomerListData(JSONObject map) {
         loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
         HttpManager.getInstance().queryCustomerList(user._id, map, new GetCustomerListListener());
     }
@@ -290,7 +315,10 @@ public class AllCustomerFragment extends BaseLazyFragment{
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         MACustomer customer = (MACustomer) parent.getAdapter().getItem(position);
                         if (customer != null) {
-                            Toast.makeText(getActivity(), "点击了客户:"+customer.name, Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(getActivity(), CustomerDetailActivity.class);
+                            intent.putExtra("customerId", customer._id);
+                            startActivity(intent);
                         }
                     }
                 });
@@ -301,36 +329,61 @@ public class AllCustomerFragment extends BaseLazyFragment{
 
     private void loadDatasMore(){
 
-        HashMap<String, Object> map =  (HashMap<String, Object>) MobileApplication.cacheUtil.getAsObject(CacheKey.CACHE_MyCustomerueryData);
-        map.put("page", page);
-        HttpManager.getInstance().queryCustomerList(user._id, map, new ResponseListener() {
-            @Override
-            public void onFailed() {
-                System.out.println("返回失败");
-            }
+        try{
+            JSONObject map =   MobileApplication.cacheUtil.getAsJSONObject(CacheKey.CACHE_MyCustomerueryData);
+            map.put("page", page);
+            HttpManager.getInstance().queryCustomerList(user._id, map, new ResponseListener() {
+                @Override
+                public void onFailed() {
+                    System.out.println("返回失败");
+                }
 
-            @Override
-            public void onSuccess(String responseStr) {
-                System.out.println("客户加载更多返回数据:"+responseStr);
-                if(HttpParser.getSucceed(responseStr)) {
-                    List<MACustomer> c = HttpParser.getCustomers(responseStr);
-                    if(c.size() < 10) {
-                        //是最后一页了
-                        customerList.addAll(c);
-                        mAdapter.notifyDataSetChanged();
-                        mPullRefreshListView.onRefreshComplete();
+                @Override
+                public void onSuccess(String responseStr) {
+                    System.out.println("客户加载更多返回数据:"+responseStr);
+                    if(HttpParser.getSucceed(responseStr)) {
+                        List<MACustomer> c = HttpParser.getCustomers(responseStr);
+                        if(c.size() < 10) {
+                            //是最后一页了
+                            customerList.addAll(c);
+                            mAdapter.notifyDataSetChanged();
+                            mPullRefreshListView.onRefreshComplete();
 
-                        mPullRefreshListView.setMode(PullToRefreshBase.Mode.DISABLED);
-                        mPullRefreshListView.getRefreshableView().addFooterView(footerView);
-                    }else {
-                        customerList.addAll(c);
-                        mAdapter.notifyDataSetChanged();
-                        mPullRefreshListView.onRefreshComplete();
-                        page++;
+                            mPullRefreshListView.setMode(PullToRefreshBase.Mode.DISABLED);
+                            mPullRefreshListView.getRefreshableView().addFooterView(footerView);
+                        }else {
+                            customerList.addAll(c);
+                            mAdapter.notifyDataSetChanged();
+                            mPullRefreshListView.onRefreshComplete();
+                            page++;
+                        }
                     }
                 }
-            }
-        });
+            });
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 0x999 && resultCode == Activity.RESULT_OK) {
+            if(data.getSerializableExtra("highQueryData") != null) {
+                loadingFragmentDialog.show(getActivity().getSupportFragmentManager(), "");
+                mycustomer_sp_quickquery.setSelection(0);
+                String str = data.getStringExtra("highQueryData");
+                try {
+                    JSONObject datas = new JSONObject(str);
+                    HttpManager.getInstance().queryCustomerList(user._id, datas, new GetCustomerListListener());
+                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, datas);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }
     }
 }

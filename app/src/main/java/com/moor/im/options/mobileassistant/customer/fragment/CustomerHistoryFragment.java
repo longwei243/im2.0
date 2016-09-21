@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 
 import com.moor.im.R;
 import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.event.CustomerHistoryRefresh;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
+import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.customer.activity.CustomerDetailActivity;
@@ -25,6 +27,8 @@ import com.moor.im.options.mobileassistant.model.MABusinessStep;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.functions.Action1;
 
 /**
  * Created by longwei on 16/8/23.
@@ -43,6 +47,22 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         customer_history_rv.setLayoutManager(manager);
 
+        refreshHistoryData();
+
+        mCompositeSubscription.add(RxBus.getInstance().toObserverable()
+                .subscribe(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        if(o instanceof CustomerHistoryRefresh) {
+                            refreshHistoryData();
+                        }
+                    }
+                }));
+
+        return view;
+    }
+
+    private void refreshHistoryData() {
         String customerId = ((CustomerDetailActivity)getActivity()).getCustomerId();
         HttpManager.getInstance().customer_queryCommonHistory(user._id, customerId, new ResponseListener() {
             @Override
@@ -63,9 +83,6 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
                 }
             }
         });
-
-
-        return view;
     }
 
     private List<CustomerHistory> processCustomerHistoryData(List<CustomerHistoryData> datas) {

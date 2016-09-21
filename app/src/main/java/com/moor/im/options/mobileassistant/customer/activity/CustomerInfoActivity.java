@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -35,7 +36,7 @@ public class CustomerInfoActivity extends BaseActivity{
 
     private TextView erp_customer_tv_name, erp_customer_tv_source, erp_customer_tv_status,
             erp_customer_tv_owner, erp_customer_tv_batchNo, erp_customer_tv_createTime,
-            erp_customer_tv_lastUpdateTime;
+            erp_customer_tv_lastUpdateTime, erp_customer_tv_lastContactTime;
     private LinearLayout erp_customer_ll_fields;
     private ScrollView erp_customer_sv;
     private String customerId;
@@ -56,6 +57,7 @@ public class CustomerInfoActivity extends BaseActivity{
         erp_customer_tv_batchNo = (TextView) findViewById(R.id.erp_customer_tv_batchNo);
         erp_customer_tv_createTime = (TextView) findViewById(R.id.erp_customer_tv_createTime);
         erp_customer_tv_lastUpdateTime = (TextView) findViewById(R.id.erp_customer_tv_lastUpdateTime);
+        erp_customer_tv_lastContactTime = (TextView) findViewById(R.id.erp_customer_tv_lastContactTime);
 
         erp_customer_ll_fields = (LinearLayout) findViewById(R.id.erp_customer_ll_fields);
         erp_customer_sv = (ScrollView) findViewById(R.id.erp_customer_sv);
@@ -94,16 +96,25 @@ public class CustomerInfoActivity extends BaseActivity{
                 String createTime = jsonObject.getString("createTime");
                 erp_customer_tv_createTime.setText(createTime);
 
-                String lastUpdateTime = jsonObject.getString("lastUpdateTime");
-                erp_customer_tv_lastUpdateTime.setText(lastUpdateTime);
+                try{
+                    String lastUpdateTime = jsonObject.getString("lastUpdateTime");
+                    erp_customer_tv_lastUpdateTime.setText(lastUpdateTime);
+                }catch (JSONException e){}
+
+                try{
+                    String lastContactTime = jsonObject.getString("lastContactTime");
+                    erp_customer_tv_lastContactTime.setText(lastContactTime);
+                }catch (JSONException e){}
+
 
 //                    String batchNo = jsonObject.getString("batchNo");
 //                    erp_customer_tv_batchNo.setText(batchNo);
 
                 String agentId = jsonObject.getString("owner");
                 MAAgent agent = MobileAssitantCache.getInstance().getAgentById(agentId);
-                erp_customer_tv_owner.setText(agent.displayName);
-
+                if(agent != null) {
+                    erp_customer_tv_owner.setText(agent.displayName);
+                }
 
                 if(MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_MACust) != null) {
                     custCacheStr = MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_MACust);
@@ -246,13 +257,7 @@ public class CustomerInfoActivity extends BaseActivity{
                                     TextView erp_customer_field_tv_value = (TextView) rl.findViewById(R.id.erp_customer_field_tv_value);
                                     erp_customer_field_tv_name.setText(name);
                                     erp_customer_field_tv_value.setText(tel);
-//                                    ImageView call = (ImageView) rl.findViewById(R.id.erp_customer_field_iv_call);
-//                                    call.setOnClickListener(new View.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(View v) {
-//                                            callDialog(tel);
-//                                        }
-//                                    });
+
                                     erp_customer_ll_fields.addView(rl);
                                 }
                             }

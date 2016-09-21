@@ -1,6 +1,7 @@
 package com.moor.im.options.mobileassistant.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by longwei on 16/9/5.
@@ -19,5 +20,7 @@ public class MACustomer implements Serializable {
     public String action;
     public String notifyTime;
     public String lastUpdateTime;
+    public List<MACustomerPhone> phone;
+    public List<MACustomerEmail> email;
 
 }

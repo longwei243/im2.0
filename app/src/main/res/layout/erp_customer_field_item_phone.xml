@@ -22,17 +22,9 @@
 
             android:text="sfada"
             />
-        <ImageView
-            android:id="@+id/erp_customer_field_iv_call"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/outbound"/>
         <TextView
             android:id="@+id/erp_customer_field_tv_value"
-            android:layout_toLeftOf="@id/erp_customer_field_iv_call"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="16dp"
             android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Path;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -199,7 +200,6 @@ public class CustomerHighQueryActivity extends BaseActivity{
                     }
                 });
 
-
                 customer_high_query_et_notifyTime_begin_date.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -236,6 +236,8 @@ public class CustomerHighQueryActivity extends BaseActivity{
                         showDateTimePiker(customer_high_query_et_createTime_end_date);
                     }
                 });
+
+
 
             } catch (JSONException e) {
                 e.printStackTrace();

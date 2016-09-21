@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.GET_TASKS" />
 
 
@@ -127,6 +128,7 @@
         <activity android:name=".options.mobileassistant.customer.activity.CustomerInfoActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.customer.activity.CustomerEditActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.mobileassistant.customer.activity.CustomerHighQueryActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".options.mobileassistant.customer.activity.CustomerAddActivity" android:screenOrientation="portrait"/>
 
         <receiver android:name=".common.receiver.SocketReceiver">
             <intent-filter>

@@ -29,6 +29,7 @@ import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.event.CustomerListRefresh;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
@@ -41,17 +42,13 @@ import com.moor.im.options.mobileassistant.cdr.adapter.SPAdapter;
 import com.moor.im.options.mobileassistant.customer.adapter.CustomerCBAdapter;
 import com.moor.im.options.mobileassistant.erp.activity.ErpActionProcessActivity;
 import com.moor.im.options.mobileassistant.erp.adapter.ErpAgentSpAdapter;
-import com.moor.im.options.mobileassistant.erp.adapter.ErpCBAdapter;
 import com.moor.im.options.mobileassistant.erp.adapter.ErpSpAdapter;
 import com.moor.im.options.mobileassistant.erp.dialog.UploadFileDialog;
 import com.moor.im.options.mobileassistant.model.MAAgent;
-import com.moor.im.options.mobileassistant.model.MABusinessField;
 import com.moor.im.options.mobileassistant.model.MACustomer;
 import com.moor.im.options.mobileassistant.model.MAOption;
 import com.moor.im.options.mobileassistant.model.Option;
 import com.moor.im.options.mobileassistant.model.QueryData;
-import com.moor.imkf.gson.Gson;
-import com.moor.imkf.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,13 +64,12 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by longwei on 16/9/12.
+ * Created by longwei on 16/9/21.
  */
-public class CustomerEditActivity extends BaseActivity{
 
+public class CustomerAddActivity extends BaseActivity{
     private LinearLayout customer_edit_ll_stable_field, customer_edit_ll_custom_field, customer_edit_ll_file;
     private ImageButton titlebar_done;
-    private String customerId;
     private String dbType;
 
     private String custCacheStr;
@@ -85,11 +81,11 @@ public class CustomerEditActivity extends BaseActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_edit);
 
-        customerId = getIntent().getStringExtra("customerId");
-
         customer_edit_ll_stable_field = (LinearLayout) findViewById(R.id.customer_edit_ll_stable_field);
         customer_edit_ll_custom_field = (LinearLayout) findViewById(R.id.customer_edit_ll_custom_field);
         customer_edit_ll_file = (LinearLayout) findViewById(R.id.customer_edit_ll_file);
+        TextView titlebar_name = (TextView) findViewById(R.id.titlebar_name);
+        titlebar_name.setText("新建客户");
         titlebar_done = (ImageButton) findViewById(R.id.titlebar_done);
 
         titlebar_done.setOnClickListener(new View.OnClickListener() {
@@ -107,45 +103,30 @@ public class CustomerEditActivity extends BaseActivity{
             }
         });
 
-        HttpManager.getInstance().queryCustomerInfo(user._id, customerId, new ResponseListener() {
-            @Override
-            public void onFailed() {
-
-            }
-
-            @Override
-            public void onSuccess(String responseStr) {
-                System.out.println("customer edit获取详情数据:"+responseStr);
-                initData(responseStr);
-            }
-        });
+        initData();
     }
 
-    private void initData(String responseStr) {
+    private void initData() {
 
 
         if (MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_MACust) != null) {
             custCacheStr = MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_MACust);
 
             try {
-                JSONObject jsonObject1 = new JSONObject(responseStr);
-                if ("true".equals(jsonObject1.getString("Succeed"))) {
-                    JSONObject cust = jsonObject1.getJSONObject("data");
-                    dbType = cust.getString("dbType");
-
                     JSONObject custCache = new JSONObject(custCacheStr);
+                    dbType = custCache.getString("_id");
 
-                    createStableFieldView(custCache, cust);
+                    createStableFieldView(custCache);
 
-                    createSourceView(custCache, cust);
+                    createSourceView(custCache);
 
-                    createOwnerView(custCache, cust);
+                    createOwnerView(custCache);
 
-                    createFileView(custCache, cust);
+                    createFileView(custCache);
 
-                    createCustomFieldView(custCache, cust);
+                    createCustomFieldView(custCache);
 
-                }
+
             }catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -171,7 +152,7 @@ public class CustomerEditActivity extends BaseActivity{
                     String required = (String) tv_single_required.getTag();
                     if("required".equals(required)) {
                         if("".equals(value)) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName + "是必填项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName + "是必填项", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -187,7 +168,7 @@ public class CustomerEditActivity extends BaseActivity{
                     String required_single = (String) tv_single_required_single.getTag();
                     if("required".equals(required_single)) {
                         if("".equals(value_single)) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName_single + "是必填项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName_single + "是必填项", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -203,7 +184,7 @@ public class CustomerEditActivity extends BaseActivity{
                     String required_mutli = (String) tv_required_mutli.getTag();
                     if("required".equals(required_mutli)) {
                         if("".equals(value_mutli)) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName_mutli + "是必填项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName_mutli + "是必填项", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -221,7 +202,7 @@ public class CustomerEditActivity extends BaseActivity{
                     String required_sex = (String) tv_required_sex.getTag();
                     if("required".equals(required_sex)) {
                         if(selectId == -1) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName_sex + "是必填项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName_sex + "是必填项", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -244,7 +225,7 @@ public class CustomerEditActivity extends BaseActivity{
                     String required_birth = (String) tv_required_birth.getTag();
                     if("required".equals(required_birth)) {
                         if("".equals(value_birth)) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName_birth + "是必填项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName_birth + "是必填项", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -413,7 +394,7 @@ public class CustomerEditActivity extends BaseActivity{
                     String required_single = (String) tv_single_required_single.getTag();
                     if("required".equals(required_single)) {
                         if("".equals(value_single)) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName_single + "是必填项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName_single + "是必填项", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -446,7 +427,7 @@ public class CustomerEditActivity extends BaseActivity{
                     }
                     if("required".equals(required_checkbox)) {
                         if(jsonArray.length() == 0) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName_checkbox + "是必选项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName_checkbox + "是必选项", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -464,7 +445,7 @@ public class CustomerEditActivity extends BaseActivity{
                     String required_sex = (String) tv_required_sex.getTag();
                     if("required".equals(required_sex)) {
                         if(selectId == -1) {
-                            Toast.makeText(CustomerEditActivity.this, fieldName_sex + "是必填项", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CustomerAddActivity.this, fieldName_sex + "是必填项", Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
@@ -480,30 +461,24 @@ public class CustomerEditActivity extends BaseActivity{
                     break;
             }
         }
-        if(!"".equals(customerId) && !"".equals(dbType)) {
-            datas.put("_id", customerId);
+        if(!"".equals(dbType)) {
+            datas.put("callId", "customer");
             datas.put("dbType", dbType);
+            datas.put("actionType", "self");
 
-            HttpManager.getInstance().customer_update(user._id, datas, jadatas, new ResponseListener() {
+            HttpManager.getInstance().customer_add(user._id, datas, jadatas, new ResponseListener() {
                 @Override
                 public void onFailed() {
-                    Toast.makeText(CustomerEditActivity.this, "更新客户失败", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CustomerAddActivity.this, "新建客户失败", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onSuccess(String responseStr) {
-                    System.out.println("更新客户返回结果:"+responseStr);
+                    System.out.println("新建客户返回结果:"+responseStr);
                     if(HttpParser.getSucceed(responseStr)) {
                         try{
-//                            JSONObject jsonObject = new JSONObject(responseStr);
-//                            JSONObject cust = jsonObject.getJSONObject("data");
-//                            Gson gson = new Gson();
-//                            MACustomer customer = gson.fromJson(cust.toString(),
-//                                    new TypeToken<MACustomer>() {
-//                                    }.getType());
-
-                            RxBus.getInstance().send(new MACustomer());
-                            Toast.makeText(CustomerEditActivity.this, "客户更新成功", Toast.LENGTH_SHORT).show();
+                            RxBus.getInstance().send(new CustomerListRefresh());
+                            Toast.makeText(CustomerAddActivity.this, "新建客户成功", Toast.LENGTH_SHORT).show();
                             finish();
                         }catch (Exception e) {
                             e.printStackTrace();
@@ -519,7 +494,7 @@ public class CustomerEditActivity extends BaseActivity{
     /**
      * 上传文件界面
      */
-    private void createFileView(JSONObject custCache, JSONObject cust) {
+    private void createFileView(JSONObject custCache) {
         RelativeLayout fileView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.erp_field_file, null);
         fileView.setTag("file");
 
@@ -541,29 +516,6 @@ public class CustomerEditActivity extends BaseActivity{
                 startActivityForResult(intent, 0x1111);
             }
         });
-
-
-        try{
-            JSONArray files = cust.getJSONArray("attachs");
-            for(int i=0; i<files.length(); i++) {
-                JSONObject file = files.getJSONObject(i);
-                final RelativeLayout rl = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.erp_field_file_already, null);
-                rl.setTag(file.getString("type"));
-                TextView erp_field_file_upload_already_tv_filename = (TextView) rl.findViewById(R.id.erp_field_file_upload_already_tv_filename);
-                erp_field_file_upload_already_tv_filename.setText(file.getString("name"));
-                erp_field_file_upload_already_tv_filename.setTag(file.getString("id"));
-
-                ImageView erp_field_file_upload_already_btn_delete = (ImageView) rl.findViewById(R.id.erp_field_file_upload_already_btn_delete);
-                erp_field_file_upload_already_btn_delete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //删除附件
-                        erp_field_file_ll_already.removeView(rl);
-                    }
-                });
-                erp_field_file_ll_already.addView(rl);
-            }
-        }catch (JSONException e){}
 
         customer_edit_ll_file.addView(fileView);
 
@@ -597,7 +549,7 @@ public class CustomerEditActivity extends BaseActivity{
                 System.out.println("文件大小为:" + fileSize);
                 if((fileSize / 1024 / 1024) > 10.0) {
                     //大于10M不能上传
-                    Toast.makeText(CustomerEditActivity.this, "上传文件不能大于10M", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CustomerAddActivity.this, "上传文件不能大于10M", Toast.LENGTH_SHORT).show();
                 }else {
                     if(fileSize / 1024 < 1.0) {
                         //B
@@ -634,7 +586,7 @@ public class CustomerEditActivity extends BaseActivity{
 
         @Override
         public void onCompleted(String fileName, String key) {
-            final RelativeLayout rl = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.erp_field_file_already, null);
+            final RelativeLayout rl = (RelativeLayout) LayoutInflater.from(CustomerAddActivity.this).inflate(R.layout.erp_field_file_already, null);
             String type = "other";
             if(fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase().equals("png") ||
                     fileName.substring(fileName.lastIndexOf(".")+1).toLowerCase().equals("jpg") ||
@@ -661,7 +613,7 @@ public class CustomerEditActivity extends BaseActivity{
         }
     };
 
-    private void createCustomFieldView(JSONObject custCache, JSONObject cust) {
+    private void createCustomFieldView(JSONObject custCache) {
 
         try {
             JSONArray custom_fields = custCache.getJSONArray("custom_fields");
@@ -677,9 +629,6 @@ public class CustomerEditActivity extends BaseActivity{
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(cf.getString("_id"));
 
-                    try{
-                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
-                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("multi".equals(cf.getString("type"))) {
                     LinearLayout singleView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_mutli, null);
@@ -690,9 +639,6 @@ public class CustomerEditActivity extends BaseActivity{
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(cf.getString("_id"));
 
-                    try{
-                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
-                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("number".equals(cf.getString("type"))) {
                     LinearLayout singleView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_single, null);
@@ -703,9 +649,6 @@ public class CustomerEditActivity extends BaseActivity{
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(cf.getString("_id"));
 
-                    try{
-                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
-                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(singleView);
                 }else if("date".equals(cf.getString("type"))) {
                     LinearLayout birthView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_birth, null);
@@ -722,9 +665,6 @@ public class CustomerEditActivity extends BaseActivity{
                         }
                     });
 
-                    try{
-                        erp_field_single_et_value.setText(cust.getString(cf.getString("_id")));
-                    }catch (JSONException e){}
                     customer_edit_ll_custom_field.addView(birthView);
                 }else if("dropdown".equals(cf.getString("type"))) {
                     LinearLayout firstItemRL = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_dropdown, null);
@@ -743,22 +683,15 @@ public class CustomerEditActivity extends BaseActivity{
                     }
                     Spinner erp_field_dropdown_item_sp_value = (Spinner) firstItemRL.findViewById(R.id.customer_edit_field_sp);
                     erp_field_dropdown_item_sp_value.setTag(cf.getString("_id"));
-                    SPAdapter adapter = new SPAdapter(CustomerEditActivity.this, datas);
+                    SPAdapter adapter = new SPAdapter(CustomerAddActivity.this, datas);
                     erp_field_dropdown_item_sp_value.setAdapter(adapter);
 
-                    try{
-                        for(int s=0; s<datas.size(); s++) {
-                            if(cust.getString(cf.getString("_id")).equals(datas.get(s).getValue())) {
-                                erp_field_dropdown_item_sp_value.setSelection(s);
-                            }
-                        }
-                    }catch (JSONException e) {}
                     customer_edit_ll_custom_field.addView(firstItemRL);
 
                 }else if("checkbox".equals(cf.getString("type"))) {
-                    initCheckBoxView(cf, cust);
+                    initCheckBoxView(cf);
                 }else if("radio".equals(cf.getString("type"))) {
-                    initRadioView(cf, cust);
+                    initRadioView(cf);
                 }
 
             }
@@ -768,7 +701,7 @@ public class CustomerEditActivity extends BaseActivity{
 
     }
 
-    private void createOwnerView(JSONObject custCache, JSONObject cust) {
+    private void createOwnerView(JSONObject custCache) {
 
         List<MAAgent> agents = MobileAssitantCache.getInstance().getAgents();
         if(agents != null && agents.size() > 0) {
@@ -785,20 +718,13 @@ public class CustomerEditActivity extends BaseActivity{
 
             Spinner erp_field_dropdown_item_sp_value = (Spinner) firstItemRL.findViewById(R.id.customer_edit_field_sp);
             erp_field_dropdown_item_sp_value.setTag("owner");
-            erp_field_dropdown_item_sp_value.setAdapter(new ErpAgentSpAdapter(CustomerEditActivity.this, agents));
+            erp_field_dropdown_item_sp_value.setAdapter(new ErpAgentSpAdapter(CustomerAddActivity.this, agents));
 
-            try{
-                for(int s=0; s<agents.size(); s++) {
-                    if(cust.getString("owner").equals(agents.get(s)._id)) {
-                        erp_field_dropdown_item_sp_value.setSelection(s);
-                    }
-                }
-            }catch (JSONException e) {}
             customer_edit_ll_stable_field.addView(firstItemRL);
         }
     }
 
-    private void createSourceView(JSONObject custCache, JSONObject cust) {
+    private void createSourceView(JSONObject custCache) {
         try{
             LinearLayout firstItemRL = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_dropdown, null);
             firstItemRL.setTag("source");
@@ -815,23 +741,16 @@ public class CustomerEditActivity extends BaseActivity{
             }
             Spinner erp_field_dropdown_item_sp_value = (Spinner) firstItemRL.findViewById(R.id.customer_edit_field_sp);
             erp_field_dropdown_item_sp_value.setTag("custsource1");
-            SPAdapter adapter = new SPAdapter(CustomerEditActivity.this, sourceDatas);
+            SPAdapter adapter = new SPAdapter(CustomerAddActivity.this, sourceDatas);
             erp_field_dropdown_item_sp_value.setAdapter(adapter);
 
-            try{
-                for(int s=0; s<sourceDatas.size(); s++) {
-                    if(cust.getString("custsource1").equals(sourceDatas.get(s).getValue())) {
-                        erp_field_dropdown_item_sp_value.setSelection(s);
-                    }
-                }
-            }catch (JSONException e) {}
             customer_edit_ll_stable_field.addView(firstItemRL);
         }catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void createStableFieldView(JSONObject custCache, final JSONObject cust) {
+    private void createStableFieldView(JSONObject custCache) {
         try {
             JSONArray stable_fields = custCache.getJSONArray("stable_fields");
             for(int i=0; i<stable_fields.length(); i++) {
@@ -846,7 +765,6 @@ public class CustomerEditActivity extends BaseActivity{
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(sf.getString("name"));
 
-                    erp_field_single_et_value.setText(cust.getString("name"));
                     customer_edit_ll_stable_field.addView(singleView);
 
                     //客户状态
@@ -866,16 +784,9 @@ public class CustomerEditActivity extends BaseActivity{
                     }
                     Spinner erp_field_dropdown_item_sp_value = (Spinner) firstItemRL.findViewById(R.id.customer_edit_field_sp);
                     erp_field_dropdown_item_sp_value.setTag("status");
-                    SPAdapter adapter = new SPAdapter(CustomerEditActivity.this, statusList);
+                    SPAdapter adapter = new SPAdapter(CustomerAddActivity.this, statusList);
                     erp_field_dropdown_item_sp_value.setAdapter(adapter);
 
-                    try{
-                        for(int s=0; s<statusList.size(); s++) {
-                            if(cust.getString("status").equals(statusList.get(s).getValue())) {
-                                erp_field_dropdown_item_sp_value.setSelection(s);
-                            }
-                        }
-                    }catch (JSONException e) {}
                     customer_edit_ll_stable_field.addView(firstItemRL);
                 }else if("phone".equals(sf.getString("name"))) {
                     //客户电话
@@ -884,123 +795,32 @@ public class CustomerEditActivity extends BaseActivity{
                     TextView erp_field_phone_item_tv_name = (TextView) phone_field.findViewById(R.id.ecustomer_edit_field_tv_name);
                     erp_field_phone_item_tv_name.setText(sf.getString("value"));
 
-                    try{
-                        JSONArray phones = cust.getJSONArray("phone");
-                        if(phones.length() == 0) {
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            final RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                    final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                    final RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                    ecustomer_edit_field_phone_item_et_number.setHint("电话号");
+                    ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
+
+                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerAddActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
                             ecustomer_edit_field_phone_item_et_number.setHint("电话号");
                             ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
-
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                            ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
                             ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number.setHint("电话号");
-                                    ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
+                                    phone_ll.removeView(phone_item_reduce);
                                 }
                             });
-                            phone_ll.addView(phone_item);
-                        }else if(phones.length() ==1) {
-
-                            JSONObject phone = phones.getJSONObject(0);
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            final RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-
-                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("tel"));
-                            ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
-                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
-
-                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number.setHint("电话号");
-                                    ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
-                                }
-                            });
-                            phone_ll.addView(phone_item);
-                        }else{
-
-                            JSONObject phone = phones.getJSONObject(0);
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            final RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-
-                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("tel"));
-                            ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
-                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
-                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number.setHint("电话号");
-                                    ecustomer_edit_field_phone_item_et_number.setInputType(InputType.TYPE_CLASS_PHONE);
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
-                                }
-                            });
-                            phone_ll.addView(phone_item);
-
-                            for(int p=1; p<phones.length(); p++) {
-
-                                JSONObject phone_reduce = phones.getJSONObject(p);
-
-                                final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                ecustomer_edit_field_phone_item_et_number_reduce.setHint("电话号");
-                                ecustomer_edit_field_phone_item_et_number_reduce.setInputType(InputType.TYPE_CLASS_PHONE);
-                                EditText ecustomer_edit_field_phone_item_et_memo_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                                ImageView ecustomer_edit_field_phone_item_iv_add_reduce = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                ecustomer_edit_field_phone_item_iv_add_reduce.setImageResource(R.drawable.customer_field_reduce);
-                                ecustomer_edit_field_phone_item_iv_add_reduce.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        phone_ll.removeView(phone_item_reduce);
-                                    }
-                                });
-
-                                ecustomer_edit_field_phone_item_et_number_reduce.setText(phone_reduce.getString("tel"));
-                                ecustomer_edit_field_phone_item_et_memo_reduce.setText(phone_reduce.getString("memo"));
-                                phone_ll.addView(phone_item_reduce);
-                            }
+                            phone_ll.addView(phone_item_reduce);
                         }
-                    }catch (JSONException e) {}
+                    });
+                    phone_ll.addView(phone_item);
 
                     customer_edit_ll_stable_field.addView(phone_field);
                 }else if("email".equals(sf.getString("name"))) {
@@ -1009,116 +829,29 @@ public class CustomerEditActivity extends BaseActivity{
                     TextView erp_field_phone_item_tv_name = (TextView) phone_field.findViewById(R.id.ecustomer_edit_field_tv_name);
                     erp_field_phone_item_tv_name.setText(sf.getString("value"));
 
-                    try{
-                        JSONArray phones = cust.getJSONArray("email");
-                        if(phones.length() == 0) {
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                    final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                    RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                    ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
+                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerAddActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
                             ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                            ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
                             ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
+                                    phone_ll.removeView(phone_item_reduce);
                                 }
                             });
-                            phone_ll.addView(phone_item);
-                        }else if(phones.length() ==1) {
-
-                            JSONObject phone = phones.getJSONObject(0);
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
-                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-
-                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("email"));
-                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
-
-                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
-                                }
-                            });
-                            phone_ll.addView(phone_item);
-                        }else{
-
-                            JSONObject phone = phones.getJSONObject(0);
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
-                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-
-                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("email"));
-                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
-                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number.setHint("邮箱号");
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
-                                }
-                            });
-                            phone_ll.addView(phone_item);
-
-                            for(int p=1; p<phones.length(); p++) {
-
-                                JSONObject phone_reduce = phones.getJSONObject(p);
-
-                                final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                ecustomer_edit_field_phone_item_et_number_reduce.setHint("邮箱号");
-                                EditText ecustomer_edit_field_phone_item_et_memo_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                                ImageView ecustomer_edit_field_phone_item_iv_add_reduce = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                ecustomer_edit_field_phone_item_iv_add_reduce.setImageResource(R.drawable.customer_field_reduce);
-                                ecustomer_edit_field_phone_item_iv_add_reduce.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        phone_ll.removeView(phone_item_reduce);
-                                    }
-                                });
-
-                                ecustomer_edit_field_phone_item_et_number_reduce.setText(phone_reduce.getString("email"));
-                                ecustomer_edit_field_phone_item_et_memo_reduce.setText(phone_reduce.getString("memo"));
-                                phone_ll.addView(phone_item_reduce);
-                            }
+                            phone_ll.addView(phone_item_reduce);
                         }
-                    }catch (JSONException e) {}
+                    });
+                    phone_ll.addView(phone_item);
 
                     customer_edit_ll_stable_field.addView(phone_field);
                 }else if("weixin".equals(sf.getString("name"))) {
@@ -1127,117 +860,29 @@ public class CustomerEditActivity extends BaseActivity{
                     TextView erp_field_phone_item_tv_name = (TextView) phone_field.findViewById(R.id.ecustomer_edit_field_tv_name);
                     erp_field_phone_item_tv_name.setText(sf.getString("value"));
 
-                    try{
-                        JSONArray phones = cust.getJSONArray("weixin");
-                        if(phones.length() == 0) {
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            ecustomer_edit_field_phone_item_et_number.setHint("微信号");
+                    final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
+                    RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
+                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                    EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                    ecustomer_edit_field_phone_item_et_number.setHint("微信号");
+                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerAddActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
+                            EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
+                            ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
+                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
+                            ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
                             ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
+                                    phone_ll.removeView(phone_item_reduce);
                                 }
                             });
-                            phone_ll.addView(phone_item);
-                        }else if(phones.length() ==1) {
-
-                            JSONObject phone = phones.getJSONObject(0);
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            ecustomer_edit_field_phone_item_et_number.setHint("微信号");
-                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-
-                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("num"));
-                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
-
-                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
-                                }
-                            });
-                            phone_ll.addView(phone_item);
-                        }else{
-
-                            JSONObject phone = phones.getJSONObject(0);
-                            final LinearLayout phone_ll = (LinearLayout) phone_field.findViewById(R.id.ecustomer_edit_field_phone_ll);
-                            RelativeLayout phone_item = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.customer_edit_field_phone_item, null);
-                            EditText ecustomer_edit_field_phone_item_et_number = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                            ecustomer_edit_field_phone_item_et_number.setHint("微信号");
-                            EditText ecustomer_edit_field_phone_item_et_memo = (EditText) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                            ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-
-                            ecustomer_edit_field_phone_item_et_number.setText(phone.getString("num"));
-                            ecustomer_edit_field_phone_item_et_memo.setText(phone.getString("memo"));
-                            ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                    EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                    ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
-                                    ImageView ecustomer_edit_field_phone_item_iv_add = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                    ecustomer_edit_field_phone_item_iv_add.setImageResource(R.drawable.customer_field_reduce);
-                                    ecustomer_edit_field_phone_item_iv_add.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            phone_ll.removeView(phone_item_reduce);
-                                        }
-                                    });
-                                    phone_ll.addView(phone_item_reduce);
-                                }
-                            });
-                            phone_ll.addView(phone_item);
-
-                            for(int p=1; p<phones.length(); p++) {
-
-                                JSONObject phone_reduce = phones.getJSONObject(p);
-
-                                final RelativeLayout phone_item_reduce = (RelativeLayout) LayoutInflater.from(CustomerEditActivity.this).inflate(R.layout.customer_edit_field_phone_item, null);
-                                EditText ecustomer_edit_field_phone_item_et_number_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_number);
-                                ecustomer_edit_field_phone_item_et_number_reduce.setHint("微信号");
-                                EditText ecustomer_edit_field_phone_item_et_memo_reduce = (EditText) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_et_memo);
-                                ImageView ecustomer_edit_field_phone_item_iv_add_reduce = (ImageView) phone_item_reduce.findViewById(R.id.ecustomer_edit_field_phone_item_iv_add);
-                                ecustomer_edit_field_phone_item_iv_add_reduce.setImageResource(R.drawable.customer_field_reduce);
-                                ecustomer_edit_field_phone_item_iv_add_reduce.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        phone_ll.removeView(phone_item_reduce);
-                                    }
-                                });
-
-                                ecustomer_edit_field_phone_item_et_number_reduce.setText(phone_reduce.getString("num"));
-                                ecustomer_edit_field_phone_item_et_memo_reduce.setText(phone_reduce.getString("memo"));
-                                phone_ll.addView(phone_item_reduce);
-                            }
+                            phone_ll.addView(phone_item_reduce);
                         }
-                    }catch (JSONException e) {}
+                    });
+                    phone_ll.addView(phone_item);
 
                     customer_edit_ll_stable_field.addView(phone_field);
                 }else if("province".equals(sf.getString("name"))) {
@@ -1253,17 +898,8 @@ public class CustomerEditActivity extends BaseActivity{
 
                     final Spinner erp_field_dropdown_item_sp_value = (Spinner) firstItemRL.findViewById(R.id.erp_field_dropdown_item_sp_value);
                     erp_field_dropdown_item_sp_value.setTag("province");
-                    final ErpSpAdapter adapter = new ErpSpAdapter(CustomerEditActivity.this, firstOption);
+                    final ErpSpAdapter adapter = new ErpSpAdapter(CustomerAddActivity.this, firstOption);
                     erp_field_dropdown_item_sp_value.setAdapter(adapter);
-
-                    try{
-                        for(int p=0; p<firstOption.size(); p++) {
-                            if(cust.getString("province").equals(firstOption.get(p).key)) {
-                                erp_field_dropdown_item_sp_value.setSelection(p);
-                            }
-                        }
-                    }catch (JSONException e){}
-
 
                     erp_field_dropdown_ll.addView(firstItemRL);
                     String fieldName2 = maoption.headers.get(1);
@@ -1280,16 +916,8 @@ public class CustomerEditActivity extends BaseActivity{
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             Option o = (Option) parent.getAdapter().getItem(position);
                             List<Option> secondOptions = getOptionsByKey(firstOption, o.key);
-                            ErpSpAdapter adapter = new ErpSpAdapter(CustomerEditActivity.this, secondOptions);
+                            ErpSpAdapter adapter = new ErpSpAdapter(CustomerAddActivity.this, secondOptions);
                             erp_field_dropdown_item_sp_value2.setAdapter(adapter);
-
-                            try{
-                                for(int p=0; p<secondOptions.size(); p++) {
-                                    if(cust.getString("city").equals(secondOptions.get(p).key)) {
-                                        erp_field_dropdown_item_sp_value2.setSelection(p);
-                                    }
-                                }
-                            }catch (Exception e){}
                         }
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {
@@ -1309,9 +937,6 @@ public class CustomerEditActivity extends BaseActivity{
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(sf.getString("name"));
 
-                    try{
-                        erp_field_single_et_value.setText(cust.getString(sf.getString("name")));
-                    }catch (JSONException e){}
                     customer_edit_ll_stable_field.addView(singleView);
 
                 }else if("sex".equals(sf.getString("name"))) {
@@ -1328,13 +953,6 @@ public class CustomerEditActivity extends BaseActivity{
                     RadioButton customer_edit_field_rb_nv = (RadioButton) sexView.findViewById(R.id.customer_edit_field_rb_nv);
                     customer_edit_field_rb_nv.setTag("1");
 
-                    try{
-                        if("0".equals(cust.getString("sex"))) {
-                            customer_edit_field_rb_nan.setChecked(true);
-                        }else if("1".equals(cust.getString("sex"))) {
-                            customer_edit_field_rb_nv.setChecked(true);
-                        }
-                    }catch (JSONException e) {}
                     customer_edit_ll_stable_field.addView(sexView);
 
 
@@ -1354,9 +972,6 @@ public class CustomerEditActivity extends BaseActivity{
                         }
                     });
 
-                    try{
-                        erp_field_single_et_value.setText(cust.getString(sf.getString("name")));
-                    }catch (JSONException e){}
                     customer_edit_ll_stable_field.addView(birthView);
                 }else {
 
@@ -1368,14 +983,6 @@ public class CustomerEditActivity extends BaseActivity{
                     EditText erp_field_single_et_value = (EditText) singleView.findViewById(R.id.ecustomer_edit_field_et_value);
                     erp_field_single_et_value.setTag(sf.getString("name"));
 
-                    try{
-                        String value = cust.getString(sf.getString("name"));
-                        if(value != null && !"".equals(value)) {
-                            erp_field_single_et_value.setText(value);
-                        }
-                    }catch (JSONException e){
-
-                    }
                     customer_edit_ll_stable_field.addView(singleView);
 
                 }
@@ -1405,7 +1012,7 @@ public class CustomerEditActivity extends BaseActivity{
         int year = d.get(Calendar.YEAR);
         int month = d.get(Calendar.MONTH);
         int day = d.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog dpd = new DatePickerDialog(CustomerEditActivity.this, new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog dpd = new DatePickerDialog(CustomerAddActivity.this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 String monthStr  = "";
@@ -1432,7 +1039,7 @@ public class CustomerEditActivity extends BaseActivity{
         dpd.show();
     }
 
-    private void initCheckBoxView(JSONObject cf, JSONObject cust) {
+    private void initCheckBoxView(JSONObject cf) {
         try{
             LinearLayout checkboxView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_field_checkbox, null);
             checkboxView.setTag("checkbox");
@@ -1453,18 +1060,8 @@ public class CustomerEditActivity extends BaseActivity{
                 queryData.setValue(key);
                 datas.add(queryData);
             }
-            final CustomerCBAdapter adapter = new CustomerCBAdapter(CustomerEditActivity.this, datas);
+            final CustomerCBAdapter adapter = new CustomerCBAdapter(CustomerAddActivity.this, datas);
 
-            try{
-                JSONArray cbs = cust.getJSONArray(cf.getString("_id"));
-                for (int i=0; i<datas.size(); i++) {
-                    for(int j=0; j<cbs.length(); j++){
-                        if(datas.get(i).getValue().equals(cbs.getString(j))) {
-                            adapter.getIsSelected().put(i, true);
-                        }
-                    }
-                }
-            }catch (JSONException e) {}
             checkbox_gv.setAdapter(adapter);
             checkbox_gv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -1486,7 +1083,7 @@ public class CustomerEditActivity extends BaseActivity{
         }
     }
 
-    private void initRadioView(JSONObject cf, JSONObject cust) {
+    private void initRadioView(JSONObject cf) {
         try{
             LinearLayout radioView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.customer_field_radio, null);
             radioView.setTag("radio");
@@ -1511,18 +1108,13 @@ public class CustomerEditActivity extends BaseActivity{
             }
             for (int i=0; i<datas.size(); i++) {
                 QueryData qd = datas.get(i);
-                RadioButton rb = new RadioButton(CustomerEditActivity.this);
+                RadioButton rb = new RadioButton(CustomerAddActivity.this);
                 ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 rb.setLayoutParams(lp);
                 rb.setText(qd.getName());
                 rb.setTag(qd.getValue());
                 rb.setId(View.generateViewId());
 
-                try{
-                    if(cust.getString(cf.getString("_id")).equals(qd.getValue())) {
-                        rb.setChecked(true);
-                    }
-                } catch (JSONException e) {}
                 radioGroup.addView(rb);
             }
             customer_edit_ll_custom_field.addView(radioView);
@@ -1531,4 +1123,5 @@ public class CustomerEditActivity extends BaseActivity{
         }
 
     }
+    
 }

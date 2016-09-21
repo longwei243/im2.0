@@ -71,4 +71,5 @@ public class CacheKey {
 	 * 待办工单查询条件缓存
 	 */
 	public static final String CACHE_MyCustomerueryData = "cache_myCustomerQueryData";
+	public static final String CACHE_AllCustomerueryData = "cache_allCustomerQueryData";
 }

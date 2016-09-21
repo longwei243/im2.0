@@ -1,6 +1,7 @@
 package com.moor.im.options.mobileassistant.customer.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
@@ -22,7 +23,11 @@ import android.widget.Toast;
 import com.moor.im.R;
 import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
+import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.dialog.dialogplus.DialogPlus;
+import com.moor.im.common.dialog.dialogplus.ListHolder;
+import com.moor.im.common.dialog.dialogplus.OnItemClickListener;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
@@ -31,17 +36,23 @@ import com.moor.im.common.model.User;
 import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.GlideUtils;
 import com.moor.im.common.utils.NullUtil;
+import com.moor.im.common.utils.log.LogUtil;
 import com.moor.im.common.views.roundimage.RoundImageView;
 import com.moor.im.options.base.BaseActivity;
 import com.moor.im.options.chat.holder.ImageViewHolder;
+import com.moor.im.options.contacts.activity.ContactsDetailActivity;
+import com.moor.im.options.dial.dialog.CallChoiseDialog;
 import com.moor.im.options.mobileassistant.MobileAssitantCache;
 import com.moor.im.options.mobileassistant.customer.CustCacheUtil;
 import com.moor.im.options.mobileassistant.customer.adapter.CustomerStatusSPAdapter;
+import com.moor.im.options.mobileassistant.customer.adapter.SimpleAdapter;
 import com.moor.im.options.mobileassistant.customer.fragment.CustomerErpFragment;
 import com.moor.im.options.mobileassistant.customer.fragment.CustomerHistoryFragment;
 import com.moor.im.options.mobileassistant.customer.fragment.CustomerPlanFragment;
 import com.moor.im.options.mobileassistant.model.MAAgent;
 import com.moor.im.options.mobileassistant.model.MACustomer;
+import com.moor.im.options.mobileassistant.model.MACustomerEmail;
+import com.moor.im.options.mobileassistant.model.MACustomerPhone;
 import com.moor.im.options.mobileassistant.model.QueryData;
 import com.moor.imkf.gson.Gson;
 import com.moor.imkf.gson.reflect.TypeToken;
@@ -82,6 +93,8 @@ public class CustomerDetailActivity extends BaseActivity{
     private LinearLayout customer_detail_ll_cust_type;
     private RelativeLayout customer_detail_ll_title;
     private Toolbar toolbar;
+
+    private ImageView customer_iv_phone, customer_iv_sms, customer_iv_email;
 
     private MACustomer mCustomer;
     private String custCacheStr;
@@ -146,6 +159,106 @@ public class CustomerDetailActivity extends BaseActivity{
         });
 
 
+        customer_iv_phone = (ImageView) findViewById(R.id.customer_iv_phone);
+        customer_iv_phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(mCustomer != null) {
+                    List<String> phoneNumList = new ArrayList<String>();
+                    List<MACustomerPhone> phones = mCustomer.phone;
+                    if(phones != null && phones.size() > 0) {
+                        if(phones.size() == 1) {
+                            String num = phones.get(0).tel.trim();
+                            if (!"".equals(num)) {
+                                Intent intent = new Intent(CustomerDetailActivity.this, CallChoiseDialog.class);
+                                intent.putExtra(M7Constant.PHONE_NUM, num);
+                                startActivity(intent);
+                            }
+                        }else {
+                            for(int p=0; p<phones.size(); p++) {
+                                MACustomerPhone phone = phones.get(p);
+                                String num = phone.tel.trim();
+                                if(!"".equals(num)) {
+                                    phoneNumList.add(num);
+                                }
+                            }
+                            showPhonePopDialog(phoneNumList);
+                        }
+                    }else {
+                        Toast.makeText(CustomerDetailActivity.this, "客户没有电话", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+        });
+
+        customer_iv_sms = (ImageView) findViewById(R.id.customer_iv_sms);
+        customer_iv_sms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(mCustomer != null) {
+                    List<String> phoneNumList = new ArrayList<String>();
+                    List<MACustomerPhone> phones = mCustomer.phone;
+                    if(phones != null && phones.size() > 0) {
+                        if(phones.size() == 1) {
+                            String num = phones.get(0).tel.trim();
+                            if (!"".equals(num)) {
+                                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"+num));
+                                startActivity(intent);
+                            }
+                        }else {
+                            for(int p=0; p<phones.size(); p++) {
+                                MACustomerPhone phone = phones.get(p);
+                                String num = phone.tel.trim();
+                                if(!"".equals(num)) {
+                                    phoneNumList.add(num);
+                                }
+                            }
+                            showSmsPopDialog(phoneNumList);
+                        }
+                    }else {
+                        Toast.makeText(CustomerDetailActivity.this, "客户没有电话", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+        });
+
+        customer_iv_email = (ImageView) findViewById(R.id.customer_iv_email);
+        customer_iv_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(mCustomer != null) {
+                    List<String> emailNumList = new ArrayList<String>();
+                    List<MACustomerEmail> emails = mCustomer.email;
+                    if(emails != null && emails.size() > 0) {
+                        if(emails.size() == 1) {
+                            String num = emails.get(0).email.trim();
+                            if (!"".equals(num)) {
+                                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                                intent.setData(Uri.parse("mailto:"+num));
+                                startActivity(intent);
+                            }
+                        }else {
+                            for(int p=0; p<emails.size(); p++) {
+                                MACustomerEmail email = emails.get(p);
+                                String num = email.email.trim();
+                                if(!"".equals(num)) {
+                                    emailNumList.add(num);
+                                }
+                            }
+                            showEmailPopDialog(emailNumList);
+                        }
+                    }else {
+                        Toast.makeText(CustomerDetailActivity.this, "客户没有邮箱", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+        });
 
         custCacheStr = MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_MACust);
         showLoadingDialog();
@@ -180,15 +293,96 @@ public class CustomerDetailActivity extends BaseActivity{
                     @Override
                     public void call(Object o) {
                         if(o instanceof MACustomer) {
-                            mCustomer = (MACustomer) o;
+                            HttpManager.getInstance().queryCustomerInfo(user._id, customerId, new ResponseListener() {
+                                @Override
+                                public void onFailed() {
 
-                            isStatusFirst = true;
-                            isSourceFirst = true;
+                                }
 
-                            initDetailData();
+                                @Override
+                                public void onSuccess(String responseStr) {
+                                    if(HttpParser.getSucceed(responseStr)) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(responseStr);
+                                            JSONObject cust = jsonObject.getJSONObject("data");
+                                            Gson gson = new Gson();
+                                            mCustomer = gson.fromJson(cust.toString(),
+                                                    new TypeToken<MACustomer>() {
+                                                    }.getType());
+                                            isStatusFirst = true;
+                                            isSourceFirst = true;
+                                            initDetailData();
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            });
                         }
                     }
                 }));
+    }
+
+    private void showPhonePopDialog(final List<String> phoneNumList) {
+
+        SimpleAdapter adapter = new SimpleAdapter(CustomerDetailActivity.this, phoneNumList);
+
+        DialogPlus.newDialog(this)
+                .setContentHolder(new ListHolder())
+                .setCancelable(true)
+                .setAdapter(adapter)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Intent intent = new Intent(CustomerDetailActivity.this, CallChoiseDialog.class);
+                        intent.putExtra(M7Constant.PHONE_NUM, phoneNumList.get(position));
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
+
+    }
+
+    private void showSmsPopDialog(final List<String> phoneNumList) {
+
+        SimpleAdapter adapter = new SimpleAdapter(CustomerDetailActivity.this, phoneNumList);
+
+        DialogPlus.newDialog(this)
+                .setContentHolder(new ListHolder())
+                .setCancelable(true)
+                .setAdapter(adapter)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:"+phoneNumList.get(position)));
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
+
+    }
+
+    private void showEmailPopDialog(final List<String> emailNumList) {
+
+        SimpleAdapter adapter = new SimpleAdapter(CustomerDetailActivity.this, emailNumList);
+
+        DialogPlus.newDialog(this)
+                .setContentHolder(new ListHolder())
+                .setCancelable(true)
+                .setAdapter(adapter)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                        intent.setData(Uri.parse("mailto:"+emailNumList.get(position)));
+                        startActivity(intent);
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
+
     }
 
     private void initViewPager() {

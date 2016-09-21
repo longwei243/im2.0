@@ -31,6 +31,7 @@ import com.moor.im.R;
 import com.moor.im.app.RequestUrl;
 import com.moor.im.common.constant.M7Constant;
 import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.event.CustomerHistoryRefresh;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
@@ -1056,6 +1057,7 @@ public class CustomerErpFragment extends BaseLazyFragment{
 
                     HttpManager.getInstance().getBusinessDetailById(user._id, jb.getString("_id"), new GetBusinessDetailResponseHandler());
 
+                    RxBus.getInstance().send(new CustomerHistoryRefresh());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -23,10 +23,12 @@ import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.dialog.LoadingDialog;
+import com.moor.im.common.event.CustomerListRefresh;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
+import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.CacheUtils;
 import com.moor.im.common.utils.ObservableUtils;
 import com.moor.im.common.utils.log.LogUtil;
@@ -164,6 +166,24 @@ public class MyCustomerFragment extends BaseLazyFragment{
         });
 
         initData();
+
+        mCompositeSubscription.add(RxBus.getInstance().toObserverable()
+                    .subscribe(new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                            if(o instanceof CustomerListRefresh) {
+                                try {
+                                    JSONObject map = new JSONObject();
+                                    map.put("menu", "customer_my");
+                                    map.put("dbType", dbType);
+                                    map.put("page", 1);
+                                    map.put("limit", 10);
+                                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, map);
+                                    queryCustomerListData(map);
+                                }catch (JSONException e){}
+                            }
+                        }
+                    }));
     }
 
     private void initSpinner(JSONObject status) {
@@ -211,8 +231,6 @@ public class MyCustomerFragment extends BaseLazyFragment{
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             @Override

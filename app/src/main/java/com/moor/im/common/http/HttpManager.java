@@ -2079,6 +2079,17 @@ public class HttpManager {
         sendPostForMobileAssistant(content, listener);
     }
 
+    public void customer_updateNote(String sessionId, HashMap<String, Object> map, final ResponseListener listener) {
+
+        map.put("sessionId", Utils.replaceBlank(sessionId));
+        map.put("action", "mobileAssistant.doCustomer");
+        map.put("real_action", "customer.updateNote");
+        JSONWriter jw = new JSONWriter();
+
+        String content = jw.write(map);
+        sendPostForMobileAssistant(content, listener);
+    }
+
     public void customer_dealNote(String sessionId, HashMap<String, Object> map, final ResponseListener listener) {
 
         map.put("sessionId", Utils.replaceBlank(sessionId));
@@ -2144,6 +2155,26 @@ public class HttpManager {
             json.put("sessionId", Utils.replaceBlank(sessionId));
             json.put("action", "mobileAssistant.doCustomer");
             json.put("real_action", "customer.updateCustomer");
+            for(String key : datas.keySet()) {
+                json.put(key, datas.get(key));
+            }
+            for (String key : jadata.keySet()) {
+                json.put(key, jadata.get(key));
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String content = json.toString();
+        sendPostForMobileAssistant(content, listener);
+    }
+
+    public void customer_add(String sessionId, HashMap<String, String> datas, HashMap<String, JSONArray> jadata, final ResponseListener listener) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("sessionId", Utils.replaceBlank(sessionId));
+            json.put("action", "mobileAssistant.doCustomer");
+            json.put("real_action", "customer.addCustomer");
             for(String key : datas.keySet()) {
                 json.put(key, datas.get(key));
             }

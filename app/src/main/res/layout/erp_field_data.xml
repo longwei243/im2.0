@@ -24,6 +24,7 @@
         android:singleLine="true"
         android:editable="false"
         android:background="@drawable/erp_field_et_bg"
+        android:focusableInTouchMode="false"
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"

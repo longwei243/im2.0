@@ -1,10 +1,12 @@
 package com.moor.im.options.mobileassistant.customer.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -41,6 +43,17 @@ public class CustomerActivity extends BaseActivity{
                 finish();
             }
         });
+
+        ImageButton titlebar_add = (ImageButton) findViewById(R.id.titlebar_add);
+        titlebar_add.setVisibility(View.VISIBLE);
+        titlebar_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CustomerActivity.this, CustomerAddActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         mycustomer_fragment = new MyCustomerFragment();
         allcustomer_fragment = new AllCustomerFragment();

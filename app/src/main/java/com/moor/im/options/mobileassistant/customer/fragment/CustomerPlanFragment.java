@@ -13,6 +13,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,23 +22,20 @@ import android.widget.Toast;
 
 import com.moor.im.R;
 import com.moor.im.common.db.dao.UserDao;
+import com.moor.im.common.event.CustomerHistoryRefresh;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
-import com.moor.im.common.utils.TimeUtil;
-import com.moor.im.common.utils.log.ObjParser;
+import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.mobileassistant.cdr.adapter.SPAdapter;
 import com.moor.im.options.mobileassistant.customer.activity.CustomerDetailActivity;
 import com.moor.im.options.mobileassistant.model.MACustomer;
 import com.moor.im.options.mobileassistant.model.QueryData;
-import com.moor.imkf.gson.Gson;
-import com.moor.imkf.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.pjsip.pjsua.SWIGTYPE_p_p_pjmedia_port;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +58,7 @@ public class CustomerPlanFragment extends BaseLazyFragment{
 
     private CheckBox customer_plan_cb_done;
     private TextView customer_plan_tv_action, customer_plan_tv_notifytime;
+    private ImageView customer_plan_ib_edit;
 
     private SPAdapter mSPAdapter;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -84,6 +83,7 @@ public class CustomerPlanFragment extends BaseLazyFragment{
         customer_plan_tv_action = (TextView) view.findViewById(R.id.customer_plan_tv_action);
         customer_plan_tv_notifytime = (TextView) view.findViewById(R.id.customer_plan_tv_notifytime);
         customer_plan_cb_done = (CheckBox) view.findViewById(R.id.customer_plan_cb_done);
+        customer_plan_ib_edit = (ImageView) view.findViewById(R.id.customer_plan_ib_edit);
 
         initSp();
         customer_plan_et_time.setOnClickListener(new View.OnClickListener() {
@@ -91,22 +91,6 @@ public class CustomerPlanFragment extends BaseLazyFragment{
             public void onClick(View v) {
                 customer_plan_sp_quicktime.setSelection(0);
                 showDatePiker();
-            }
-        });
-        customer_plan_btn_submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String content = customer_plan_et_content.getText().toString().trim();
-                if(!"".equals(content)) {
-                    String dateStr = customer_plan_et_time.getText().toString().trim();
-                    if(!"".equals(dateStr)) {
-                        saveNote(content, dateStr);
-                    }else {
-                        Toast.makeText(getActivity(), "联系时间不能为空", Toast.LENGTH_SHORT).show();
-                    }
-                }else {
-                    Toast.makeText(getActivity(), "内容不能为空", Toast.LENGTH_SHORT).show();
-                }
             }
         });
 
@@ -121,40 +105,6 @@ public class CustomerPlanFragment extends BaseLazyFragment{
         }else {
             showAddNoteView();
         }
-
-
-
-//        if(customer != null) {
-//            HttpManager.getInstance().queryCustomerInfo(user._id, customer._id, new ResponseListener() {
-//                @Override
-//                public void onFailed() {
-//
-//                }
-//
-//                @Override
-//                public void onSuccess(String responseStr) {
-//                    if(HttpParser.getSucceed(responseStr)) {
-//                        try {
-//                            JSONObject jsonObject = new JSONObject(responseStr);
-//                            JSONObject cust = jsonObject.getJSONObject("data");
-//                            Gson gson = new Gson();
-//
-//                            customer = gson.fromJson(cust.toString(),
-//                                    new TypeToken<MACustomer>() {
-//                                    }.getType());
-//                            if(customer.actionId != null && !"".equals(customer.actionId)) {
-//                                showActionView(customer.action, customer.notifyTime, customer.actionId, customer._id);
-//                            }else {
-//                                showAddNoteView();
-//                            }
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            });
-//        }
-
 
     }
 
@@ -184,6 +134,8 @@ public class CustomerPlanFragment extends BaseLazyFragment{
                             customer.notifyTime = jb.getString("notifyTime");
                             customer.action = jb.getString("action");
                             showActionView(jb.getString("action"), jb.getString("notifyTime"), jb.getString("actionId"), customerId);
+
+                            RxBus.getInstance().send(new CustomerHistoryRefresh());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -193,6 +145,46 @@ public class CustomerPlanFragment extends BaseLazyFragment{
         });
 
     }
+
+    private void updateNote(String id, String content, String dateStr) {
+        final String customerId = ((CustomerDetailActivity)getActivity()).getCustomerId();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("userId", user._id);
+        map.put("accountId", user.accountId);
+        map.put("remark", content);
+        map.put("notifyTime", dateStr);
+        map.put("customerId",customerId);
+        map.put("_id",id);
+        HttpManager.getInstance().customer_addNote(user._id, map, new ResponseListener() {
+            @Override
+            public void onFailed() {
+                Toast.makeText(getActivity(), "保存失败", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(String responseStr) {
+                System.out.println("保存联系计划返回结果:"+responseStr);
+                if(HttpParser.getSucceed(responseStr)) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(responseStr);
+                        JSONObject jb = jsonObject.getJSONObject("data");
+                        if(jb.getString("actionId") != null) {
+                            customer.actionId = jb.getString("actionId");
+                            customer.notifyTime = jb.getString("notifyTime");
+                            customer.action = jb.getString("action");
+                            showActionView(jb.getString("action"), jb.getString("notifyTime"), jb.getString("actionId"), customerId);
+
+                            RxBus.getInstance().send(new CustomerHistoryRefresh());
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+    }
+
     private void showAddNoteView() {
         customer_plan_ll_add.setVisibility(View.VISIBLE);
         customer_plan_ll_show.setVisibility(View.GONE);
@@ -200,9 +192,26 @@ public class CustomerPlanFragment extends BaseLazyFragment{
         customer_plan_sp_quicktime.setSelection(0);
         customer_plan_et_time.setText("");
 
+        customer_plan_btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String content = customer_plan_et_content.getText().toString().trim();
+                if(!"".equals(content)) {
+                    String dateStr = customer_plan_et_time.getText().toString().trim();
+                    if(!"".equals(dateStr)) {
+                        saveNote(content, dateStr);
+                    }else {
+                        Toast.makeText(getActivity(), "联系时间不能为空", Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(getActivity(), "内容不能为空", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
-    private void showActionView(String content, String notifyTime, final String actionId, final String customerId) {
+    private void showActionView(final String content, final String notifyTime, final String actionId, final String customerId) {
         customer_plan_ll_add.setVisibility(View.GONE);
         customer_plan_ll_show.setVisibility(View.VISIBLE);
         customer_plan_tv_action.setText("");
@@ -234,6 +243,40 @@ public class CustomerPlanFragment extends BaseLazyFragment{
                         }
                     });
                 }
+            }
+        });
+
+        customer_plan_ib_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customer_plan_ll_add.setVisibility(View.VISIBLE);
+                customer_plan_ll_show.setVisibility(View.GONE);
+                customer_plan_et_content.setText(content);
+                customer_plan_et_time.setText(notifyTime);
+                customer_plan_btn_submit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String content = customer_plan_et_content.getText().toString().trim();
+                        if(!"".equals(content)) {
+                            String dateStr = customer_plan_et_time.getText().toString().trim();
+                            if(!"".equals(dateStr)) {
+                                updateNote(actionId, content, dateStr);
+                            }else {
+                                Toast.makeText(getActivity(), "联系时间不能为空", Toast.LENGTH_SHORT).show();
+                            }
+                        }else {
+                            Toast.makeText(getActivity(), "内容不能为空", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+            }
+        });
+        customer_plan_btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customer_plan_ll_add.setVisibility(View.GONE);
+                customer_plan_ll_show.setVisibility(View.VISIBLE);
             }
         });
     }

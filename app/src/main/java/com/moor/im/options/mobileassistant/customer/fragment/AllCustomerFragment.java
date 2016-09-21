@@ -23,10 +23,12 @@ import com.moor.im.app.MobileApplication;
 import com.moor.im.common.constant.CacheKey;
 import com.moor.im.common.db.dao.UserDao;
 import com.moor.im.common.dialog.LoadingDialog;
+import com.moor.im.common.event.CustomerListRefresh;
 import com.moor.im.common.http.HttpManager;
 import com.moor.im.common.http.HttpParser;
 import com.moor.im.common.http.ResponseListener;
 import com.moor.im.common.model.User;
+import com.moor.im.common.rxbus.RxBus;
 import com.moor.im.common.utils.ObservableUtils;
 import com.moor.im.common.views.pulltorefresh.PullToRefreshBase;
 import com.moor.im.common.views.pulltorefresh.PullToRefreshListView;
@@ -50,6 +52,7 @@ import java.util.List;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -131,7 +134,7 @@ public class AllCustomerFragment extends BaseLazyFragment{
                         map.put("page", 1);
                         map.put("limit", 10);
                         map.put("combox", num);
-                        MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, map);
+                        MobileApplication.cacheUtil.put(CacheKey.CACHE_AllCustomerueryData, map);
                         queryCustomerListData(map);
                     }catch (JSONException e) {
                         e.printStackTrace();
@@ -153,7 +156,36 @@ public class AllCustomerFragment extends BaseLazyFragment{
             }
         });
 
-        initData();
+//        initData();
+
+        if(MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_MACust) != null) {
+            String custCacheStr = MobileApplication.cacheUtil.getAsString(CacheKey.CACHE_MACust);
+            try{
+                custCache = new JSONObject(custCacheStr);
+                dbType = custCache.getString("_id");
+                JSONObject status = custCache.getJSONObject("status");
+                initSpinner(status);
+            }catch (JSONException e){}
+
+        }
+
+        mCompositeSubscription.add(RxBus.getInstance().toObserverable()
+                .subscribe(new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        if(o instanceof CustomerListRefresh) {
+                            try {
+                                JSONObject map = new JSONObject();
+                                map.put("menu", "customer_all");
+                                map.put("dbType", dbType);
+                                map.put("page", 1);
+                                map.put("limit", 10);
+                                MobileApplication.cacheUtil.put(CacheKey.CACHE_AllCustomerueryData, map);
+                                queryCustomerListData(map);
+                            }catch (JSONException e){}
+                        }
+                    }
+                }));
     }
 
     private void initSpinner(JSONObject status) {
@@ -196,7 +228,7 @@ public class AllCustomerFragment extends BaseLazyFragment{
                     if(!"".equals(value)) {
                         map.put("status", value);
                     }
-                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, map);
+                    MobileApplication.cacheUtil.put(CacheKey.CACHE_AllCustomerueryData, map);
                     queryCustomerListData(map);
                 }catch (JSONException e) {
                     e.printStackTrace();
@@ -330,7 +362,7 @@ public class AllCustomerFragment extends BaseLazyFragment{
     private void loadDatasMore(){
 
         try{
-            JSONObject map =   MobileApplication.cacheUtil.getAsJSONObject(CacheKey.CACHE_MyCustomerueryData);
+            JSONObject map =   MobileApplication.cacheUtil.getAsJSONObject(CacheKey.CACHE_AllCustomerueryData);
             map.put("page", page);
             HttpManager.getInstance().queryCustomerList(user._id, map, new ResponseListener() {
                 @Override
@@ -377,7 +409,7 @@ public class AllCustomerFragment extends BaseLazyFragment{
                 try {
                     JSONObject datas = new JSONObject(str);
                     HttpManager.getInstance().queryCustomerList(user._id, datas, new GetCustomerListListener());
-                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MyCustomerueryData, datas);
+                    MobileApplication.cacheUtil.put(CacheKey.CACHE_AllCustomerueryData, datas);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

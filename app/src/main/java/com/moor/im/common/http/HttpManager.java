@@ -2125,13 +2125,15 @@ public class HttpManager {
         sendPostForMobileAssistant(content, listener);
     }
 
-    public void customer_queryCommonHistory(String sessionId, String customerId, final ResponseListener listener) {
+    public void customer_queryCommonHistory(String sessionId, String customerId, int page, final ResponseListener listener) {
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("sessionId", Utils.replaceBlank(sessionId));
         map.put("action", "mobileAssistant.doCustomer");
         map.put("real_action", "customer.queryCustCommonHistory");
         map.put("customer", customerId);
+        map.put("page", page);
+        map.put("limit", 20);
         JSONWriter jw = new JSONWriter();
 
         String content = jw.write(map);

@@ -35,7 +35,6 @@ import com.moor.im.common.views.recyclerviewsidebar.EasyFloatingImageView;
 import com.moor.im.common.views.recyclerviewsidebar.EasyRecyclerViewSidebar;
 import com.moor.im.common.views.recyclerviewsidebar.sections.EasyImageSection;
 import com.moor.im.common.views.recyclerviewsidebar.sections.EasySection;
-import com.moor.im.helptest.activity.TestActivity;
 import com.moor.im.options.base.BaseLazyFragment;
 import com.moor.im.options.contacts.activity.ContactsDetailActivity;
 import com.moor.im.options.contacts.adapter.ContactAdatper;

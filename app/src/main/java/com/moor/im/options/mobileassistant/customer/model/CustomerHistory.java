@@ -15,5 +15,6 @@ public class CustomerHistory implements Serializable{
     public String comment;
     public boolean isShowDate;
     public String status;
+    public String recordFile;
 
 }

@@ -21,6 +21,7 @@ import com.moor.im.R;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by longwei on 2016/2/25.
@@ -105,9 +106,12 @@ public class MP3PlayerView extends FrameLayout implements MediaPlayer.OnBufferin
         public void run() {
             if (mediaPlayer == null)
                 return;
-            if (mediaPlayer.isPlaying() && !mp3player_seekbar.isPressed()) {
-                handler.sendEmptyMessage(0); // 发送消息
-            }
+            try {
+                if (mediaPlayer.isPlaying() && !mp3player_seekbar.isPressed()) {
+                    handler.sendEmptyMessage(0); // 发送消息
+                }
+            }catch (Exception e){}
+
         }
     };
 
@@ -148,9 +152,14 @@ public class MP3PlayerView extends FrameLayout implements MediaPlayer.OnBufferin
     // 停止
     public void stop() {
         if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
+            try{
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }catch (Exception e){
+
+            }
+
         }
     }
 

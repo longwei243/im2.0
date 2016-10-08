@@ -1280,16 +1280,18 @@ public class CustomerEditActivity extends BaseActivity{
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             Option o = (Option) parent.getAdapter().getItem(position);
                             List<Option> secondOptions = getOptionsByKey(firstOption, o.key);
-                            ErpSpAdapter adapter = new ErpSpAdapter(CustomerEditActivity.this, secondOptions);
-                            erp_field_dropdown_item_sp_value2.setAdapter(adapter);
+                            if(secondOptions != null) {
+                                ErpSpAdapter adapter = new ErpSpAdapter(CustomerEditActivity.this, secondOptions);
+                                erp_field_dropdown_item_sp_value2.setAdapter(adapter);
 
-                            try{
-                                for(int p=0; p<secondOptions.size(); p++) {
-                                    if(cust.getString("city").equals(secondOptions.get(p).key)) {
-                                        erp_field_dropdown_item_sp_value2.setSelection(p);
+                                try{
+                                    for(int p=0; p<secondOptions.size(); p++) {
+                                        if(cust.getString("city").equals(secondOptions.get(p).key)) {
+                                            erp_field_dropdown_item_sp_value2.setSelection(p);
+                                        }
                                     }
-                                }
-                            }catch (Exception e){}
+                                }catch (Exception e){}
+                            }
                         }
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {

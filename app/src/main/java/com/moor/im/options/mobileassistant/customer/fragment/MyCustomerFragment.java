@@ -135,7 +135,7 @@ public class MyCustomerFragment extends BaseLazyFragment{
             @Override
             public void onClick(View v) {
                 String num = mycustomer_et_numquery.getText().toString().trim();
-                if (!"".equals(num)) {
+//                if (!"".equals(num)) {
                     try{
                         JSONObject map = new JSONObject();
                         map.put("menu", "customer_my");
@@ -148,7 +148,7 @@ public class MyCustomerFragment extends BaseLazyFragment{
                     }catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
+//                }
             }
         });
         loadingFragmentDialog = new LoadingDialog();
@@ -273,7 +273,7 @@ public class MyCustomerFragment extends BaseLazyFragment{
 
                                 }else {
                                     custCache = ja.getJSONObject(0);
-                                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MACust, custCache.toString());
+                                    MobileApplication.cacheUtil.put(CacheKey.CACHE_MACust, custCache.toString(), CacheUtils.TIME_DAY * 7);
                                     dbType = custCache.getString("_id");
                                     JSONObject status = custCache.getJSONObject("status");
                                     initSpinner(status);

@@ -916,8 +916,10 @@ public class CustomerAddActivity extends BaseActivity{
                         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                             Option o = (Option) parent.getAdapter().getItem(position);
                             List<Option> secondOptions = getOptionsByKey(firstOption, o.key);
-                            ErpSpAdapter adapter = new ErpSpAdapter(CustomerAddActivity.this, secondOptions);
-                            erp_field_dropdown_item_sp_value2.setAdapter(adapter);
+                            if(secondOptions != null) {
+                                ErpSpAdapter adapter = new ErpSpAdapter(CustomerAddActivity.this, secondOptions);
+                                erp_field_dropdown_item_sp_value2.setAdapter(adapter);
+                            }
                         }
                         @Override
                         public void onNothingSelected(AdapterView<?> parent) {

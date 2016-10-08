@@ -237,29 +237,32 @@ public class LoginActivity extends AppCompatActivity {
             UserDao.getInstance().deleteUser();
             UserRoleDao.getInstance().deleteUserRole();
             UserDao.getInstance().insertUser(user);
-            List<String> userRoles = user.role;
-            if(userRoles != null) {
-                for (String role : userRoles) {
-                    UserRole ur = new UserRole();
-                    ur.role = role;
-                    ur.user = user;
-                    UserRoleDao.getInstance().insertUserRole(ur);
+            if (user.product != null && !"zj".equals(user.product)) {
+                List<String> userRoles = user.role;
+                if(userRoles != null) {
+                    for (String role : userRoles) {
+                        UserRole ur = new UserRole();
+                        ur.role = role;
+                        ur.user = user;
+                        UserRoleDao.getInstance().insertUserRole(ur);
+                    }
+                }
+
+                try {
+                    JSONObject o = new JSONObject(responseStr);
+                    JSONObject o1 = o.getJSONObject("Authority");
+                    JSONArray array = o1.getJSONArray("limit_in");
+                    if(array != null && array.length() > 0) {
+                        MobileApplication.cacheUtil.put("userLimit", array.toString(), 99 * CacheUtils.TIME_DAY);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
+
             //保存登陆成功到sp文件
             mEditor.putBoolean(M7Constant.SP_LOGIN_SUCCEED ,true);
             mEditor.commit();
-
-            try {
-                JSONObject o = new JSONObject(responseStr);
-                JSONObject o1 = o.getJSONObject("Authority");
-                JSONArray array = o1.getJSONArray("limit_in");
-                if(array != null && array.length() > 0) {
-                    MobileApplication.cacheUtil.put("userLimit", array.toString(), 99 * CacheUtils.TIME_DAY);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
             onFirstLoginInit(user);
 
@@ -282,7 +285,9 @@ public class LoginActivity extends AppCompatActivity {
         createAccount(displayName, sipExten, sipExtenSecret, pbxSipAddr);
 
         //生成一条手机助手消息
-        buildMAMsg();
+        if (user.product != null && !"zj".equals(user.product)) {
+            buildMAMsg();
+        }
     }
 
     private void buildMAMsg() {

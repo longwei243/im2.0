@@ -128,9 +128,10 @@
                     android:id="@+id/customer_detail_tv_action"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
                     android:textSize="18sp"
                     android:textColor="@color/all_black"
-                    android:text="    xxx工单处理"/>
+                    android:text="xxx工单处理"/>
 
             </LinearLayout>
             <LinearLayout
@@ -154,6 +155,26 @@
                     android:textSize="16sp"
                     android:text="llkjlkjlklkjlkj"
                     android:background="@drawable/customer_history_comment_bg"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/customer_history_ll_record"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                >
+                <TextView
+                    android:id="@+id/customer_history_tv_record"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:textColor="@color/all_white"
+                    android:drawableLeft="@drawable/bofang"
+                    android:textSize="16sp"
+                    android:text="播放录音"
+                    android:background="@drawable/call_green_bg"
                     />
             </LinearLayout>
         </LinearLayout>

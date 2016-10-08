@@ -139,6 +139,10 @@ public class SetupFragment extends BaseLazyFragment{
 
         setup_ll_setting = (RelativeLayout) view.findViewById(R.id.setup_ll_setting);
         setup_ll_setting.setOnClickListener(clickListener);
+        if (user.product != null && "zj".equals(user.product)) {
+            setup_ll_setting.setVisibility(View.GONE);
+        }
+
         contact_detail_image = (ImageView) view.findViewById(R.id.user_icon);
 
         if(user.im_icon != null && !"".equals(user.im_icon)) {
@@ -329,6 +333,11 @@ public class SetupFragment extends BaseLazyFragment{
         UserRoleDao.getInstance().deleteUserRole();
         ContactsDao.getInstance().clear();
         MobileApplication.cacheUtil.clear();
+
+        if(MobileApplication.isKFSDK) {
+            IMChatManager.getInstance().quit();
+            MobileApplication.isKFSDK = false;
+        }
     }
 
     class GetUserInfoResponseHandler implements ResponseListener{

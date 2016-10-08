@@ -94,7 +94,7 @@ public class CustomerDetailActivity extends BaseActivity{
     private RelativeLayout customer_detail_ll_title;
     private Toolbar toolbar;
 
-    private ImageView customer_iv_phone, customer_iv_sms, customer_iv_email;
+    private RelativeLayout customer_rl_phone, customer_rl_sms, customer_rl_email;
 
     private MACustomer mCustomer;
     private String custCacheStr;
@@ -159,8 +159,8 @@ public class CustomerDetailActivity extends BaseActivity{
         });
 
 
-        customer_iv_phone = (ImageView) findViewById(R.id.customer_iv_phone);
-        customer_iv_phone.setOnClickListener(new View.OnClickListener() {
+        customer_rl_phone = (RelativeLayout) findViewById(R.id.customer_rl_phone);
+        customer_rl_phone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -192,9 +192,8 @@ public class CustomerDetailActivity extends BaseActivity{
 
             }
         });
-
-        customer_iv_sms = (ImageView) findViewById(R.id.customer_iv_sms);
-        customer_iv_sms.setOnClickListener(new View.OnClickListener() {
+        customer_rl_sms = (RelativeLayout) findViewById(R.id.customer_rl_sms);
+        customer_rl_sms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -225,9 +224,8 @@ public class CustomerDetailActivity extends BaseActivity{
 
             }
         });
-
-        customer_iv_email = (ImageView) findViewById(R.id.customer_iv_email);
-        customer_iv_email.setOnClickListener(new View.OnClickListener() {
+        customer_rl_email = (RelativeLayout) findViewById(R.id.customer_rl_email);
+        customer_rl_email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

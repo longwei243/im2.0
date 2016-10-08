@@ -113,11 +113,13 @@ public class CallChoiseDialog extends Activity implements View.OnClickListener{
                 id = c.getLong(c.getColumnIndex("id"));
             }
         }
-        try {
-            service.makeCall(callee, id.intValue());
-        } catch (RemoteException e) {
-            Toast.makeText(CallChoiseDialog.this, "拨打电话失败", Toast.LENGTH_SHORT)
-                    .show();
+        if(service != null) {
+            try {
+                service.makeCall(callee, id.intValue());
+            } catch (RemoteException e) {
+                Toast.makeText(CallChoiseDialog.this, "拨打电话失败", Toast.LENGTH_SHORT)
+                        .show();
+            }
         }
     }
 

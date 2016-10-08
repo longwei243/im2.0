@@ -100,7 +100,7 @@ public class CustomerPlanFragment extends BaseLazyFragment{
 
     private void initData() {
         customer = ((CustomerDetailActivity)getActivity()).getCustomer();
-        if(customer.actionId != null && !"".equals(customer.actionId)) {
+        if(customer.actionId != null && !"".equals(customer.actionId) && customer.action != null && !"".equals(customer.action)) {
             showActionView(customer.action, customer.notifyTime, customer.actionId, customer._id);
         }else {
             showAddNoteView();
@@ -134,7 +134,7 @@ public class CustomerPlanFragment extends BaseLazyFragment{
                             customer.notifyTime = jb.getString("notifyTime");
                             customer.action = jb.getString("action");
                             showActionView(jb.getString("action"), jb.getString("notifyTime"), jb.getString("actionId"), customerId);
-
+                            Toast.makeText(getActivity(), "完成了联系计划", Toast.LENGTH_SHORT).show();
                             RxBus.getInstance().send(new CustomerHistoryRefresh());
                         }
                     } catch (JSONException e) {

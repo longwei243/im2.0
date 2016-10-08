@@ -92,6 +92,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/erp_field_et_bg"
+                        android:focusableInTouchMode="false"
                         android:textSize="16sp"
                         android:singleLine="true"
                         android:editable="false"

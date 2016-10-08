@@ -126,7 +126,7 @@ public class AllCustomerFragment extends BaseLazyFragment{
             @Override
             public void onClick(View v) {
                 String num = mycustomer_et_numquery.getText().toString().trim();
-                if (!"".equals(num)) {
+//                if (!"".equals(num)) {
                     try{
                         JSONObject map = new JSONObject();
                         map.put("menu", "customer_all");
@@ -139,7 +139,7 @@ public class AllCustomerFragment extends BaseLazyFragment{
                     }catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
+//                }
             }
         });
         loadingFragmentDialog = new LoadingDialog();

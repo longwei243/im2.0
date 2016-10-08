@@ -134,7 +134,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
+                    android:gravity="center_vertical"
                     android:layout_marginTop="8dp"
                     >
 
@@ -143,6 +143,7 @@
                         android:id="@+id/customer_detail_iv_user_icon"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
+                        android:layout_marginLeft="32dp"
                         android:src="@drawable/img_default_head"/>
                     <TextView
                         android:id="@+id/customer_detail_tv_user_name"
@@ -150,10 +151,10 @@
                         android:layout_toRightOf="@id/customer_detail_iv_user_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:maxLines="2"
-                        android:layout_marginLeft="16dp"
+                        android:maxLines="1"
+                        android:maxEms="5"
                         android:ellipsize="end"
+                        android:layout_marginLeft="16dp"
                         android:textSize="16sp"
                         android:textColor="@color/all_white"
                         android:text="姓名"/>
@@ -163,10 +164,8 @@
                         android:layout_toRightOf="@id/customer_detail_tv_user_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:maxLines="2"
+                        android:maxLines="1"
                         android:layout_marginLeft="16dp"
-                        android:ellipsize="end"
                         android:textSize="16sp"
                         android:textColor="@color/all_white"
                         android:text="日期"/>
@@ -179,14 +178,17 @@
                     android:background="@color/all_white"/>
 
                 <LinearLayout
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <RelativeLayout
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:id="@+id/customer_rl_phone"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:background="@drawable/bg_customer_selector"
                         android:layout_weight="1">
 
                         <ImageView
@@ -206,8 +208,13 @@
                             android:text="电话"/>
                     </RelativeLayout>
                     <RelativeLayout
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:id="@+id/customer_rl_sms"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:background="@drawable/bg_customer_selector"
                         android:layout_weight="1">
 
                         <ImageView
@@ -238,8 +245,13 @@
                             android:background="@color/all_white"/>
                     </RelativeLayout>
                     <RelativeLayout
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:id="@+id/customer_rl_email"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:background="@drawable/bg_customer_selector"
                         android:layout_weight="1">
 
                         <ImageView

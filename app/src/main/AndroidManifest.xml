@@ -62,9 +62,6 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             />
-        <activity android:name=".helptest.activity.TestActivity" android:screenOrientation="portrait">
-
-        </activity>
         <activity android:name=".options.group.activity.GroupActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.group.activity.CreateGroupActivity" android:screenOrientation="portrait"/>
         <activity android:name=".options.group.activity.GroupSettingActivity" android:screenOrientation="portrait"/>

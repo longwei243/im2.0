@@ -22,9 +22,13 @@ public class CustomerHistoryData {
     public String createTime;
     public String agent;
     public String status;
+    public String businessType;
     public String lastUpdateTime;
     public String comments;
     public String dispose;
+    public String recordFile;
+    public String email;
+
 
     public static int getTypeCode(String type) {
         int typeCode = 0;
@@ -54,7 +58,7 @@ public class CustomerHistoryData {
         }else if("callout".equals(type)) {
             typeStr = "外呼去电";
         }else if("chat".equals(type)) {
-            typeStr = "微信咨询";
+            typeStr = "在线咨询";
         }else if("email".equals(type)) {
             typeStr = "邮件处理";
         }else if("note".equals(type)) {

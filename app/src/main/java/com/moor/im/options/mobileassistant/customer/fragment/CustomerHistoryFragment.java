@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 
 import com.moor.im.R;
 import com.moor.im.common.db.dao.UserDao;
@@ -23,6 +24,7 @@ import com.moor.im.options.mobileassistant.customer.adapter.CustomerHistoryAdapt
 import com.moor.im.options.mobileassistant.customer.model.CustomerHistory;
 import com.moor.im.options.mobileassistant.customer.model.CustomerHistoryData;
 import com.moor.im.options.mobileassistant.model.MAAgent;
+import com.moor.im.options.mobileassistant.model.MABusinessFlow;
 import com.moor.im.options.mobileassistant.model.MABusinessStep;
 
 import java.util.ArrayList;
@@ -36,14 +38,17 @@ import rx.functions.Action1;
 public class CustomerHistoryFragment extends BaseLazyFragment{
 
     private RecyclerView customer_history_rv;
-    private List<CustomerHistoryData> datas;
     private User user = UserDao.getInstance().getUser();
+    private int page = 1;
+    private List<CustomerHistory> mCustomerHistoryList = new ArrayList<>();
 
+    private RelativeLayout customer_history_rl_empty;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_customer_history, null);
         customer_history_rv = (RecyclerView) view.findViewById(R.id.customer_history_rv);
+        customer_history_rl_empty = (RelativeLayout) view.findViewById(R.id.customer_history_rl_empty);
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         customer_history_rv.setLayoutManager(manager);
 
@@ -63,8 +68,8 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
     }
 
     private void refreshHistoryData() {
-        String customerId = ((CustomerDetailActivity)getActivity()).getCustomerId();
-        HttpManager.getInstance().customer_queryCommonHistory(user._id, customerId, new ResponseListener() {
+        final String customerId = ((CustomerDetailActivity)getActivity()).getCustomerId();
+        HttpManager.getInstance().customer_queryCommonHistory(user._id, customerId, 1, new ResponseListener() {
             @Override
             public void onFailed() {
 
@@ -74,12 +79,69 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
             public void onSuccess(String responseStr) {
                 System.out.println("客户联系历史返回数据:"+responseStr);
                 if(HttpParser.getSucceed(responseStr)) {
-                    List<CustomerHistoryData> datas = HttpParser.getCustomerHistoryData(responseStr);
-                    List<CustomerHistory> ch = processCustomerHistoryData(datas);
+                    final List<CustomerHistoryData> datas = HttpParser.getCustomerHistoryData(responseStr);
+                    if(datas.size() == 0) {
+                        customer_history_rl_empty.setVisibility(View.VISIBLE);
+                        customer_history_rv.setVisibility(View.GONE);
+                    }else {
+                        customer_history_rl_empty.setVisibility(View.GONE);
+                        customer_history_rv.setVisibility(View.VISIBLE);
+                    }
 
+                    mCustomerHistoryList = processCustomerHistoryData(datas);
 
-                    CustomerHistoryAdapter adapter = new CustomerHistoryAdapter(getActivity(), ch);
+                    final CustomerHistoryAdapter adapter = new CustomerHistoryAdapter(getActivity(), mCustomerHistoryList, customer_history_rv);
                     customer_history_rv.setAdapter(adapter);
+
+                    if(mCustomerHistoryList.size() == 20) {
+                        adapter.setOnMoreDataLoadListener(new CustomerHistoryAdapter.LoadMoreDataListener() {
+                            @Override
+                            public void loadMoreData() {
+                                //加入null值此时adapter会判断item的type
+                                mCustomerHistoryList.add(null);
+                                adapter.notifyDataSetChanged();
+
+                                page++;
+
+                                HttpManager.getInstance().customer_queryCommonHistory(user._id, customerId, page, new ResponseListener() {
+                                    @Override
+                                    public void onFailed() {
+                                        mCustomerHistoryList.remove(mCustomerHistoryList.size() - 1);
+                                        adapter.notifyDataSetChanged();
+                                        adapter.setLoaded();
+                                    }
+
+                                    @Override
+                                    public void onSuccess(String responseStr) {
+
+                                        if(HttpParser.getSucceed(responseStr)) {
+                                            final List<CustomerHistoryData> datas = HttpParser.getCustomerHistoryData(responseStr);
+                                            if(datas.size() != 0) {
+                                                List<CustomerHistory> ch_more = processCustomerHistoryData(datas);
+                                                mCustomerHistoryList.remove(mCustomerHistoryList.size() - 1);
+                                                adapter.notifyDataSetChanged();
+                                                mCustomerHistoryList.addAll(ch_more);
+                                                adapter.notifyDataSetChanged();
+                                                adapter.setLoaded();
+
+                                                if (datas.size() < 20) {
+                                                    adapter.setOnMoreDataLoadListener(null);
+                                                    page = 1;
+                                                }
+                                            }else {
+                                                adapter.setOnMoreDataLoadListener(null);
+                                                page = 1;
+                                                mCustomerHistoryList.remove(mCustomerHistoryList.size() - 1);
+                                                adapter.notifyDataSetChanged();
+                                                adapter.setLoaded();
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+
                 }
             }
         });
@@ -92,15 +154,12 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
 
             CustomerHistory customerHistory = new CustomerHistory();
             customerHistory.typeCode = CustomerHistoryData.getTypeCode(chd.type);
-            customerHistory.typeName = CustomerHistoryData.getTypeString(chd.type);
 
             String agentName = "";
             MAAgent agent = MobileAssitantCache.getInstance().getAgentById(chd.agent);
             if(agent != null) {
                 agentName = agent.displayName;
             }
-            String action = "    "+agentName + customerHistory.typeName;
-            customerHistory.action = action;
 
             try {
                 String[] createTime = chd.createTime.split(" ");
@@ -118,17 +177,27 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
 
             customerHistory.comment = chd.comments;
 
+            String action = "";
+
             String statusStr = chd.status;
             if(customerHistory.typeCode == CustomerHistoryData.TYPE_NOTE) {
                 if("finish".equals(chd.status)) {
                     statusStr = "计划完成";
+                    action = agentName + "完成了联系计划";
                 } else if("create".equals(chd.status)) {
                     statusStr = "进行中";
+                    action = agentName + "制定了联系计划";
                 }
             }else if(customerHistory.typeCode == CustomerHistoryData.TYPE_BUSSINESS) {
                 MABusinessStep step = MobileAssitantCache.getInstance().getBusinessStep(chd.status);
                 if (step != null) {
                     statusStr = step.name;
+                }
+                MABusinessFlow flow = MobileAssitantCache.getInstance().getBusinessFlow(chd.businessType);
+                if(flow != null) {
+                    action = agentName + "处理了"+flow.name+"的工单";
+                }else {
+                    action = agentName + "处理了工单";
                 }
             }else if(customerHistory.typeCode == CustomerHistoryData.TYPE_CALL_IN || customerHistory.typeCode == CustomerHistoryData.TYPE_CALL_OUT) {
 
@@ -145,7 +214,19 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
                 }else if("blackList".equals(chd.status)) {
                     statusStr = "黑名单";
                 }
+
+                if(chd.recordFile != null && !"".equals(chd.recordFile)) {
+                    customerHistory.recordFile = chd.recordFile;
+                }
+                if(customerHistory.typeCode == CustomerHistoryData.TYPE_CALL_IN) {
+                    action = agentName + "来电呼入";
+                }else {
+                    action = agentName + "外呼去电";
+                }
             }else if(customerHistory.typeCode == CustomerHistoryData.TYPE_CHAT) {
+
+                statusStr = chd.dispose;
+                action = agentName + "在线咨询";
 
             }else if(customerHistory.typeCode == CustomerHistoryData.TYPE_APPROVAL) {
                 if("unPass".equals(chd.status)) {
@@ -153,14 +234,16 @@ public class CustomerHistoryFragment extends BaseLazyFragment{
                 }else {
                     statusStr = "审核通过";
                 }
+                action = agentName + "审批";
+            }else if(customerHistory.typeCode == CustomerHistoryData.TYPE_EMAIL) {
+                statusStr = chd.dispose;
+                action = agentName + "处理邮件";
             }
             customerHistory.status = statusStr;
-
+            customerHistory.action = action;
 
             ch.add(customerHistory);
         }
-
-
         return ch;
     }
 
